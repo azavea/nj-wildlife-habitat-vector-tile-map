@@ -1,1 +1,4 @@
 #!/bin/sh
+
+brew install gdal python3
+pip3 install fiona csv json
