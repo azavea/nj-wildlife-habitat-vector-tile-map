@@ -1,4 +1,7 @@
 #!/bin/sh
 
-brew install gdal python3
+brew install gdal python3 parallel node tippecanoe
 pip3 install fiona csv json
+npm install turf @turf/random @turf/points-within-polygon @mapbox/polylabel
+
+mkdir -p data
