@@ -1,7 +1,3 @@
-scratch
-
 data/*
-!data/.gitkeep
-
-habitats/*
-!habitats/.gitkeep
+habitat/*
+tiles/*

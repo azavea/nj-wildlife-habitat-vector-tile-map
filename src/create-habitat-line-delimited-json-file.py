@@ -81,7 +81,7 @@ with open(file=species_path) as species_data:
             habitats[link]['properties']['species'].append(data)
 
 # Write habitats to a line-delimited JSON text file `habitats/features.txt`
-with open(os.path.join(dir, '..', 'habitats', 'features.txt'), 'w') as habitat_file:
+with open(os.path.join(dir, '..', 'data', 'features.txt'), 'w') as habitat_file:
     # For each habitat feature...
     for habitat in habitats:
         # Write the GeoJSON feature on a new line
