@@ -1,1 +1,4 @@
 #!/bin/sh
+
+# Upload tiles to Mapbox
+python3 src/upload-tiles.py
