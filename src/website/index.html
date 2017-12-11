@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NJ Wildlife Habitat Viewer">
+    <title>NJ Wildlife Habitat Viewer</title>
+    <link rel="shortcut icon" href="images/New-Jersey-favicon.png">
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="https://use.fontawesome.com/e1061b6f05.js"></script>
+    <script src="js/modal.js"></script>
+</head>
+
+<body>
+
+    <div class="grid">
+        <!-- Header -->
+        <div class="header">
+            <div class="learn-more-btn">
+                <a href="#" id="modal-btn" class="btn btn-blue">Learn more</a>
+            </div>
+            <div class="logo middle">
+                <a href="http://www.azavea.com" target="_blank"><img src="images/azavea_rgb_solo.svg"></a>
+                <p class="subtitle"> an Azavea R&amp;D Project</p>
+            </div>
+        </div>
+        <!-- Header -->
+        <!-- Title -->
+        <div class="title">
+            <h1><img src="images/New-Jersey.svg"> NJ Wildlife Habitat Viewer</h1>
+        </div>
+        <!-- Title -->
+        <!-- Sidebar -->
+        <sidebar>
+            <div class="block">
+
+                <!-- Search boxes -->
+                <div class="search-box input-muni">
+                    <form action="/search" class="search-form" method="get" target="_top">
+                        <input class="search-input" placeholder="Municipality" type="text">
+                    </form>
+                </div>
+                <div class="search-box">
+                <form action="/search" class="search-form" method="get" target="_top">
+                    <input class="search-input input-block" placeholder="Block" type="text">
+                    <input class="search-input input-lot" placeholder="Lot" type="text">
+                    <a href="" class="btn-search" type="submit"><i class="fa fa-search"></i></a>
+                </form>
+                </div>
+                <!-- Search boxes -->
+
+                <p>Enter location information to search for a parcel or zoom to an area on the map and draw a custom shape.</p>
+            </div>
+            <div class="block">
+                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
+            </div>
+            <div class="block">
+                <p>This is another text area in the sidebar. <a href="https://www.azavea.com/blog/" target="_blank">Click here to learn how to make this map.</a></p>
+            </div>
+        </sidebar>
+        <!-- Sidebar -->
+        <!-- Map -->
+        <maparea id="map"></maparea>
+        <!-- Map -->
+        <!-- Footer -->
+        <div class="footer">
+            <table>
+                <tbody>
+                    <tr><td class="table-center"><a href="https://www.azavea.com/blog/" target="_blank"><i class="fa fa-external-link"></i></a></td><td class="table-column"><a href="https://www.azavea.com/blog/" target="_blank">learn how we built this tool</a></td></tr>
+                    <tr><td class="table-center"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank"><i class="fa fa-github-square"></i></a></td><td class="table-column"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank">view source code on Github</a></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Footer -->
+    </div>
+
+    <!-- Modal -->
+    <div id="about-modal" class="modal">
+    <!-- Modal Content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close"><i class="fa fa-times" aria-hidden="true"></i></span>
+                <h2>Modal Header</h2>
+            </div>
+            <div class="modal-body">
+                <h4>About this application</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <h4>Solving difficult problems</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <h4>Future possibilities</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+
+  <script>
+
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZGFuamZvcmQiLCJhIjoiY2pheWZxZmh6MTZueTJxbmc0enlucnlnOSJ9.7sKY5s_o_0YSz0RJ6po5bQ';
+  var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/danjford/cjayfrirx1inl2so0fa06l1ed',
+      center: [-74.596258, 40.195586],
+      zoom: 7.2
+  });
+
+  </script>
+
+  <script>
+    // Get the modal
+    var modal = document.getElementById('about-modal');
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("modal-btn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+
+</body>
+</html>
