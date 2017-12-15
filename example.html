@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>NJ Habitat</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    <!-- Mapbox GL JS -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+    
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    
+    <!-- Turf.js -->
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+    
+    <!-- Mapbox GL JS Draw -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
+    
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+
+// Read-scope Mapbox Access Token for account with uploaded tile sources
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWFyb25kZW5uaXMiLCJhIjoiem5LLURoYyJ9.T3tswGTI5ve8_wE-a02cMw';
+
+// Protocol, hostname, and port for application (e.g. http://localhost:8000)
+const HOST = 'http://localhost:8000';
+
+// URLs to the uploaded tile source TileJSON resources. Supported protocols are http:, https:, and mapbox://<mapid>.
+const TILE_SOURCES = {
+  habitatAreas: 'mapbox://aarondennis.habitat-areas-2017',
+  habitatOverview: 'mapbox://aarondennis.sightings-2017',
+  parcels: undefined
+}
+
+const APP = {
+  initalMapLoaded: false,
+  mode: 'draw',
+  areaOfInterest: { type: 'FeatureCollection', features: [] },
+  contextFeatures: { type: 'FeatureCollection', features: [] },
+  featuresOfInterest: { type: 'FeatureCollection', features: [] },
+  ready: false
+} 
+
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+const MAP = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/satellite-streets-v9',
+  zoom: 12,
+  center: [-74.7988, 40.61251],
+  hash: true
+});
+
+MAP.addControl(new mapboxgl.NavigationControl());
+
+const DRAW = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    polygon: true,
+    trash: true
+  }
+});
+
+MAP.addControl(DRAW);
+
+function updateApp() {
+  // determine if loaded, then set ready status
+  if (APP.initialMapLoaded && MAP.loaded()) {
+    MAP.ready = true;
+    
+    switch(APP.state) {
+      case 0:
+        // Render "Search for Address or Zoom to Region"
+      case 1:
+        // Render "Select Area of Interest"
+      case 2:
+        // Render "Display Area of Interest Analysis with Species List"
+    }
+  } else {
+    MAP.ready = false;
+  }
+}
+
+function updateAreaOfInterest() {
+  APP.areaOfInterest = turf.combine(DRAW.getAll());
+  
+  frameMap();
+  updateFeaturesOfInterest();
+}
+
+function frameMap() {
+  if (APP.areaOfInterest.features.length > 0) {
+    let bounds = turf.bbox(APP.areaOfInterest);
+    MAP.fitBounds(bounds, { duration: 0, padding: 50 });
+  }
+}
+
+function updateFeaturesOfInterest() {
+  
+  let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'habitat-areas-2017' ] });
+  
+  let tileFeatureLINKIDs = tileFeatures.map((feature) => { 
+    return feature.properties.LINKID; 
+  });
+  
+  let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
+    return tileFeatureLINKIDs.indexOf(id) === index; 
+  }).sort();
+    
+  // Download GeoJSON
+  // let data = await Promise.all(LINKIDs.map((LINKID) => {
+  //   return fetch(`${HOST}/habitat/${LINKID}.json`).then((response) => response.json())
+  // }));
+  
+  // Initialize a queue of requests
+  var q = d3.queue()
+  // Make a request for the raw GeoJSON of each LINKID habitat
+  for (var i = 0; i < LINKIDs.length; i++) {
+    // Request GeoJSON files from `habitat` directory
+    q.defer(d3.json, 'http://localhost:8000/habitat/' + LINKIDs[i] + '.json')
+  }
+  // Wait for all the individual GeoJSON habitats to load
+  q.awaitAll(function(error, data) {
+    APP.contextFeatures = turf.featureCollection(data);
+    
+    let habitatData = APP.contextFeatures;
+    let intersectionArea = APP.areaOfInterest.features[0];
+    
+    // Clip each feature in the FeatureCollection by the drawing's area of interest
+    let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
+      let clippedFeature = turf.intersect(intersectionArea, f);
+      if (clippedFeature) { clippedFeature.properties = f.properties; }
+      return clippedFeature; 
+    }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
+    
+    APP.featuresOfInterest = intersectingHabitat;
+    
+    displaySpecies();
+  });
+}
+
+function displaySpecies() {
+  console.log(JSON.stringify(APP.featuresOfInterest));
+  APP.featuresOfInterest.features.map(function(f) {
+    f.properties.species.map(function(s) {
+      console.log(s);
+    });
+  });
+}
+
+
+MAP.on('render', updateApp);
+MAP.on('move', updateApp);
+
+MAP.on('load', () => {
+  APP.initialMapLoaded = true;
+  
+  // Add Habitats Areas
+  MAP.addSource('habitats', {
+    type: 'vector',
+    url: TILE_SOURCES.habitatAreas
+  });
+  MAP.addLayer({
+    "id": "habitat-areas-2017",
+    "source": "habitats",
+    "source-layer": "featurestxt",
+    "minzoom": 12,
+    "type": "fill",
+    "paint": {
+      "fill-color": "#be38ae",
+      "fill-opacity": 0.4,
+      "fill-outline-color": "#fff"
+    }
+  });
+
+  // Add Sightings Overview
+  MAP.addSource('sightings', {
+    type: 'vector',
+    url: TILE_SOURCES.habitatOverview
+  });
+  MAP.addLayer({
+    "id": "sightings-2017",
+    "source": "sightings",
+    "source-layer": "sightings",
+    "maxzoom": 12,
+    "type": "circle",
+    "paint": {
+      'circle-radius': 3,
+      'circle-color': '#fff',
+      'circle-opacity': 0.8,
+      'circle-blur': 1
+    }
+  });
+});
+
+// Listen for updates to the drawing
+MAP.on('draw.create', updateAreaOfInterest);
+MAP.on('draw.delete', updateAreaOfInterest);
+MAP.on('draw.update', updateAreaOfInterest);
+
+</script>
+
+</body>
+</html>
