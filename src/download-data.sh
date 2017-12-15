@@ -17,5 +17,5 @@ done
 for county in $(cat ./src/nj-county-names.txt)
 do
     wget -P ./data/downloads http://njgin.state.nj.us/download2/parcels/parcels_shp_${county}.zip
-    unzip ./data/downloads/parcels/parcels_shp_${county}.zip -d ./data/parcels/${county}
+    unzip ./data/downloads/parcels_shp_${county}.zip -d ./data/parcels/${county}
 done
