@@ -33,8 +33,15 @@ h3 {
 
 h4 {
     font-size: 1.0rem;
-    font-weight: 600;
+    font-weight: normal;
     color: #444;
+}
+
+.modal-body h4 {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 0;
 }
 
 .title h1 {
@@ -49,6 +56,14 @@ p {
     line-height: 150%;
     color: #444;
 }
+
+.modal-body p {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 150%;
+    color: #444;
+    margin-top: 5px;
+}
 /*Text*/
 
 /* Links */
@@ -60,7 +75,7 @@ a {
 
 a:hover, a:focus {
     color: #4ea0da;
-    text-decoration: none;
+    text-decoration: underline;
     outline: 0;
 }
 
@@ -71,6 +86,18 @@ a:hover, a:focus {
 }
 
 .footer a:hover, a:focus {
+    color: #444;
+    text-decoration: underline;
+    outline: 0;
+}
+
+.modal-footer a {
+    color: #444;
+    word-wrap: break-word;
+    text-decoration: none;
+}
+
+.modal-footer a:hover, a:focus {
     color: #444;
     text-decoration: underline;
     outline: 0;
@@ -200,7 +227,6 @@ maparea {
         vertical-align: middle;
         padding-right: 10px;
     }
-
 }
 
 sidebar .block {
@@ -375,7 +401,6 @@ table {
     border: 1px solid #888;
     width: 100%;
     height: 100vh;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
@@ -409,16 +434,26 @@ table {
 }
 
 .modal-header {
-    flex: 1;
-    padding: 20px;
+    padding: 25px;
     background-color: #f4f6f7;
+    max-height: 100px;
 }
 
 .modal-body {
-    flex: 4;
-    padding: 20px;
+    padding-left: 25px;
+    padding-right: 50px;
+    padding-top: 5px;
+    padding-bottom: 10px;
     background-color: #fff;
     overflow-y: scroll;
+}
+
+.modal-footer {
+    padding: 20px;
+    background-color: #a9b1b5;
+    color: #333;
+    font-size: 0.9rem;
+    max-height: 50px;
 }
 
 @media only screen and (min-width: 700px)  {
@@ -431,7 +466,6 @@ table {
         top: 0;
         width: 100%;
         height: 100%;
-        border-radius: 5px;
         overflow: auto;
         background-color: rgba(0,0,0,0.4);
     }
@@ -442,7 +476,7 @@ table {
         margin: auto;
         border: 1px solid #888;
         width: 50%;
-        height: 400px;
+        height: 70%;
         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
         -webkit-animation-name: animatetop;
         -webkit-animation-duration: 0.4s;
