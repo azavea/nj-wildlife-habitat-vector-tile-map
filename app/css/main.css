@@ -45,7 +45,9 @@ h4 {
 }
 
 .title h1 {
-    font-size: 1.2rem;
+    align-self: center;
+    text-align: center;
+    font-size: 1.4rem;
     font-weight: normal;
     color: #444;
 }
@@ -109,13 +111,11 @@ a:hover, a:focus {
 .grid {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 70px 1fr 40px 1fr 70px;
+    grid-template-rows: 70px 1fr 1fr;
     grid-template-areas:
         "header"
         "maparea"
-        "title"
-        "sidebar"
-        "footer";
+        "sidebar";
     height: 100vh;
     background-color: #fff;
     color: #444;
@@ -137,7 +137,7 @@ a:hover, a:focus {
     justify-content: space-between;
     align-items: center;
     padding: 0 1rem;
-    background-color: #f4f6f7;
+    background-color: #d4dce0;
     border-bottom: 1px solid #888;
 }
 
@@ -153,14 +153,7 @@ a:hover, a:focus {
 
 .title {
     grid-area: title;
-    padding: 0 1rem;
-    background-color: #f4f6f7;
-    text-align: center;
-    white-space:nowrap;
-}
-
-.title img {
-    display: none !important;
+    display: none;
 }
 
 .subtitle {
@@ -177,7 +170,10 @@ sidebar {
     flex-direction: column;
     background-color: #f4f6f7;
     color: #444;
-    padding: 10px;
+    padding-top: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 25px;
     text-align: left;
     align-items: center;
     align-content: left;
@@ -203,29 +199,19 @@ maparea {
 @media only screen and (min-width: 1028px)  {
     .grid {
         grid-template-columns: 1fr 3fr;
-        grid-template-rows: 70px 1fr 70px;
+        grid-template-rows: 70px 1fr;
         grid-template-areas:
             "title    header"
-            "sidebar  maparea"
-            "footer   maparea";
+            "sidebar  maparea";
     }
 
     .title {
+        grid-area: title;
+        display: flex;
+        justify-content: center;
         padding: 0 1rem;
-        text-align: center;
+        background-color: #d4dce0;
         border-bottom: 1px solid #888;
-    }
-
-    .title h1 {
-        font-size: 1.5rem;
-        font-weight: normal;
-        color: #444;
-    }
-
-    .title img {
-        height: 40px;
-        vertical-align: middle;
-        padding-right: 10px;
     }
 }
 
@@ -332,7 +318,7 @@ table {
     overflow: hidden;
 }
 
-.input-muni {
+.input-address {
     padding-top: 5px;
     padding-bottom: 5px;
 }
@@ -435,7 +421,7 @@ table {
 
 .modal-header {
     padding: 25px;
-    background-color: #f4f6f7;
+    background-color: #d4dce0;
     max-height: 100px;
 }
 
@@ -488,6 +474,7 @@ table {
 
 /* Map */
 #map {
+    height: 100vh;
     min-height: 400px;
 }
 /*Map*/

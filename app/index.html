@@ -46,51 +46,33 @@
         <!-- Header -->
         <!-- Title -->
         <div class="title">
-            <h1><img src="images/New-Jersey.svg"> NJ Wildlife Habitat Viewer</h1>
+            <h1>NJ Wildlife Habitat Viewer</h1>
         </div>
         <!-- Title -->
         <!-- Sidebar -->
         <sidebar>
             <div class="block">
-
                 <!-- Search boxes -->
-                <div class="search-box input-muni">
-                    <form action="/search" class="search-form" method="get" target="_top">
-                        <input class="search-input" placeholder="Municipality" type="text">
-                    </form>
-                </div>
                 <div class="search-box">
                 <form action="/search" class="search-form" method="get" target="_top">
-                    <input class="search-input input-block" placeholder="Block" type="text">
-                    <input class="search-input input-lot" placeholder="Lot" type="text">
+                    <input class="search-input input-address" placeholder="Address" type="text">
                     <a href="" class="btn-search" type="submit"><i class="fa fa-search"></i></a>
                 </form>
                 </div>
                 <!-- Search boxes -->
-
-                <p>Enter location information to search for a parcel or zoom to an area on the map and draw a custom shape.</p>
+                <p>Enter an address to zoom to an area on the map, then select parcels or draw a custom shape.</p>
             </div>
-            <div class="block">
+            <!-- <div class="block">
                 <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
             </div>
             <div class="block">
                 <p>This is another text area in the sidebar. <a href="https://www.azavea.com/blog/" target="_blank">Click here to learn how to make this map.</a></p>
-            </div>
+            </div> -->
         </sidebar>
         <!-- Sidebar -->
         <!-- Map -->
         <maparea id="map"></maparea>
         <!-- Map -->
-        <!-- Footer -->
-        <div class="footer">
-            <table>
-                <tbody>
-                    <tr><td class="table-center"><a href="https://www.azavea.com/blog/" target="_blank"><i class="fa fa-external-link"></i></a></td><td class="table-column"><a href="https://www.azavea.com/blog/" target="_blank">learn how we built this tool</a></td></tr>
-                    <tr><td class="table-center"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank"><i class="fa fa-github-square"></i></a></td><td class="table-column"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank">view source code on Github</a></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <!-- Footer -->
     </div>
 
     <!-- Modal -->
