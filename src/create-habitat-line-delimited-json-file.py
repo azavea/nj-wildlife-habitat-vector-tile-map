@@ -7,8 +7,8 @@ import json
 dir = os.path.dirname(__file__)
 
 # Paths to habitat geopackage and species csv (already converted from FileGDB) 
-habitat_path = os.path.join(dir, '..', 'data', 'skylands_habitat.gpkg')
-species_path = os.path.join(dir, '..', 'data', 'skylands_species.csv')
+habitat_path = '/app/data/skylands_habitat.gpkg'
+species_path = '/app/data/skylands_species.csv'
 
 # Collection of habitat features with species sightings, organized by LINKID
 habitats = {}
@@ -81,7 +81,7 @@ with open(file=species_path) as species_data:
             habitats[link]['properties']['species'].append(data)
 
 # Write habitats to a line-delimited JSON text file `habitats/features.txt`
-with open(os.path.join(dir, '..', 'data', 'features.txt'), 'w') as habitat_file:
+with open('/app/data/features.txt', 'w') as habitat_file:
     # For each habitat feature...
     for habitat in habitats:
         # Write the GeoJSON feature on a new line

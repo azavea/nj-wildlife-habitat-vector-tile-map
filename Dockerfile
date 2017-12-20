@@ -1,4 +1,3 @@
-
 FROM ubuntu:14.04
 
 # Install GDAL, Python, and other dependencies
