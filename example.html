@@ -51,7 +51,7 @@ const APP = {
   contextFeatures: { type: 'FeatureCollection', features: [] },
   featuresOfInterest: { type: 'FeatureCollection', features: [] },
   ready: false
-} 
+}
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
@@ -64,6 +64,7 @@ const MAP = new mapboxgl.Map({
 
 MAP.addControl(new mapboxgl.NavigationControl());
 
+// Setup drawing tool
 const DRAW = new MapboxDraw({
   displayControlsDefault: false,
   controls: {
@@ -71,7 +72,6 @@ const DRAW = new MapboxDraw({
     trash: true
   }
 });
-
 MAP.addControl(DRAW);
 
 function updateApp() {
@@ -94,7 +94,7 @@ function updateApp() {
 
 function updateAreaOfInterest() {
   APP.areaOfInterest = turf.combine(DRAW.getAll());
-  
+    
   frameMap();
   updateFeaturesOfInterest();
 }
@@ -102,7 +102,7 @@ function updateAreaOfInterest() {
 function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, { duration: 0, padding: 50 });
+    MAP.fitBounds(bounds, { duration: 0, padding: 50 }); // duration: 0 makes this synchronous
   }
 }
 
