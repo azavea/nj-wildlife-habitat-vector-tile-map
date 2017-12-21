@@ -1,44 +1,25 @@
 #!/bin/sh
 
-### Prepare Client Data Sources ###
+# Download Landscape Project Version 3.3 Species-Based Habitat Data & Parcel Data
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap /usr/local/src/download-data.sh
 
-#docker run --mount type=bind,source=${PWD}/app,target=/app --mount type=bind,source=${PWD}/src,target=/usr/local/src njmap /usr/local/src/download-data.sh
+# Convert data from FileGDB related tables to open formats
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap /usr/local/src/convert-data.sh
 
-### 1 ### Download Landscape Project Version 3.3 Species-Based Habitat Data & Parcel Data
-/usr/local/src/download-data.sh
+# Process data to line delimited GeoJSON
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap /usr/local/src/process-data.sh
 
-### 2 ###
-#docker run --mount type=bind,source=${PWD}/app,target=/app --mount type=bind,source=${PWD}/src,target=/usr/local/src njmap /usr/local/src/convert-data.sh
-
-# Convert data from FileGDB to open formats
-ogr2ogr -t_srs 'EPSG:4326' -f 'GPKG' /app/data/skylands_habitat.gpkg /app/data/skylands_v3_3gdb/skylands_v3_3.gdb Envr_hab_ls_v3_3_skylands
-ogr2ogr -f 'CSV' ./data/skylands_species.csv /app/data/skylands_v3_3gdb/skylands_v3_3.gdb Envr_hab_ls_v3_3_skyland_sp_05
-
-### 3 ###
-#docker run --mount type=bind,source=${PWD}/app,target=/app --mount type=bind,source=${PWD}/src,target=/usr/local/src njmap /usr/local/src/process-data.sh
-
-# Convert data to line-delimited GeoJSON text file
-python3 /usr/local/src/create-habitat-line-delimited-json-file.py
-
-### 4 ###
-#docker run --mount type=bind,source=${PWD}/app,target=/app --mount type=bind,source=${PWD}/src,target=/usr/local/src njmap /usr/local/src/prepare-app-data.sh
-
-# Directory for tiles
-mkdir -p /app/tiles
-
-#Directory for individual habitat files
-mkdir -p /app/habitat
-
-# Habitat Polygon Vector Tiles
-# Read habitat features and convert to vector tiles
-tippecanoe --read-parallel -z 13 -Z 11 -f -o /app/tiles/habitat-areas.mbtiles ./data/features.txt
-
-# Individual Habitat GeoJSON Files
-# Save habitat features to individual GeoJSON files named by LINKID
-parallel --pipepart -a ./data/features.txt --block 3M node /usr/local/src/create-habitat-individual-json-files.js
-
-# Habitat Point Overview Vector Tiles
-# Read habitat features line-by-line in parallel, generate species report points, then convert to vector tiles
-parallel --pipepart -a ./data/features.txt --block 3M node /usr/local/src/create-species-sighting-points.js | tippecanoe -rg -f -o /app/tiles/sightings.mbtiles
-
-### 5 ###
+# Prepare tile and data resources used by web application
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap /usr/local/src/prepare-app-data.sh
