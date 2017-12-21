@@ -32,7 +32,7 @@
 <script>
 
 // Read-scope Mapbox Access Token for account with uploaded tile sources
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWFyb25kZW5uaXMiLCJhIjoiem5LLURoYyJ9.T3tswGTI5ve8_wE-a02cMw';
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWFyb25kZW5uaXMiLCJhIjoiY2piZ3Jxb2h1MWYzdDM0cXdoZ2l0M2FmbSJ9.H7i4tLx_gKCJN-qDoTc8aw';
 
 // Protocol, hostname, and port for application (e.g. http://localhost:8000)
 const HOST = 'http://localhost:4000/app';
@@ -44,11 +44,13 @@ const TILE_SOURCES = {
   parcels: undefined
 }
 
+// Map pan and zoom contraints for New Jersey
 const NJ_MAP_LIMITS = {
   minZoom: 7,
   bounds: [[-76.151,38.638],[-73.128,41.572]]
 }
 
+// Object to manage application state
 const APP = {
   initialMapLoaded: false,
   mode: 'draw',
@@ -100,7 +102,7 @@ MAP.on('load', () => {
     "id": "habitat-areas-2017",
     "source": "habitats",
     "source-layer": "featurestxt",
-    "minzoom": 12,
+    "minzoom": 13,
     "type": "fill",
     "paint": {
       "fill-color": "#be38ae",
@@ -118,14 +120,52 @@ MAP.on('load', () => {
     "id": "sightings-2017",
     "source": "sightings",
     "source-layer": "sightings",
-    "maxzoom": 12,
-    "type": "circle",
+    "maxzoom": 13,
+    "type": "heatmap",
     "paint": {
-      'circle-radius': 3,
-      'circle-color': '#fff',
-      'circle-opacity': 0.8,
-      'circle-blur': 1
-    }
+      // increase weight as diameter breast height increases
+      'heatmap-weight': {
+        property: 'dbh',
+        type: 'exponential',
+        stops: [
+          [1, 0],
+          [200, 1]
+        ]
+      },
+      // increase intensity as zoom level increases
+      'heatmap-intensity': {
+        stops: [
+          [7, 0.2],
+          [11, 0.5]
+        ]
+      },
+      // assign color values be applied to points depending on their density
+      'heatmap-color': [
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0, 'rgba(236,222,239,0)',
+        0.2, 'rgba(208,209,230,50)',
+        0.4, 'rgba(166,189,219,100)',
+        0.6, 'rgba(103,169,207,200)',
+        0.8, 'rgba(28,144,153,255)'
+      ],
+      // increase radius as zoom increases
+      'heatmap-radius': {
+        stops: [
+          [9, 2],
+          [13, 8]
+        ]
+      },
+      // decrease opacity to transition into the circle layer
+      'heatmap-opacity': {
+        default: 1,
+        stops: [
+          [12, 1],
+          [14, 0]
+        ]
+      }
+  }
   });
 });
 
