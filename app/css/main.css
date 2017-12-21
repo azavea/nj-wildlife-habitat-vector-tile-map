@@ -2,7 +2,6 @@
 /* FONTS */
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700,900);
 
-
 body {
     margin: 0;
     height: 100%;
@@ -122,12 +121,12 @@ a:hover, a:focus {
 }
 
 .block {
-  background-color: #f4f6f7;
-  color: #444;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+    background-color: #f4f6f7;
+    color: #444;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .header {
@@ -216,9 +215,14 @@ maparea {
 }
 
 sidebar .block {
-    flex: 1;
+    display: flex;
+    justify-content: space-around;
     align-content: left;
     align-items: left;
+}
+
+.block .geocoder-container {
+    padding-top: 40px;
 }
 /*Grid Elements*/
 
@@ -255,6 +259,7 @@ sidebar .block {
 .btn-blue:hover {
     background-color:#4ea0da;
     color: #fff;
+    text-decoration: none;
 }
 
 .btn-search {
@@ -421,7 +426,7 @@ table {
 
 .modal-header {
     padding: 25px;
-    background-color: #d4dce0;
+    background-color: #f4f6f7;
     max-height: 100px;
 }
 
@@ -474,7 +479,69 @@ table {
 
 /* Map */
 #map {
-    height: 100vh;
-    min-height: 400px;
+    min-height: 500px;
+}
+
+.geocoder-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    align-self: center;
+    width: 100%;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder, .mapboxgl-ctrl-geocoder ul {
+    box-shadow: none;
+    border: 1px solid #999;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder {
+    font: 15px/25px 'Roboto', Arial, sans-serif;
+    position: relative;
+    background-color: white;
+    width: 75%;
+    min-width: 50%;
+    z-index: 1;
+    border-radius: 5px;
+    border: 1px solid #999;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder ul {
+    background-color: #fff;
+    border-radius: 0 0 5px 5px;
+    border: 1px solid #999;
+    box-shadow: none;
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    z-index: 1000;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+@media only screen and (min-width: 1028px)  {
+    .geocoder-container {
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        align-self: center;
+        max-width: 25%;
+    }
+
+    .geocoder-container > .mapboxgl-ctrl-geocoder {
+        font: 15px/25px 'Roboto', Arial, sans-serif;
+        position: relative;
+        background-color: white;
+        width: 85%;
+        min-width: 180px;
+        max-width: 300px;
+        z-index: 1;
+        border-radius: 5px;
+        border: 1px solid #999;
+    }
 }
 /*Map*/
