@@ -146,6 +146,7 @@ function updateApp() {
       renderSelectAreaOfInterestPrompt();
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
+        // Wait if processing not complete
         if (APP.featuresOfInterest.features.length > 0) {
           // Render "Display Area of Interest Analysis with Species List"
           APP.state = 2;
@@ -169,10 +170,14 @@ function setLoading() {
 }
 
 // Render Application State 0: Prompt user to zoom to an area of interest
-function renderZoomPrompt() {}
+function renderZoomPrompt() {
+  console.log('Zoom to a region.');
+}
 
 // Render Application State 1: Prompt user to select an area of interest
-function renderSelectAreaOfInterestPrompt() {}
+function renderSelectAreaOfInterestPrompt() {
+  console.log('Select an area.');
+}
 
 // Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
