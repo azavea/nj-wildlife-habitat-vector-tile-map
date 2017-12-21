@@ -2,7 +2,6 @@
 /* FONTS */
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700,900);
 
-
 body {
     margin: 0;
     height: 100%;
@@ -33,12 +32,21 @@ h3 {
 
 h4 {
     font-size: 1.0rem;
-    font-weight: 600;
+    font-weight: normal;
     color: #444;
 }
 
+.modal-body h4 {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 0;
+}
+
 .title h1 {
-    font-size: 1.2rem;
+    align-self: center;
+    text-align: center;
+    font-size: 1.4rem;
     font-weight: normal;
     color: #444;
 }
@@ -48,6 +56,14 @@ p {
     font-weight: 400;
     line-height: 150%;
     color: #444;
+}
+
+.modal-body p {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 150%;
+    color: #444;
+    margin-top: 5px;
 }
 /*Text*/
 
@@ -60,7 +76,7 @@ a {
 
 a:hover, a:focus {
     color: #4ea0da;
-    text-decoration: none;
+    text-decoration: underline;
     outline: 0;
 }
 
@@ -75,6 +91,18 @@ a:hover, a:focus {
     text-decoration: underline;
     outline: 0;
 }
+
+.modal-footer a {
+    color: #444;
+    word-wrap: break-word;
+    text-decoration: none;
+}
+
+.modal-footer a:hover, a:focus {
+    color: #444;
+    text-decoration: underline;
+    outline: 0;
+}
 /*Links*/
 
 /*Grid Elements*/
@@ -82,25 +110,23 @@ a:hover, a:focus {
 .grid {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 70px 1fr 40px 1fr 70px;
+    grid-template-rows: 70px 1fr 1fr;
     grid-template-areas:
         "header"
         "maparea"
-        "title"
-        "sidebar"
-        "footer";
+        "sidebar";
     height: 100vh;
     background-color: #fff;
     color: #444;
 }
 
 .block {
-  background-color: #f4f6f7;
-  color: #444;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+    background-color: #f4f6f7;
+    color: #444;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .header {
@@ -110,7 +136,7 @@ a:hover, a:focus {
     justify-content: space-between;
     align-items: center;
     padding: 0 1rem;
-    background-color: #f4f6f7;
+    background-color: #d4dce0;
     border-bottom: 1px solid #888;
 }
 
@@ -126,14 +152,7 @@ a:hover, a:focus {
 
 .title {
     grid-area: title;
-    padding: 0 1rem;
-    background-color: #f4f6f7;
-    text-align: center;
-    white-space:nowrap;
-}
-
-.title img {
-    display: none !important;
+    display: none;
 }
 
 .subtitle {
@@ -150,7 +169,10 @@ sidebar {
     flex-direction: column;
     background-color: #f4f6f7;
     color: #444;
-    padding: 10px;
+    padding-top: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 25px;
     text-align: left;
     align-items: center;
     align-content: left;
@@ -176,37 +198,31 @@ maparea {
 @media only screen and (min-width: 1028px)  {
     .grid {
         grid-template-columns: 1fr 3fr;
-        grid-template-rows: 70px 1fr 70px;
+        grid-template-rows: 70px 1fr;
         grid-template-areas:
             "title    header"
-            "sidebar  maparea"
-            "footer   maparea";
+            "sidebar  maparea";
     }
 
     .title {
+        grid-area: title;
+        display: flex;
+        justify-content: center;
         padding: 0 1rem;
-        text-align: center;
+        background-color: #d4dce0;
         border-bottom: 1px solid #888;
     }
-
-    .title h1 {
-        font-size: 1.5rem;
-        font-weight: normal;
-        color: #444;
-    }
-
-    .title img {
-        height: 40px;
-        vertical-align: middle;
-        padding-right: 10px;
-    }
-
 }
 
 sidebar .block {
-    flex: 1;
+    display: flex;
+    justify-content: space-around;
     align-content: left;
     align-items: left;
+}
+
+.block .geocoder-container {
+    padding-top: 40px;
 }
 /*Grid Elements*/
 
@@ -243,6 +259,7 @@ sidebar .block {
 .btn-blue:hover {
     background-color:#4ea0da;
     color: #fff;
+    text-decoration: none;
 }
 
 .btn-search {
@@ -306,7 +323,7 @@ table {
     overflow: hidden;
 }
 
-.input-muni {
+.input-address {
     padding-top: 5px;
     padding-bottom: 5px;
 }
@@ -375,7 +392,6 @@ table {
     border: 1px solid #888;
     width: 100%;
     height: 100vh;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
@@ -409,16 +425,26 @@ table {
 }
 
 .modal-header {
-    flex: 1;
-    padding: 20px;
+    padding: 25px;
     background-color: #f4f6f7;
+    max-height: 100px;
 }
 
 .modal-body {
-    flex: 4;
-    padding: 20px;
+    padding-left: 25px;
+    padding-right: 50px;
+    padding-top: 5px;
+    padding-bottom: 10px;
     background-color: #fff;
     overflow-y: scroll;
+}
+
+.modal-footer {
+    padding: 20px;
+    background-color: #a9b1b5;
+    color: #333;
+    font-size: 0.9rem;
+    max-height: 50px;
 }
 
 @media only screen and (min-width: 700px)  {
@@ -431,7 +457,6 @@ table {
         top: 0;
         width: 100%;
         height: 100%;
-        border-radius: 5px;
         overflow: auto;
         background-color: rgba(0,0,0,0.4);
     }
@@ -442,7 +467,7 @@ table {
         margin: auto;
         border: 1px solid #888;
         width: 50%;
-        height: 400px;
+        height: 70%;
         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
         -webkit-animation-name: animatetop;
         -webkit-animation-duration: 0.4s;
@@ -454,6 +479,69 @@ table {
 
 /* Map */
 #map {
-    min-height: 400px;
+    min-height: 500px;
+}
+
+.geocoder-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    align-self: center;
+    width: 100%;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder, .mapboxgl-ctrl-geocoder ul {
+    box-shadow: none;
+    border: 1px solid #999;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder {
+    font: 15px/25px 'Roboto', Arial, sans-serif;
+    position: relative;
+    background-color: white;
+    width: 75%;
+    min-width: 50%;
+    z-index: 1;
+    border-radius: 5px;
+    border: 1px solid #999;
+}
+
+.geocoder-container > .mapboxgl-ctrl-geocoder ul {
+    background-color: #fff;
+    border-radius: 0 0 5px 5px;
+    border: 1px solid #999;
+    box-shadow: none;
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    z-index: 1000;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+@media only screen and (min-width: 1028px)  {
+    .geocoder-container {
+        display: flex;
+        justify-content: center;
+        position: absolute;
+        align-self: center;
+        max-width: 25%;
+    }
+
+    .geocoder-container > .mapboxgl-ctrl-geocoder {
+        font: 15px/25px 'Roboto', Arial, sans-serif;
+        position: relative;
+        background-color: white;
+        width: 85%;
+        min-width: 180px;
+        max-width: 300px;
+        z-index: 1;
+        border-radius: 5px;
+        border: 1px solid #999;
+    }
 }
 /*Map*/

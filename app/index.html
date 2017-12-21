@@ -8,15 +8,33 @@
     <title>NJ Wildlife Habitat Viewer</title>
     <link rel="shortcut icon" href="images/New-Jersey-favicon.png">
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/main.css" />
+
+    <!-- Mapbox GL JS -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+
+    <!-- Turf.js -->
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+
+    <!-- Mapbox GL JS Draw -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
+
+    <!-- Mapbox GL JS Geocoder -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.css' type='text/css' />
+
+    <!-- Font Awesome icon library -->
     <script src="https://use.fontawesome.com/e1061b6f05.js"></script>
-    <script src="js/modal.js"></script>
 </head>
-
 <body>
-
     <div class="grid">
         <!-- Header -->
         <div class="header">
@@ -31,51 +49,25 @@
         <!-- Header -->
         <!-- Title -->
         <div class="title">
-            <h1><img src="images/New-Jersey.svg"> NJ Wildlife Habitat Viewer</h1>
+            <h1>NJ Wildlife Habitat Viewer</h1>
         </div>
         <!-- Title -->
         <!-- Sidebar -->
         <sidebar>
+            <!-- Geocoder -->
             <div class="block">
-
-                <!-- Search boxes -->
-                <div class="search-box input-muni">
-                    <form action="/search" class="search-form" method="get" target="_top">
-                        <input class="search-input" placeholder="Municipality" type="text">
-                    </form>
-                </div>
-                <div class="search-box">
-                <form action="/search" class="search-form" method="get" target="_top">
-                    <input class="search-input input-block" placeholder="Block" type="text">
-                    <input class="search-input input-lot" placeholder="Lot" type="text">
-                    <a href="" class="btn-search" type="submit"><i class="fa fa-search"></i></a>
-                </form>
-                </div>
-                <!-- Search boxes -->
-
-                <p>Enter location information to search for a parcel or zoom to an area on the map and draw a custom shape.</p>
+                <div id="geocoder-container" class="geocoder-container"></div>
             </div>
+            <div class="block"></div>
+            <!-- Geocoder -->
             <div class="block">
-                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
-            </div>
-            <div class="block">
-                <p>This is another text area in the sidebar. <a href="https://www.azavea.com/blog/" target="_blank">Click here to learn how to make this map.</a></p>
+                <p>Enter an address to zoom to an area on the map, then select parcels or draw a custom shape.</p>
             </div>
         </sidebar>
         <!-- Sidebar -->
         <!-- Map -->
         <maparea id="map"></maparea>
         <!-- Map -->
-        <!-- Footer -->
-        <div class="footer">
-            <table>
-                <tbody>
-                    <tr><td class="table-center"><a href="https://www.azavea.com/blog/" target="_blank"><i class="fa fa-external-link"></i></a></td><td class="table-column"><a href="https://www.azavea.com/blog/" target="_blank">learn how we built this tool</a></td></tr>
-                    <tr><td class="table-center"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank"><i class="fa fa-github-square"></i></a></td><td class="table-column"><a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank">view source code on Github</a></td></tr>
-                </tbody>
-            </table>
-        </div>
-        <!-- Footer -->
     </div>
 
     <!-- Modal -->
@@ -84,31 +76,70 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span class="close"><i class="fa fa-times" aria-hidden="true"></i></span>
-                <h2>Modal Header</h2>
+                <h3>Making environmental inventory fast.</h3>
             </div>
             <div class="modal-body">
-                <h4>About this application</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <h4>About this tool</h4>
+                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
+                <h4>About the data</h4>
+                <p><a href="http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm" target='_blank'>New Jersey Landscape Project</a> is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. The dataset in made up of hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife sighting records.</p>
+                <p>Landscape Project species habitat areas are determined by running species-specific models on a wildlife observation point dataset. NJDEP ENSP biologists create habitat models for each NJ Special Concern, Threatened, and Endangered species, including Federal Threatened and Endangered species, using a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide LULC polygons to create potential habitat areas. <a href="https://njdep.maps.arcgis.com/apps/Cascade/index.html?appid=6cd21ef042634609904beae390f34482" target='_blank'>View the story map</a> produced by the NJDEP to learn more about Landscape Project 3.3 data.</p>
                 <h4>Solving difficult problems</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>It can be challenging to determine a list of wildlife habitat on a specific site, even if you’re in the environmental consulting/regulatory compliance world and have experience with GIS software. Other online tools that explore Landscape Project data exist, but load time is slow and retrieving lists for a user-selected area is not possible.</p>
+                <p>Through the creation of this Proof of Concept we investigated a workflow to process a large dataset into vector tiles that can be rendered responsively in a web browser with <a href="https://www.mapbox.com/" target='_blank'>Mapbox</a> services and <a href="https://www.mapbox.com/mapbox-gl-js/api/" target='_blank'>Mapbox GL JS.</a></p>
+                <p>Read in detail about the steps we took to create this tool in <a href="#" target='_blank'>this blog post</a> and explore other Azavea 10% Research Projects at <a href="https://www.azavea.com/research/" target='_blank'>azavea.com/research</a>.
                 <h4>Future possibilities</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>This tool solves a specific set of problems, but it is an example of what is possible if we apply the methods used in this Proof of Concept to a similar need.</p>
+                <p>What is your current process for conducting environmental inventories? If you would like to hear more about how we can help you build a tool that maximizes efficiency and accuracy for site inventories, <a href="#" target='_blank'>contact us today.</a></p>
+            </div>
+            <div class="modal-footer">
+                <table>
+                    <tbody>
+                        <tr><td class="table-center"><a href="https://www.azavea.com/blog/" target="_blank"><i class="fa fa-external-link"></i></a></td><td class="table-column"><a href="https://www.azavea.com/blog/" target="_blank">learn how we built this tool</a></td></tr>
+                        <tr><td class="table-center"><a href="#" target="_blank"><i class="fa fa-envelope"></i></a></td><td class="table-column"><a href="#" target="_blank">contact our team to build your own</a></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
     <!-- Modal -->
+<script>
 
-  <script>
+// Read-scope Mapbox Access Token for account with uploaded tile sources
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuamZvcmQiLCJhIjoiY2pheWZxZmh6MTZueTJxbmc0enlucnlnOSJ9.7sKY5s_o_0YSz0RJ6po5bQ';
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZGFuamZvcmQiLCJhIjoiY2pheWZxZmh6MTZueTJxbmc0enlucnlnOSJ9.7sKY5s_o_0YSz0RJ6po5bQ';
-  var map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/danjford/cjayfrirx1inl2so0fa06l1ed',
-      center: [-74.596258, 40.195586],
-      zoom: 7.2
-  });
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+var MAP = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/danjford/cjayfrirx1inl2so0fa06l1ed',
+  center: [-74.596258, 40.195586],
+  zoom: 7.2
+});
 
-  </script>
+const GEOCODER = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    placeholder:"Type address here",
+    proximity: {
+        latitude: 40.195586,
+        longitude: -74.596258
+    }
+});
+
+document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
+
+MAP.addControl(new mapboxgl.NavigationControl());
+
+const DRAW = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+      polygon: true,
+      trash: true
+  }
+});
+
+MAP.addControl(DRAW);
+
+</script>
 
   <script>
     // Get the modal
@@ -137,7 +168,5 @@
         }
     }
 </script>
-
-
 </body>
 </html>
