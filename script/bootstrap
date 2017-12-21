@@ -1,7 +1,10 @@
 #!/bin/sh
 
-brew install gdal python3 parallel node tippecanoe
-pip3 install fiona csv json mapbox
-npm install turf @turf/random @turf/points-within-polygon @mapbox/polylabel
-
-mkdir -p data
+# Check if Docker is installed
+docker -v
+if [ $? -ne 0 ]; then
+  echo "Docker needs to be installed."
+else
+  # Build Docker image
+  docker build --tag njmap .
+fi

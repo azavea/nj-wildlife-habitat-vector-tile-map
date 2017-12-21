@@ -1,3 +1,9 @@
+app/data/*
+app/habitat/*
+app/tiles/*
+
 data/*
 habitat/*
 tiles/*
+
+notes.txt

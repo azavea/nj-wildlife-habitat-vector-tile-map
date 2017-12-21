@@ -19,5 +19,5 @@ rl.on('line', function (data) {
   /* Do stuff to feature. */
   labelCoordinates = polylabel(feature.geometry.coordinates[0], 1.0);
   
-  fs.writeFileSync(path.join(__dirname, '..', 'habitat', link + '.json'), JSON.stringify(feature));
+  fs.writeFileSync('/app/habitat/' + link + '.json', JSON.stringify(feature));
 });
