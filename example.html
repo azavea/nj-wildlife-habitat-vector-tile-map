@@ -35,7 +35,7 @@
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWFyb25kZW5uaXMiLCJhIjoiem5LLURoYyJ9.T3tswGTI5ve8_wE-a02cMw';
 
 // Protocol, hostname, and port for application (e.g. http://localhost:8000)
-const HOST = 'http://localhost:8000';
+const HOST = 'http://localhost:4000/app';
 
 // URLs to the uploaded tile source TileJSON resources. Supported protocols are http:, https:, and mapbox://<mapid>.
 const TILE_SOURCES = {
@@ -44,13 +44,17 @@ const TILE_SOURCES = {
   parcels: undefined
 }
 
+const NJ_MAP_LIMITS = {
+  minZoom: 7,
+  bounds: [[-76.151,38.638],[-73.128,41.572]]
+}
+
 const APP = {
-  initalMapLoaded: false,
+  initialMapLoaded: false,
   mode: 'draw',
   areaOfInterest: { type: 'FeatureCollection', features: [] },
   contextFeatures: { type: 'FeatureCollection', features: [] },
-  featuresOfInterest: { type: 'FeatureCollection', features: [] },
-  ready: false
+  featuresOfInterest: { type: 'FeatureCollection', features: [] }
 }
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -59,7 +63,9 @@ const MAP = new mapboxgl.Map({
   style: 'mapbox://styles/mapbox/satellite-streets-v9',
   zoom: 12,
   center: [-74.7988, 40.61251],
-  hash: true
+  hash: true,
+  minZoom: NJ_MAP_LIMITS.minZoom,
+  maxBounds: NJ_MAP_LIMITS.bounds
 });
 
 MAP.addControl(new mapboxgl.NavigationControl());
@@ -74,94 +80,13 @@ const DRAW = new MapboxDraw({
 });
 MAP.addControl(DRAW);
 
-function updateApp() {
-  // determine if loaded, then set ready status
-  if (APP.initialMapLoaded && MAP.loaded()) {
-    MAP.ready = true;
-    
-    switch(APP.state) {
-      case 0:
-        // Render "Search for Address or Zoom to Region"
-      case 1:
-        // Render "Select Area of Interest"
-      case 2:
-        // Render "Display Area of Interest Analysis with Species List"
-    }
-  } else {
-    MAP.ready = false;
-  }
-}
-
-function updateAreaOfInterest() {
-  APP.areaOfInterest = turf.combine(DRAW.getAll());
-    
-  frameMap();
-  updateFeaturesOfInterest();
-}
-
-function frameMap() {
-  if (APP.areaOfInterest.features.length > 0) {
-    let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, { duration: 0, padding: 50 }); // duration: 0 makes this synchronous
-  }
-}
-
-function updateFeaturesOfInterest() {
-  
-  let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'habitat-areas-2017' ] });
-  
-  let tileFeatureLINKIDs = tileFeatures.map((feature) => { 
-    return feature.properties.LINKID; 
-  });
-  
-  let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
-    return tileFeatureLINKIDs.indexOf(id) === index; 
-  }).sort();
-    
-  // Download GeoJSON
-  // let data = await Promise.all(LINKIDs.map((LINKID) => {
-  //   return fetch(`${HOST}/habitat/${LINKID}.json`).then((response) => response.json())
-  // }));
-  
-  // Initialize a queue of requests
-  var q = d3.queue()
-  // Make a request for the raw GeoJSON of each LINKID habitat
-  for (var i = 0; i < LINKIDs.length; i++) {
-    // Request GeoJSON files from `habitat` directory
-    q.defer(d3.json, 'http://localhost:8000/habitat/' + LINKIDs[i] + '.json')
-  }
-  // Wait for all the individual GeoJSON habitats to load
-  q.awaitAll(function(error, data) {
-    APP.contextFeatures = turf.featureCollection(data);
-    
-    let habitatData = APP.contextFeatures;
-    let intersectionArea = APP.areaOfInterest.features[0];
-    
-    // Clip each feature in the FeatureCollection by the drawing's area of interest
-    let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
-      let clippedFeature = turf.intersect(intersectionArea, f);
-      if (clippedFeature) { clippedFeature.properties = f.properties; }
-      return clippedFeature; 
-    }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
-    
-    APP.featuresOfInterest = intersectingHabitat;
-    
-    displaySpecies();
-  });
-}
-
-function displaySpecies() {
-  console.log(JSON.stringify(APP.featuresOfInterest));
-  APP.featuresOfInterest.features.map(function(f) {
-    f.properties.species.map(function(s) {
-      console.log(s);
-    });
-  });
-}
-
-
 MAP.on('render', updateApp);
-MAP.on('move', updateApp);
+MAP.on('moveend', updateApp);
+
+// Listen for updates to the drawing
+MAP.on('draw.create', updateAreaOfInterest);
+MAP.on('draw.delete', updateAreaOfInterest);
+MAP.on('draw.update', updateAreaOfInterest);
 
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
@@ -204,10 +129,131 @@ MAP.on('load', () => {
   });
 });
 
-// Listen for updates to the drawing
-MAP.on('draw.create', updateAreaOfInterest);
-MAP.on('draw.delete', updateAreaOfInterest);
-MAP.on('draw.update', updateAreaOfInterest);
+function updateApp() {
+  // determine if loaded
+  if (APP.initialMapLoaded && MAP.loaded()) {
+    setReady();
+    
+    let zoom = MAP.getZoom();
+    
+    if (zoom < 13) {
+      // Render "Search for Address or Zoom to Region"
+      renderZoomPrompt();
+      APP.state = 0;
+    } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0 ) {
+      // Render "Select Area of Interest"
+      APP.state = 1;
+      renderSelectAreaOfInterestPrompt();
+    } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
+      if (APP.state !== 2) {
+        if (APP.featuresOfInterest.features.length > 0) {
+          // Render "Display Area of Interest Analysis with Species List"
+          APP.state = 2;
+          renderAreaOfInterestReport();
+        } else {
+          setLoading();
+        }
+      }
+    }
+  } else {
+    setLoading();
+  }
+}
+
+function setReady() {
+  //console.log('ready');
+}
+
+function setLoading() {
+  //console.log('loading');
+}
+
+// Render Application State 0: Prompt user to zoom to an area of interest
+function renderZoomPrompt() {}
+
+// Render Application State 1: Prompt user to select an area of interest
+function renderSelectAreaOfInterestPrompt() {}
+
+// Render Application State 2: Report on user's selected area of interest
+function renderAreaOfInterestReport() {
+  console.log(JSON.stringify(APP.featuresOfInterest));
+  APP.featuresOfInterest.features.map(function(f) {
+    f.properties.species.map(function(s) {
+      console.log(s);
+    });
+  });
+}
+
+function updateAreaOfInterest() {
+  APP.areaOfInterest = turf.combine(DRAW.getAll());
+  
+  if (APP.areaOfInterest.features.length > 0) {
+    
+    frameMap();
+    constrainMap();
+    
+    let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'habitat-areas-2017' ] });
+    
+    let tileFeatureLINKIDs = tileFeatures.map((feature) => { 
+      return feature.properties.LINKID; 
+    });
+    
+    let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
+      return tileFeatureLINKIDs.indexOf(id) === index; 
+    }).sort();
+            
+    // Download GeoJSON //
+    // Initialize a queue of requests
+    var q = d3.queue()
+    // Make a request for the raw GeoJSON of each LINKID habitat
+    for (var i = 0; i < LINKIDs.length; i++) {
+      // Request GeoJSON files from `habitat` directory
+      q.defer(d3.json, HOST + '/habitat/' + LINKIDs[i] + '.json')
+    }
+    // Wait for all the individual GeoJSON habitats to load
+    q.awaitAll(function(error, data) {
+      APP.contextFeatures = turf.featureCollection(data);
+      
+      let habitatData = APP.contextFeatures;
+      let intersectionArea = APP.areaOfInterest.features[0];
+      
+      // Clip each feature in the FeatureCollection by the drawing's area of interest
+      let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
+        let clippedFeature = turf.intersect(intersectionArea, f);
+        if (clippedFeature) { clippedFeature.properties = f.properties; }
+        return clippedFeature; 
+      }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
+      
+      APP.featuresOfInterest = intersectingHabitat;
+      
+      updateApp();
+    });
+  } else {
+    APP.contextFeatures = turf.featureCollection([]);
+    APP.featuresOfInterest = turf.featureCollection([]);
+    unconstrainMap();
+    updateApp();
+  }
+}
+
+function frameMap() {
+  if (APP.areaOfInterest.features.length > 0) {
+    let bounds = turf.bbox(APP.areaOfInterest);
+    MAP.fitBounds(bounds, { duration: 0, padding: 50 }); // duration: 0 makes this synchronous
+  }
+}
+
+// Limit the map zooming and panning to within the current frame
+function constrainMap() {
+  MAP.setMaxBounds(MAP.getBounds());
+  MAP.setMinZoom(MAP.getZoom());
+}
+
+// Limit the map zooming and panning to only within NJ limits
+function unconstrainMap() {
+  MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
+  MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
+}
 
 </script>
 
