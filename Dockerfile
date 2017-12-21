@@ -1,14 +1,17 @@
-FROM ubuntu:14.04
+FROM ubuntu:17.04
 
-# Install GDAL, Python, and other dependencies
+# Install Python and other dependencies
 RUN apt-get update -y && \
     apt-get install -y software-properties-common && \
-    add-apt-repository -y ppa:ubuntugis/ppa && \
-    apt-get install -y git gdal-bin libgdal1-dev python3 python3-pip build-essential libsqlite3-dev zlib1g-dev wget curl
+    apt-get install -y git python3 python3-pip build-essential libsqlite3-dev zlib1g-dev wget curl unzip parallel
 
 # Install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash && \
-    apt-get install -y nodejs build-essential
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash && \
+    apt-get install -y nodejs
+
+# Install GDAL
+RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && \
+    apt-get install -y gdal-bin
 
 # Download and install Tippecanoe.
 RUN git clone -b 1.15.1 https://github.com/mapbox/tippecanoe.git /tmp/tippecanoe && \
