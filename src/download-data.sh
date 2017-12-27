@@ -14,8 +14,8 @@ do
 done
 
 # download parcel shapefiles from https://njgin.state.nj.us/NJ_NJGINExplorer/IW.jsp?DLayer=Parcels%20by%20County/Muni
-for county in $(cat /usr/local/src/nj-county-names.txt)
-do
-    wget -P /app/data/downloads http://njgin.state.nj.us/download2/parcels/parcels_shp_${county}.zip
-    unzip /app/data/downloads/parcels_shp_${county}.zip -d /app/data/parcels/${county}
-done
+#for county in $(cat /usr/local/src/nj-county-names.txt)
+#do
+#    wget -P /app/data/downloads http://njgin.state.nj.us/download2/parcels/parcels_shp_${county}.zip
+#    unzip /app/data/downloads/parcels_shp_${county}.zip -d /app/data/parcels/${county}
+#done
