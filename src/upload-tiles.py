@@ -13,9 +13,9 @@ tilesets = [
 
 for tileset in tilesets:
     with open(tileset['path'], 'rb') as src:
+        print('Uploading:')
         upload_resp = service.upload(src, tileset['mapid'])
         tileset['upload_id'] = upload_resp.json()['id']
-        print('Uploading:')
         print(upload_resp.json())
 
 def uploads_complete(tileset_list):
