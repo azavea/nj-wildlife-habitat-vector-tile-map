@@ -16,8 +16,7 @@ rl.on('line', function (data) {
   
   var link = feature.properties['LINKID'];
   
-  /* Do stuff to feature. */
-  labelCoordinates = polylabel(feature.geometry.coordinates[0], 1.0);
-  
-  fs.writeFileSync('/app/habitat/' + link + '.json', JSON.stringify(feature));
+  if (feature.geometry) {
+    fs.writeFileSync('/app/habitat/' + link + '.json', JSON.stringify(feature));
+  }
 });
