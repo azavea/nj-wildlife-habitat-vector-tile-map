@@ -7,8 +7,8 @@ service = Uploader()
 dir = os.path.dirname(__file__)
 
 tilesets = [
-  { 'mapid': 'habitat-areas-2017', 'path': '/app/tiles/habitat-areas.mbtiles' },
-  { 'mapid': 'sightings-2017',     'path': '/app/tiles/sightings.mbtiles' },
+  { 'mapid': 'habitat-areas-2017', 'path': '/app/tiles/habitat-areas-2017.mbtiles' },
+  { 'mapid': 'habitat-overview-2017',     'path': '/app/tiles/habitat-overview-2017.mbtiles' },
 ]
 
 for tileset in tilesets:
