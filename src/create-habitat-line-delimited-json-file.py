@@ -34,8 +34,6 @@ for region in region_list:
                     del feature['id']
                     if 'VERSION' in feature['properties']:
                         del feature['properties']['VERSION']
-                    if 'ACRES' in feature['properties']:
-                        del feature['properties']['ACRES']
                     if 'HECTARES' in feature['properties']:
                         del feature['properties']['HECTARES']
                     if 'SHAPE_Length' in feature['properties']:
@@ -84,8 +82,10 @@ for region in region_list:
                 habitats[link]['properties']['species'].append(data)
 
     # Write habitats to a line-delimited JSON text file `habitats/features.txt`
-    with open('/app/data/features.txt', 'w') as habitat_file:
+    with open('/app/data/features.txt', 'a') as habitat_file:
         # For each habitat feature...
         for habitat in habitats:
             # Write the GeoJSON feature on a new line
             habitat_file.write(json.dumps(habitats[habitat])+'\n')
+    
+    print('Added %s to features.txt' % region)

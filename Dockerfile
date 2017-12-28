@@ -11,7 +11,7 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | bash && \
 
 # Install GDAL
 RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && \
-    apt-get install -y gdal-bin
+    apt-get install -y gdal-bin libgdal-dev
 
 # Download and install Tippecanoe.
 RUN git clone -b 1.15.1 https://github.com/mapbox/tippecanoe.git /tmp/tippecanoe && \
@@ -22,7 +22,7 @@ RUN git clone -b 1.15.1 https://github.com/mapbox/tippecanoe.git /tmp/tippecanoe
 
 # Install Python packages
 RUN pip3 install mapbox && \
-    pip3 install --user fiona && \
+    pip3 install -I fiona --no-binary fiona && \
     pip3 install --ignore-installed six
 
 # Install Node.js packages
