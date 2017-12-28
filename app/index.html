@@ -154,8 +154,8 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/satellite-streets-v9',
-  zoom: 12,
-  center: [-74.7988, 40.61251],
+  zoom: 7,
+  center: [-74.596258, 40.195586],
   hash: true,
   minZoom: NJ_MAP_LIMITS.minZoom,
   maxBounds: NJ_MAP_LIMITS.bounds
@@ -235,11 +235,11 @@ MAP.on('load', () => {
     "paint": {
       // increase weight as diameter breast height increases
       'heatmap-weight': {
-        property: 'dbh',
+        property: 'acres',
         type: 'exponential',
         stops: [
           [1, 0],
-          [200, 1]
+          [10, 1]
         ]
       },
       // increase intensity as zoom level increases
@@ -399,7 +399,7 @@ function updateAreaOfInterest() {
 function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, { duration: 0, padding: 50 }); // duration: 0 makes this synchronous
+    MAP.fitBounds(bounds, { duration: 0, padding: 50}); // duration: 0 makes this synchronous
   }
 }
 
@@ -414,34 +414,71 @@ function unconstrainMap() {
   MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
   MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
 }
+
+// Add popup data window for habitat vector tile data
+
+// When a click event occurs near a place, open a popup at the location of
+// the feature, with HTML description from its properties
+MAP.on('click', function(e) {
+  var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+
+  // if the features have no info, return nothing
+  if (!features.length) {
+    return;
+  }
+
+  var feature = features[0];
+
+  // Populate the popup and set its coordinates
+  // based on the feature found
+  var popup = new mapboxgl.Popup ({
+      closeButton: true,
+      closeOnClick: true
+  })
+  popup.setLngLat(e.lngLat);
+  popup.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat:</h3>' +
+  '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+  '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+  '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
+  '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
+  popup.addTo(MAP);
+});
+
+// Use the same approach as above to indicate that the symbols are clickable
+// by changing the cursor style to 'pointer'
+MAP.on('mousemove', function(e) {
+  var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+  MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
+});
+
 </script>
 
-  <script>
-    // Get the modal
-    var modal = document.getElementById('about-modal');
+<script>
+// Get the modal
+var modal = document.getElementById('about-modal');
 
-    // Get the button that opens the modal
-    var btn = document.getElementById("modal-btn");
+// Get the button that opens the modal
+var btn = document.getElementById("modal-btn");
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
 
-    // When the user clicks the button, open the modal
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
 
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
         modal.style.display = "none";
     }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
+}
 </script>
 </body>
 </html>
