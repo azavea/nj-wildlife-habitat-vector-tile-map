@@ -288,31 +288,40 @@ MAP.on('load', () => {
   // the feature, with HTML description from its properties
   MAP.on('click', function(e) {
     POPUP.remove();
-    let features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
+      let features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
 
-    // if the features have no info, return nothing
-    if (!features.length) {
-      return;
+      // if the features have no info, return nothing
+      if (!features.length) {
+        return;
+      }
+
+      let feature = features[0];
+      let featureLINKID = feature.properties.LINKID;
+
+      // Populate the popup and set its coordinates
+      // based on the feature found
+      POPUP.setLngLat(e.lngLat);
+      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat ' + featureLINKID + '</h3>' +
+      '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+      '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+      '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
+      '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
+      POPUP.addTo(MAP);
     }
-
-    let feature = features[0];
-
-    // Populate the popup and set its coordinates
-    // based on the feature found
-    POPUP.setLngLat(e.lngLat);
-    POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat:</h3>' +
-    '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-    '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-    '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
-    '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
-    POPUP.addTo(MAP);
   });
 
   // Use the same approach as above to indicate that the symbols are clickable
   // by changing the cursor style to 'pointer'
   MAP.on('mousemove', function(e) {
-    var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
-    MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getSelectedIds().length === 0) {
+      var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+      MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    } else if (DRAW.getMode() === 'draw_polygon') {
+      MAP.getCanvas().style.cursor = 'crosshair';
+    } else if (DRAW.getMode() === 'simple_select') {
+      MAP.getCanvas().style.cursor = 'pointer';
+    }
   });
 });
 
