@@ -187,7 +187,7 @@ MAP.addControl(DRAW);
 // Add popup data window for habitat vector tile data
 const POPUP = new mapboxgl.Popup ({
     closeButton: true,
-    closeOnClick: true
+    closeOnClick: false
 });
 
 MAP.on('render', updateApp);
@@ -287,6 +287,7 @@ MAP.on('load', () => {
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
   MAP.on('click', function(e) {
+    POPUP.remove();
     let features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
 
     // if the features have no info, return nothing
