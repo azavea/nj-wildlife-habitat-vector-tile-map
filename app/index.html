@@ -184,6 +184,12 @@ const DRAW = new MapboxDraw({
 });
 MAP.addControl(DRAW);
 
+// Add popup data window for habitat vector tile data
+const POPUP = new mapboxgl.Popup ({
+    closeButton: true,
+    closeOnClick: true
+});
+
 MAP.on('render', updateApp);
 MAP.on('moveend', updateApp);
 
@@ -275,11 +281,46 @@ MAP.on('load', () => {
           [14, 0]
         ]
       }
-  }
+    }
+  });
+  
+  // When a click event occurs near a place, open a popup at the location of
+  // the feature, with HTML description from its properties
+  MAP.on('click', function(e) {
+    let features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+
+    // if the features have no info, return nothing
+    if (!features.length) {
+      return;
+    }
+
+    let feature = features[0];
+
+    // Populate the popup and set its coordinates
+    // based on the feature found
+    POPUP.setLngLat(e.lngLat);
+    POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat:</h3>' +
+    '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+    '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
+    '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
+    '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
+    POPUP.addTo(MAP);
+  });
+
+  // Use the same approach as above to indicate that the symbols are clickable
+  // by changing the cursor style to 'pointer'
+  MAP.on('mousemove', function(e) {
+    var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+    MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
   });
 });
 
 function updateApp() {
+  // Immediately remove map annotation if zoom is less than 13
+  if (MAP.getZoom() < 13) { 
+    POPUP.remove();
+  }
+  
   // determine if loaded
   if (APP.initialMapLoaded && MAP.loaded()) {
     setReady();
@@ -414,42 +455,6 @@ function unconstrainMap() {
   MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
   MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
 }
-
-// Add popup data window for habitat vector tile data
-
-// When a click event occurs near a place, open a popup at the location of
-// the feature, with HTML description from its properties
-MAP.on('click', function(e) {
-  var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
-
-  // if the features have no info, return nothing
-  if (!features.length) {
-    return;
-  }
-
-  var feature = features[0];
-
-  // Populate the popup and set its coordinates
-  // based on the feature found
-  var popup = new mapboxgl.Popup ({
-      closeButton: true,
-      closeOnClick: true
-  })
-  popup.setLngLat(e.lngLat);
-  popup.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat:</h3>' +
-  '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-  '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-  '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
-  '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
-  popup.addTo(MAP);
-});
-
-// Use the same approach as above to indicate that the symbols are clickable
-// by changing the cursor style to 'pointer'
-MAP.on('mousemove', function(e) {
-  var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
-  MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
-});
 
 </script>
 
