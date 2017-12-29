@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="css/main.css" />
 
     <!-- Mapbox GL JS -->
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.css' rel='stylesheet' />
 
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -68,8 +68,25 @@
         <!-- Map -->
         <maparea id="map"></maparea>
         <!-- Map -->
+        <!-- Legend -->
+        <div id='heatmap-legend' class='legend' style='display: block;'>
+            <h4>Heatmap</h4>
+            <div><span style='background-color: rgba(236,222,239,0)'></span>0</div>
+            <div><span style='background-color: rgba(208,209,230,50)'></span>0.2</div>
+            <div><span style='background-color: rgba(166,189,219,100)'></span>0.4</div>
+            <div><span style='background-color: rgba(103,169,207,200)'></span>0.6</div>
+            <div><span style='background-color: rgba(28,144,153,255)'></span>0.8</div>
+        </div>
+        <div id='habitat-legend' class='legend' style='display: none;'>
+            <h4>Wildlife Habitat</h4>
+            <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
+            <div><span style='background-color: #e1cca2'></span>Special Concern</div>
+            <div><span style='background-color: #cce1a2'></span>State Threatened</div>
+            <div><span style='background-color: #9bb88f'></span>State Endangered</div>
+            <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+        </div>
     </div>
-
+    <!-- Legend -->
     <!-- Modal -->
     <div id="about-modal" class="modal">
     <!-- Modal Content -->
@@ -177,7 +194,7 @@ MAP.on('draw.update', updateAreaOfInterest);
 
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
-  
+
   // Add Habitats Areas
   MAP.addSource('habitats', {
     type: 'vector',
@@ -190,7 +207,15 @@ MAP.on('load', () => {
     "minzoom": 13,
     "type": "fill",
     "paint": {
-      "fill-color": "#be38ae",
+      "fill-color": {
+            property: 'LNDR',
+            stops: [
+                [1, '#fffbb2'],
+                [2, '#e1cca2'],
+                [3, '#cce1a2'],
+                [4, '#9bb88f'],
+                [5, '#78aa94']]
+            },
       "fill-opacity": 0.4,
       "fill-outline-color": "#fff"
     }
@@ -258,9 +283,9 @@ function updateApp() {
   // determine if loaded
   if (APP.initialMapLoaded && MAP.loaded()) {
     setReady();
-    
+
     let zoom = MAP.getZoom();
-    
+
     if (zoom < 13) {
       // Render "Search for Address or Zoom to Region"
       renderZoomPrompt();
@@ -297,11 +322,16 @@ function setLoading() {
 // Render Application State 0: Prompt user to zoom to an area of interest
 function renderZoomPrompt() {
   console.log('Zoom to a region.');
+  document.getElementById('habitat-legend').style.display = 'none';
+  document.getElementById('heatmap-legend').style.display = 'block';
 }
 
 // Render Application State 1: Prompt user to select an area of interest
 function renderSelectAreaOfInterestPrompt() {
   console.log('Select an area.');
+  document.getElementById('habitat-legend').style.display = 'block';
+  document.getElementById('heatmap-legend').style.display = 'none';
+
 }
 
 // Render Application State 2: Report on user's selected area of interest
@@ -316,22 +346,22 @@ function renderAreaOfInterestReport() {
 
 function updateAreaOfInterest() {
   APP.areaOfInterest = turf.combine(DRAW.getAll());
-  
+
   if (APP.areaOfInterest.features.length > 0) {
-    
+
     frameMap();
     constrainMap();
-    
+
     let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'habitat-areas-2017' ] });
-    
-    let tileFeatureLINKIDs = tileFeatures.map((feature) => { 
-      return feature.properties.LINKID; 
+
+    let tileFeatureLINKIDs = tileFeatures.map((feature) => {
+      return feature.properties.LINKID;
     });
-    
+
     let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
-      return tileFeatureLINKIDs.indexOf(id) === index; 
+      return tileFeatureLINKIDs.indexOf(id) === index;
     }).sort();
-            
+
     // Download GeoJSON //
     // Initialize a queue of requests
     var q = d3.queue()
@@ -343,19 +373,19 @@ function updateAreaOfInterest() {
     // Wait for all the individual GeoJSON habitats to load
     q.awaitAll(function(error, data) {
       APP.contextFeatures = turf.featureCollection(data);
-      
+
       let habitatData = APP.contextFeatures;
       let intersectionArea = APP.areaOfInterest.features[0];
-      
+
       // Clip each feature in the FeatureCollection by the drawing's area of interest
       let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
         let clippedFeature = turf.intersect(intersectionArea, f);
         if (clippedFeature) { clippedFeature.properties = f.properties; }
-        return clippedFeature; 
+        return clippedFeature;
       }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
-      
+
       APP.featuresOfInterest = intersectingHabitat;
-      
+
       updateApp();
     });
   } else {
@@ -384,7 +414,6 @@ function unconstrainMap() {
   MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
   MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
 }
-
 </script>
 
   <script>
