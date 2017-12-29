@@ -303,6 +303,7 @@ MAP.on('load', () => {
       // based on the feature found
       POPUP.setLngLat(e.lngLat);
       POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat ' + featureLINKID + '</h3>' +
+      '<p><a href=\'' + HOST + '/habitat/' + featureLINKID + '.json' + '\' download>Download GeoJSON</a></p>' +
       '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
       '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
       '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
