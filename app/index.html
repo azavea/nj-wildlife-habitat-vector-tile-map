@@ -279,19 +279,6 @@ MAP.on('load', () => {
   });
 });
 
-// add legends
-var habitatLegend = document.getElementById('habitat-legend');
-var heatmapLegend = document.getElementById('heatmap-legend');
-MAP.on('zoom', function() {
-    if (MAP.getZoom() >= 13) {
-        heatmapLegend.style.display = 'none';
-        habitatLegend.style.display = 'block';
-    } else {
-        heatmapLegend.style.display = 'block';
-        habitatLegend.style.display = 'none';
-    }
-});
-
 function updateApp() {
   // determine if loaded
   if (APP.initialMapLoaded && MAP.loaded()) {
@@ -335,11 +322,16 @@ function setLoading() {
 // Render Application State 0: Prompt user to zoom to an area of interest
 function renderZoomPrompt() {
   console.log('Zoom to a region.');
+  document.getElementById('habitat-legend').style.display = 'none';
+  document.getElementById('heatmap-legend').style.display = 'block';
 }
 
 // Render Application State 1: Prompt user to select an area of interest
 function renderSelectAreaOfInterestPrompt() {
   console.log('Select an area.');
+  document.getElementById('habitat-legend').style.display = 'block';
+  document.getElementById('heatmap-legend').style.display = 'none';
+
 }
 
 // Render Application State 2: Report on user's selected area of interest
