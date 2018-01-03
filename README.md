@@ -6,37 +6,26 @@ This Proof of Concept investigates a workflow to process this dataset into vecto
 
 # Usage
 
-## `script/bootstrap`
+## 1. Install dependencies with `script/bootstrap`.
 
-`script/bootstrap` is used solely for fulfilling dependencies of the project.
+The project downloads, processes, and prepares data resources all within a Docker container. To build the Docker image, run `script/bootstrap`.
 
-This can mean RubyGems, npm packages, Homebrew packages, Ruby versions, Git submodules, etc.
+## 2. Prepare the data with `script/setup`.
 
-The goal is to make sure all required dependencies are installed.
+Setup the web app by running `script/setup`. This will download the NJ Landscape Project data and prepares app resources in the `app/` directory.
 
-## `script/setup`
+## 3. Upload the prepared MBTiles files to Mapbox Tilesets.
 
-`script/setup` is used to set up a project in an initial state. This is typically run after an initial clone, or, to reset the project back to its initial state.
+Go to the [Mapbox Tilesets](https://www.mapbox.com/studio/tilesets/) page and upload the MBTiles files in `app/tiles/`. Once processing is complete, copy the Tileset IDs and use them in the next configuration step.
 
-This will accomplish:
+## 4. Configure the website application by editing `app/config.js`.
 
-1. Download the NJ Landscape Project data
-2. Read the FileGDB
-3. Process data into line-delimited GeoJSON
-4. Process the line-delimited GeoJSON into vector tiles.
+Edit `app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/studio/account/tokens/), your Tileset IDs, and the hostname where `app/` will be served.
 
-## `script/update`
+## 5. Serve the contents of the `app/` directory.
 
-`script/update` is used to update the project after a fresh pull.
+Start serving the contents of `app/` on a web server.
 
-This will run `script/bootstrap` and make sure the output of `script/setup` also exists, running `script/setup` again if necessary.
+# Developing
 
-## `script/server`
-
-`script/server` is used to start the application.
-
-This will accomplish:
-
-1. Uploading an MBTiles file to Mapbox, creating a new tileset.
-2. Updating example HTML files to reference the correct Mapbox tileset ID and access tokens.
-3. Serve examples maps on localhost.
+You can get into the Docker container by running `script/console`.
