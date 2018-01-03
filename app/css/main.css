@@ -573,4 +573,16 @@ table {
     width: 10px;
 }
 
+.mapboxgl-popup {
+  max-width: 200px;
+  font: 8px/14px 'Roboto', Arial, sans-serif;
+}
+
+@media only screen and (min-width: 1028px)  {
+    .mapboxgl-popup {
+      max-width: 400px;
+      font: 12px/20px 'Roboto', Arial, sans-serif;
+    }
+}
+
 /*Map*/
