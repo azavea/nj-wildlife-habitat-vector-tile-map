@@ -130,9 +130,8 @@ const HOST = 'http://localhost:4000/app';
 
 // URLs to the uploaded tile source TileJSON resources. Supported protocols are http:, https:, and mapbox://<mapid>.
 const TILE_SOURCES = {
-  habitatAreas: 'mapbox://aarondennis.habitat-areas-2017',
-  habitatOverview: 'mapbox://aarondennis.sightings-2017',
-  parcels: undefined
+  habitatAreas: 'mapbox://aarondennis.3tq2eaql',
+  habitatOverview: 'mapbox://aarondennis.d5s2i4zb'
 }
 
 // Map pan and zoom contraints for New Jersey
@@ -202,14 +201,14 @@ MAP.on('load', () => {
   APP.initialMapLoaded = true;
 
   // Add Habitats Areas
-  MAP.addSource('habitats', {
+  MAP.addSource('nj-habitat-areas', {
     type: 'vector',
     url: TILE_SOURCES.habitatAreas
   });
   MAP.addLayer({
-    "id": "habitat-areas-2017",
-    "source": "habitats",
-    "source-layer": "featurestxt",
+    "id": "nj-habitat-areas",
+    "source": "nj-habitat-areas",
+    "source-layer": "nj-habitat-areas",
     "minzoom": 13,
     "type": "fill",
     "paint": {
@@ -228,14 +227,14 @@ MAP.on('load', () => {
   });
 
   // Add Sightings Overview
-  MAP.addSource('sightings', {
+  MAP.addSource('nj-habitat-overview', {
     type: 'vector',
     url: TILE_SOURCES.habitatOverview
   });
   MAP.addLayer({
-    "id": "sightings-2017",
-    "source": "sightings",
-    "source-layer": "sightings",
+    "id": "nj-habitat-overview",
+    "source": "nj-habitat-overview",
+    "source-layer": "nj-habitat-overview",
     "maxzoom": 13,
     "type": "heatmap",
     "paint": {
@@ -289,7 +288,7 @@ MAP.on('load', () => {
   MAP.on('click', function(e) {
     POPUP.remove();
     if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
-      let features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+      let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
 
       // if the features have no info, return nothing
       if (!features.length) {
@@ -316,7 +315,7 @@ MAP.on('load', () => {
   // by changing the cursor style to 'pointer'
   MAP.on('mousemove', function(e) {
     if (DRAW.getMode() !== 'draw_polygon' && DRAW.getSelectedIds().length === 0) {
-      var features = MAP.queryRenderedFeatures(e.point, { layers: ['habitat-areas-2017'] });
+      var features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
       MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
     } else if (DRAW.getMode() === 'draw_polygon') {
       MAP.getCanvas().style.cursor = 'crosshair';
@@ -404,7 +403,7 @@ function updateAreaOfInterest() {
     frameMap();
     constrainMap();
 
-    let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'habitat-areas-2017' ] });
+    let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'nj-habitat-areas' ] });
 
     let tileFeatureLINKIDs = tileFeatures.map((feature) => {
       return feature.properties.LINKID;
