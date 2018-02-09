@@ -192,6 +192,16 @@ MAP.on('draw.update', updateAreaOfInterest);
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
 
+  let layers = MAP.getStyle().layers;
+  // Find the index of the first symbol layer in the map style
+  let firstSymbolId;
+  for (let i = 0; i < layers.length; i++) {
+      if (layers[i].type === 'symbol') {
+          firstSymbolId = layers[i].id;
+          break;
+      }
+  }
+
   // Add Habitats Areas
   MAP.addSource('nj-habitat-areas', {
     type: 'vector',
@@ -216,7 +226,7 @@ MAP.on('load', () => {
       "fill-opacity": 0.4,
       "fill-outline-color": "#fff"
     }
-  });
+}, firstSymbolId);
 
   // Add Sightings Overview
   MAP.addSource('nj-habitat-overview', {
@@ -273,8 +283,8 @@ MAP.on('load', () => {
         ]
       }
     }
-  });
-  
+}, firstSymbolId);
+
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
   MAP.on('click', function(e) {
@@ -319,10 +329,10 @@ MAP.on('load', () => {
 
 function updateApp() {
   // Immediately remove map annotation if zoom is less than 13
-  if (MAP.getZoom() < 13) { 
+  if (MAP.getZoom() < 13) {
     POPUP.remove();
   }
-  
+
   // determine if loaded
   if (APP.initialMapLoaded && MAP.loaded()) {
     setReady();
