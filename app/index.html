@@ -210,6 +210,16 @@ MAP.on('draw.update', updateAreaOfInterest);
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
 
+  let layers = MAP.getStyle().layers;
+  // Find the index of the first symbol layer in the map style
+  let firstSymbolId;
+  for (let i = 0; i < layers.length; i++) {
+      if (layers[i].type === 'symbol') {
+          firstSymbolId = layers[i].id;
+          break;
+      }
+  }
+
   // Add Habitats Areas
   MAP.addSource('nj-habitat-areas', {
     type: 'vector',
@@ -218,7 +228,7 @@ MAP.on('load', () => {
   MAP.addLayer({
     "id": "nj-habitat-areas",
     "source": "nj-habitat-areas",
-    "source-layer": "nj-habitat-areas",
+    "source-layer": "featurestxt",
     "minzoom": 13,
     "type": "fill",
     "paint": {
@@ -234,7 +244,7 @@ MAP.on('load', () => {
       "fill-opacity": 0.4,
       "fill-outline-color": "#fff"
     }
-  });
+}, firstSymbolId);
 
   // Add Sightings Overview
   MAP.addSource('nj-habitat-overview', {
@@ -244,7 +254,7 @@ MAP.on('load', () => {
   MAP.addLayer({
     "id": "nj-habitat-overview",
     "source": "nj-habitat-overview",
-    "source-layer": "nj-habitat-overview",
+    "source-layer": "habitatoverview2017",
     "maxzoom": 13,
     "type": "heatmap",
     "paint": {
@@ -291,7 +301,7 @@ MAP.on('load', () => {
         ]
       }
     }
-  });
+}, firstSymbolId);
 
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
