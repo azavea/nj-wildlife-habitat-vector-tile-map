@@ -4,28 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-
-    <!-- Site info -->
+    <meta name="description" content="NJ Wildlife Habitat Viewer">
     <title>NJ Wildlife Habitat Viewer</title>
-    <meta name="description" content="Draw a custom area on a map. Get a list of wildlife habitat.">
-
-    <!-- Favicon -->
     <link rel="shortcut icon" href="images/New-Jersey-favicon.png">
-
-    <!-- Metatags -->
-    <meta property="og:title" content="NJ Wildlife Habitat Viewer" />
-    <meta property="og:url" content="ADD URL HERE" />
-    <meta property="og:type" content="website" />
-    <meta property="og:description" content="Draw a custom area on a map. Get a list of wildlife habitat." />
-    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
-    <meta name="tiwtter:creator" content="@azavea" />
-    <meta name="twitter:description" content="Draw a custom area on a map. Get a list of wildlife habitat." />
-    <meta name="twitter:url" content="ADD URL HERE" />
-    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/main.css" />
@@ -405,20 +387,15 @@ function renderSelectAreaOfInterestPrompt() {
 
 }
 
-
-let speciesList =[]
-
 // Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
   console.log(JSON.stringify(APP.featuresOfInterest));
   APP.featuresOfInterest.features.map(function(f) {
     f.properties.species.map(function(s) {
       console.log(s);
-      speciesList.push(s);
     });
   });
 }
-
 
 function updateAreaOfInterest() {
   APP.areaOfInterest = turf.combine(DRAW.getAll());
