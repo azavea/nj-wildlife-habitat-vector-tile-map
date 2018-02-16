@@ -192,12 +192,12 @@ MAP.on('draw.update', updateAreaOfInterest);
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
 
-  let layers = MAP.getStyle().layers;
+  let mapStyleLayers = MAP.getStyle().layers;
   // Find the index of the first symbol layer in the map style
   let firstSymbolId;
-  for (let i = 0; i < layers.length; i++) {
-      if (layers[i].type === 'symbol') {
-          firstSymbolId = layers[i].id;
+  for (let i = 0; i < mapStyleLayers.length; i++) {
+      if (mapStyleLayers[i].type === 'symbol') {
+          firstSymbolId = mapStyleLayers[i].id;
           break;
       }
   }
