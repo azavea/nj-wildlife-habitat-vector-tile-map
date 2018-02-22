@@ -1,6 +1,11 @@
 
-/* FONTS */
+/* Fonts */
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700,900);
+/* Fonts */
+
+html {
+    height: 100%;
+}
 
 body {
     margin: 0;
@@ -115,7 +120,7 @@ a:hover, a:focus {
         "header"
         "maparea"
         "sidebar";
-    height: 100vh;
+    height: 100%;
     background-color: #fff;
     color: #444;
 }
@@ -147,9 +152,6 @@ a:hover, a:focus {
     width: 120px;
 }
 
-.header .learn-more-btn {
-}
-
 .title {
     grid-area: title;
     display: none;
@@ -163,7 +165,7 @@ a:hover, a:focus {
     color: #444;
 }
 
-sidebar {
+.sidebar {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
@@ -178,6 +180,11 @@ sidebar {
     align-content: left;
     border-bottom: 1px solid #888;
     overflow-y: scroll;
+}
+
+.drawing-tools {
+    display: flex;
+    justify-content: space-between;
 }
 
 maparea {
@@ -214,7 +221,7 @@ maparea {
     }
 }
 
-sidebar .block {
+.sidebar .block {
     display: flex;
     justify-content: space-around;
     align-content: left;
@@ -256,33 +263,26 @@ sidebar .block {
     vertical-align: middle;
 }
 
-.btn-blue:hover {
-    background-color:#4ea0da;
+.btn-blue:hover, .btn-blue:active {
+    background-color: #4ea0da;
     color: #fff;
     text-decoration: none;
 }
 
-.btn-search {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 36px;
-    width: 36px;
-    font-size: 12px;
-    color: #999;
-    background-color: #fff;
-    text-align: center;
-    line-height: 36px;
-    border: 1px solid #999;
-    -webkit-border-radius: 0px 5px 5px 0px;
-    -moz-border-radius: 0px 5px 5px 0px;
-    border-radius: 0px 5px 5px 0px;
-    cursor: pointer;
+.btn-grey {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    background-color: #75848b;
+    color: #fff;
+    padding: 10px 20px;
+    vertical-align: middle;
 }
 
-.btn-search:hover {
-    background-color:#eee;
-    color: #444;
+.btn-grey:hover, .btn-grey:active {
+    background-color: #85949b;
+    color: #fff;
+    text-decoration: none;
 }
 /*Buttons*/
 
@@ -302,72 +302,6 @@ table {
     text-align: left;
 }
 /*Footer Table*/
-
-/*Seach Form*/
-.search-box {
-    position: relative;
-    width: 100%;
-    margin: 0;
-}
-
-.search-form {
-    display: flex;
-    flex-direction: row;
-    vertical-align: middle;
-    height: 36px;
-    border: 1px solid #999;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #fff;
-    overflow: hidden;
-}
-
-.input-address {
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.input-block {
-    flex: 1;
-    order: 1;
-    width: 45%;
-    float: left;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.input-lot {
-    flex: 1;
-    order: 2;
-    width: 45%;
-}
-
-.search-input {
-    font-size: 0.9rem;
-    color: #ddd;
-    border-width: 0;
-    background: transparent;
-}
-
-.input-lot {
-    border-left: 1px solid #999 !important;
-}
-
-.search-box input[type="text"] {
-    width: 90%;
-    padding: 11px 0 12px 1em;
-    color: #333;
-    outline: none;
-}
-
-.search-input:focus {
-    border-color: #4ea0da;
-    outline: 0;
-    -webkit-box-shadow: inset 0 0 4px #4ea0da;
-    box-shadow: inset 0 0 4px #4ea0da;
-}
-/*Search Form*/
 
 /*Modal*/
 /* The Modal (background) */
