@@ -51,6 +51,14 @@
 
     <!-- Font Awesome icon library -->
     <script src="https://use.fontawesome.com/e1061b6f05.js"></script>
+
+    <!-- jQuery -->
+    <script
+        src="http://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+
 </head>
 <body>
     <div class="grid">
@@ -71,7 +79,8 @@
         </div>
         <!-- Title -->
         <!-- Sidebar -->
-        <sidebar>
+        <div class="sidebar">
+            <!-- App State 0 -->
             <!-- Geocoder -->
             <div class="block">
                 <div id="geocoder-container" class="geocoder-container"></div>
@@ -79,10 +88,11 @@
             <div class="block"></div>
             <!-- Geocoder -->
             <div class="block">
-                <p>Enter an address to zoom to an area on the map, then select parcels or draw a custom shape.</p>
+                <p>Enter an address to zoom to an area on the map.</p>
             </div>
-        </sidebar>
-        <!-- Sidebar -->
+            <!-- App State 0 -->
+        </div>
+
         <!-- Map -->
         <maparea id="map"></maparea>
         <!-- Map -->
@@ -105,8 +115,8 @@
         </div>
     </div>
     <!-- Legend -->
-    <!-- Modal -->
-    <div id="about-modal" class="modal">
+    <!-- Learn More Modal -->
+    <div id="learn-more-modal" class="modal">
     <!-- Modal Content -->
         <div class="modal-content">
             <div class="modal-header">
@@ -116,9 +126,10 @@
             <div class="modal-body">
                 <h4>About this tool</h4>
                 <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
+                <p>To use this tool, zoom to an area by typing an address into the search bar or by using the zoom navigation buttons. Then, draw a custom shape to display a list of wildlife habitat within the area of interest.</p>
                 <h4>About the data</h4>
                 <p><a href="http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm" target='_blank'>New Jersey Landscape Project</a> is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. The dataset in made up of hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife sighting records.</p>
-                <p>Landscape Project species habitat areas are determined by running species-specific models on a wildlife observation point dataset. NJDEP ENSP biologists create habitat models for each NJ Special Concern, Threatened, and Endangered species, including Federal Threatened and Endangered species, using a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide LULC polygons to create potential habitat areas. <a href="https://njdep.maps.arcgis.com/apps/Cascade/index.html?appid=6cd21ef042634609904beae390f34482" target='_blank'>View the story map</a> produced by the NJDEP to learn more about Landscape Project 3.3 data.</p>
+                <p>Landscape Project wildlife habitat areas are determined by running species-specific models on a wildlife observation point dataset. <a href="http://www.njfishandwildlife.com/ensphome.htm" target='_blank'>NJDEP ENSP</a> biologists create habitat models for each NJ Special Concern, Threatened, and Endangered species, including Federal Threatened and Endangered species, using a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide LULC polygons to create potential habitat areas. <a href="https://njdep.maps.arcgis.com/apps/Cascade/index.html?appid=6cd21ef042634609904beae390f34482" target='_blank'>View the story map</a> produced by the NJDEP to learn more about Landscape Project 3.3 data.</p>
                 <h4>Solving difficult problems</h4>
                 <p>It can be challenging to determine a list of wildlife habitat on a specific site, even if you’re in the environmental consulting/regulatory compliance world and have experience with GIS software. Other online tools that explore Landscape Project data exist, but load time is slow and retrieving lists for a user-selected area is not possible.</p>
                 <p>Through the creation of this Proof of Concept we investigated a workflow to process a large dataset into vector tiles that can be rendered responsively in a web browser with <a href="https://www.mapbox.com/" target='_blank'>Mapbox</a> services and <a href="https://www.mapbox.com/mapbox-gl-js/api/" target='_blank'>Mapbox GL JS.</a></p>
@@ -137,7 +148,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
+    <!-- Learn More Modal -->
 
 <!-- IMPORTANT: Configuration of application tokens, tilesources, and host URL is in a seperate script "config.js". This script must be manually updated.-->
 <script src="config.js"></script>
@@ -147,7 +158,7 @@
 // Map pan and zoom contraints for New Jersey
 const NJ_MAP_LIMITS = {
   minZoom: 7,
-  bounds: [[-76.151,38.638],[-73.128,41.572]]
+  bounds: [[-77.663250, 38.549432],[-71.459113, 41.571781]]
 }
 
 // Object to manage application state
@@ -210,6 +221,7 @@ MAP.on('draw.update', updateAreaOfInterest);
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
 
+  // Define map style layers to enable search
   let mapStyleLayers = MAP.getStyle().layers;
   // Find the index of the first symbol layer in the map style
   let firstSymbolId;
@@ -246,7 +258,7 @@ MAP.on('load', () => {
     }
 }, firstSymbolId);
 
-  // Add Sightings Overview
+  // Add Habitat Overview (point data)
   MAP.addSource('nj-habitat-overview', {
     type: 'vector',
     url: TILE_SOURCES.habitatOverview
@@ -258,7 +270,7 @@ MAP.on('load', () => {
     "maxzoom": 13,
     "type": "heatmap",
     "paint": {
-      // increase weight as diameter breast height increases
+      // increase weight as acreage of associated habitat polygon increases
       'heatmap-weight': {
         property: 'acres',
         type: 'exponential',
@@ -267,14 +279,12 @@ MAP.on('load', () => {
           [10, 1]
         ]
       },
-      // increase intensity as zoom level increases
       'heatmap-intensity': {
         stops: [
           [7, 0.2],
           [11, 0.5]
         ]
       },
-      // assign color values be applied to points depending on their density
       'heatmap-color': [
         'interpolate',
         ['linear'],
@@ -285,14 +295,12 @@ MAP.on('load', () => {
         0.6, 'rgba(103,169,207,200)',
         0.8, 'rgba(28,144,153,255)'
       ],
-      // increase radius as zoom increases
       'heatmap-radius': {
         stops: [
           [9, 2],
           [13, 8]
         ]
       },
-      // decrease opacity to transition into the circle layer
       'heatmap-opacity': {
         default: 1,
         stops: [
@@ -310,7 +318,7 @@ MAP.on('load', () => {
     if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
       let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
 
-      // if the features have no info, return nothing
+      // If the features have no info, return nothing
       if (!features.length) {
         return;
       }
@@ -393,26 +401,98 @@ function setLoading() {
 // Render Application State 0: Prompt user to zoom to an area of interest
 function renderZoomPrompt() {
   console.log('Zoom to a region.');
+
+  // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'none';
   document.getElementById('heatmap-legend').style.display = 'block';
+
+  const appState0 =
+      '<div class="sidebar" id="app-state-0"> \
+      <!-- App State 0 --> \
+          <!-- Geocoder --> \
+          <div class="block"> \
+              <div id="geocoder-container" class="geocoder-container"></div> \
+          </div> \
+          <div class="block"></div> \
+          <!-- Geocoder --> \
+          <div class="block"> \
+              <p>Enter an address to zoom to an area on the map.</p> \
+          </div> \
+      <!-- App State 0 --> \
+      </div>';
+
+  // Replace App State 0 Sidebar with App State 1 Sidebar
+  $(".sidebar").replaceWith($(appState0));
+
+  document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
+
 }
 
 // Render Application State 1: Prompt user to select an area of interest
 function renderSelectAreaOfInterestPrompt() {
+
   console.log('Select an area.');
+
+  // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'block';
   document.getElementById('heatmap-legend').style.display = 'none';
 
+  const appState1 =
+      '<div class="sidebar" id="app-state-1"> \
+      <!-- App State 1 --> \
+          <div class="block"> \
+              <p>Draw a custom area.</p> \
+          </div> \
+          <div class="drawing-tools"> \
+              <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
+          </div> \
+      <!-- App State 1 --> \
+      </div>';
+
+  // Replace App State 0 Sidebar with App State 1 Sidebar
+  $(".sidebar").replaceWith($(appState1));
+
+  var drawBtn = document.getElementById("draw-btn");
+  // When the user clicks the button, trash the current drawing and Start
+  // new drawing session
+  drawBtn.onclick = function() {
+      DRAW.changeMode('draw_polygon');
+  }
 }
 
 // Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
+  console.log('Habitat list in sidebar.');
+
   console.log(JSON.stringify(APP.featuresOfInterest));
   APP.featuresOfInterest.features.map(function(f) {
     f.properties.species.map(function(s) {
       console.log(s);
     });
   });
+
+  const appState2 =
+      '<div class="sidebar" id="app-state-2"> \
+      <!-- App State 1 --> \
+          <div class="drawing-tools"> \
+              <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
+          </div> \
+          <div class="block"> \
+              <p>Area of Interest Habitat List</p> \
+          </div> \
+      <!-- App State 1 --> \
+      </div>';
+
+  // Replace App State 0 Sidebar with App State 1 Sidebar
+  $(".sidebar").replaceWith($(appState2));
+
+  var trashBtn = document.getElementById("trash-btn");
+  // When the user clicks the button, trash the current drawing and Start
+  // new drawing session
+  trashBtn.onclick = function() {
+      DRAW.trash();
+      DRAW.changeMode('draw_polygon');
+  }
 }
 
 function updateAreaOfInterest() {
@@ -470,7 +550,7 @@ function updateAreaOfInterest() {
 function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, { duration: 0, padding: 50}); // duration: 0 makes this synchronous
+    MAP.fitBounds(bounds, { duration: 0, padding: 100}); // duration: 0 makes this synchronous
   }
 }
 
