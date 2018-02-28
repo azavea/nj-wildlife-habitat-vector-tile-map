@@ -59,6 +59,13 @@
         crossorigin="anonymous">
     </script>
 
+    <!-- jQuery Plugin: DataTables (and dependencies) -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.js"></script>
+
 </head>
 <body>
     <div class="grid">
@@ -253,7 +260,7 @@ MAP.on('load', () => {
                 [4, '#9bb88f'],
                 [5, '#78aa94']]
             },
-      "fill-opacity": 0.4,
+      "fill-opacity": 0.7,
       "fill-outline-color": "#fff"
     }
 }, firstSymbolId);
@@ -460,16 +467,43 @@ function renderSelectAreaOfInterestPrompt() {
   }
 }
 
+let fullList = [];
+
 // Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
-  console.log('Habitat list in sidebar.');
+
+  fullList = [];
 
   console.log(JSON.stringify(APP.featuresOfInterest));
   APP.featuresOfInterest.features.map(function(f) {
     f.properties.species.map(function(s) {
-      console.log(s);
+      fullList.push(s);
     });
   });
+
+  // // remove duplicates function
+  function removeDuplicates(arr, key) {
+
+      if (!(arr instanceof Array) || key && typeof key !== 'string') {
+          return false;
+      }
+
+      if (key && typeof key === 'string') {
+          return arr.filter((obj, index, arr) => {
+              return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+          });
+
+      } else {
+          return arr.filter(function(item, index, arr) {
+              return arr.indexOf(item) == index;
+          });
+      }
+  };
+
+  let uniquesList = removeDuplicates(fullList, 'COMNAME');
+
+  console.log(fullList);
+  console.log(uniquesList);
 
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
@@ -480,19 +514,57 @@ function renderAreaOfInterestReport() {
           <div class="block"> \
               <p>Area of Interest Habitat List</p> \
           </div> \
+          <div> \
+            <table id="table" class="display compact" width="100%"></table> \
+          </div> \
       <!-- App State 1 --> \
       </div>';
 
   // Replace App State 0 Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState2));
 
-  var trashBtn = document.getElementById("trash-btn");
+  let trashBtn = document.getElementById("trash-btn");
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   trashBtn.onclick = function() {
       DRAW.trash();
       DRAW.changeMode('draw_polygon');
   }
+
+  $('#table').DataTable( {
+      data: uniquesList,
+      scrollX: "300px",
+      scrollY: "400px",
+      scrollCollapse: true,
+      paging: false,
+      info: false,
+      dom: 'Bfrtip',
+      buttons: [
+          {
+              extend: 'copy',
+              text: 'Copy',
+              className: 'new'
+          },
+          {
+              extend: 'excel',
+              text: 'Excel',
+              className: 'new'
+          },
+          {
+              extend: 'pdf',
+              text: 'PDF',
+              className: 'new'
+          }
+      ],
+      searching: false,
+      responsive: true,
+      columns: [
+          { data: 'COMNAME', title: 'Common Name' },
+          { data: 'FED_STATUS', title: 'Federal Status' },
+          { data: 'NJ_STATUS', title: 'NJ Status' },
+          { data: 'FEAT_LABEL', title: 'Feature Label' }
+      ]
+  });
 }
 
 function updateAreaOfInterest() {
