@@ -493,7 +493,7 @@ function renderAreaOfInterestReport() {
   // Replace App State 0 Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState2));
 
-  var trashBtn = document.getElementById("trash-btn");
+  let trashBtn = document.getElementById("trash-btn");
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   trashBtn.onclick = function() {
