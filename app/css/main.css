@@ -284,6 +284,40 @@ maparea {
     color: #fff;
     text-decoration: none;
 }
+
+.dt-button.new {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    background-color: #75848b;
+    background-image: none;
+    color: #fff;
+    margin: 0;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.dt-button.new:hover, .dt-button.new:focus, .dt-button.new:active {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    background-color: #85949b;
+    background-image: none;
+    color: #fff;
+    margin: 0;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.dt-button.new:hover:not(.disabled) {
+    background-color: #85949b;
+    background-image: none;
+    color: #fff;
+}
+
 /*Buttons*/
 
 /*Footer Table*/
