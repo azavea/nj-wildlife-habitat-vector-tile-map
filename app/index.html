@@ -467,16 +467,43 @@ function renderSelectAreaOfInterestPrompt() {
   }
 }
 
+let fullList = [];
+
 // Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
-  console.log('Habitat list in sidebar.');
+
+  fullList = [];
 
   console.log(JSON.stringify(APP.featuresOfInterest));
   APP.featuresOfInterest.features.map(function(f) {
     f.properties.species.map(function(s) {
-      console.log(s);
+      fullList.push(s);
     });
   });
+
+  // // remove duplicates function
+  function removeDuplicates(arr, key) {
+
+      if (!(arr instanceof Array) || key && typeof key !== 'string') {
+          return false;
+      }
+
+      if (key && typeof key === 'string') {
+          return arr.filter((obj, index, arr) => {
+              return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+          });
+
+      } else {
+          return arr.filter(function(item, index, arr) {
+              return arr.indexOf(item) == index;
+          });
+      }
+  };
+
+  let uniquesList = removeDuplicates(fullList, 'COMNAME');
+
+  console.log(fullList);
+  console.log(uniquesList);
 
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
@@ -486,6 +513,9 @@ function renderAreaOfInterestReport() {
           </div> \
           <div class="block"> \
               <p>Area of Interest Habitat List</p> \
+          </div> \
+          <div> \
+            <table id="table" class="display compact" width="100%"></table> \
           </div> \
       <!-- App State 1 --> \
       </div>';
@@ -500,6 +530,41 @@ function renderAreaOfInterestReport() {
       DRAW.trash();
       DRAW.changeMode('draw_polygon');
   }
+
+  $('#table').DataTable( {
+      data: uniquesList,
+      scrollX: "300px",
+      scrollY: "400px",
+      scrollCollapse: true,
+      paging: false,
+      info: false,
+      dom: 'Bfrtip',
+      buttons: [
+          {
+              extend: 'copy',
+              text: 'Copy',
+              className: 'new'
+          },
+          {
+              extend: 'excel',
+              text: 'Excel',
+              className: 'new'
+          },
+          {
+              extend: 'pdf',
+              text: 'PDF',
+              className: 'new'
+          }
+      ],
+      searching: false,
+      responsive: true,
+      columns: [
+          { data: 'COMNAME', title: 'Common Name' },
+          { data: 'FED_STATUS', title: 'Federal Status' },
+          { data: 'NJ_STATUS', title: 'NJ Status' },
+          { data: 'FEAT_LABEL', title: 'Feature Label' }
+      ]
+  });
 }
 
 function updateAreaOfInterest() {
