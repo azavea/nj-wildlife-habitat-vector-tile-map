@@ -1,4 +1,4 @@
-FROM ubuntu:17.04
+FROM ubuntu:16.04
 
 # Install Python and other dependencies
 RUN apt-get update -y && \
