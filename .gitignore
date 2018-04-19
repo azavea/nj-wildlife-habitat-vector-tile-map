@@ -1,9 +1,5 @@
-app/data/*
-app/habitat/*
-app/tiles/*
-
-data/*
-habitat/*
-tiles/*
+app/data
+app/habitat
+app/tiles
 
 notes.txt
