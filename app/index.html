@@ -104,21 +104,24 @@
         <maparea id="map"></maparea>
         <!-- Map -->
         <!-- Legend -->
-        <div id='heatmap-legend' class='legend' style='display: block;'>
-            <h4>Heatmap</h4>
-            <div><span style='background-color: rgba(236,222,239,0)'></span>0</div>
-            <div><span style='background-color: rgba(208,209,230,50)'></span>0.2</div>
-            <div><span style='background-color: rgba(166,189,219,100)'></span>0.4</div>
-            <div><span style='background-color: rgba(103,169,207,200)'></span>0.6</div>
-            <div><span style='background-color: rgba(28,144,153,255)'></span>0.8</div>
-        </div>
-        <div id='habitat-legend' class='legend' style='display: none;'>
-            <h4>Wildlife Habitat</h4>
-            <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
-            <div><span style='background-color: #e1cca2'></span>Special Concern</div>
-            <div><span style='background-color: #cce1a2'></span>State Threatened</div>
-            <div><span style='background-color: #9bb88f'></span>State Endangered</div>
-            <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+        <div class="legend-block">
+            <div id='heatmap-legend' class='legend' style='display: block;'>
+                <h4>Regions</h4>
+                <div><span style='background-color: #db9d9b'></span>Atlantic Coastal</div>
+                <div><span style='background-color: #faf46a'></span>Delaware Bay</div>
+                <div><span style='background-color: #edbc6b'></span>Piedmont</div>
+                <div><span style='background-color: #72a489'></span>Pinelands</div>
+                <div><span style='background-color: #73a25c'></span>Skylands</div>
+                <div><span style='background-color: #96e7fc'></span>Marine</div>
+            </div>
+            <div id='habitat-legend' class='legend' style='display: none;'>
+                <h4>Wildlife Habitat</h4>
+                <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
+                <div><span style='background-color: #e1cca2'></span>Special Concern</div>
+                <div><span style='background-color: #cce1a2'></span>State Threatened</div>
+                <div><span style='background-color: #9bb88f'></span>State Endangered</div>
+                <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+            </div>
         </div>
     </div>
     <!-- Legend -->
@@ -266,55 +269,29 @@ MAP.on('load', () => {
 }, firstSymbolId);
 
   // Add Habitat Overview (point data)
-  MAP.addSource('nj-habitat-overview', {
+  MAP.addSource('nj-habitat-regions', {
     type: 'vector',
-    url: TILE_SOURCES.habitatOverview
+    url: TILE_SOURCES.habitatRegions
   });
   MAP.addLayer({
-    "id": "nj-habitat-overview",
-    "source": "nj-habitat-overview",
-    "source-layer": "habitatoverview2017",
+    "id": "nj-habitat-regions",
+    "source": "nj-habitat-regions",
+    "source-layer": "landscape_regions_v3_3-clq87r",
     "maxzoom": 13,
-    "type": "heatmap",
+    "type": "fill",
     "paint": {
-      // increase weight as acreage of associated habitat polygon increases
-      'heatmap-weight': {
-        property: 'acres',
-        type: 'exponential',
-        stops: [
-          [1, 0],
-          [10, 1]
-        ]
-      },
-      'heatmap-intensity': {
-        stops: [
-          [7, 0.2],
-          [11, 0.5]
-        ]
-      },
-      'heatmap-color': [
-        'interpolate',
-        ['linear'],
-        ['heatmap-density'],
-        0, 'rgba(236,222,239,0)',
-        0.2, 'rgba(208,209,230,50)',
-        0.4, 'rgba(166,189,219,100)',
-        0.6, 'rgba(103,169,207,200)',
-        0.8, 'rgba(28,144,153,255)'
-      ],
-      'heatmap-radius': {
-        stops: [
-          [9, 2],
-          [13, 8]
-        ]
-      },
-      'heatmap-opacity': {
-        default: 1,
-        stops: [
-          [12, 1],
-          [14, 0]
-        ]
-      }
+      "fill-color": {
+            property: 'REGION_ID',
+            stops: [
+                [1, '#db9d9b'],
+                [2, '#faf46a'],
+                [3, '#edbc6b'],
+                [4, '#72a489'],
+                [5, '#73a25c'],
+                [6, '#96e7fc']]
+            },
+      "fill-opacity": 0.7,
+      "fill-outline-color": "#fff"
     }
 }, firstSymbolId);
 
