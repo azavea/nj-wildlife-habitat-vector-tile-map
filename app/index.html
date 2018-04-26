@@ -575,36 +575,66 @@ function renderAreaOfInterestReport() {
 
   $('#table').DataTable( {
       data: uniquesList,
-      scrollX: "300px",
-      scrollY: "400px",
-      scrollCollapse: true,
+      dom: 'Bfrtip',
+      scrollCollapse: false,
       paging: false,
       info: false,
-      dom: 'Bfrtip',
+      compact: true,
+      searching: false,
+      responsive: false,
       buttons: [
           {
-              extend: 'copy',
-              text: 'Copy',
-              className: 'new'
-          },
-          {
-              extend: 'excel',
-              text: 'Excel',
-              className: 'new'
-          },
-          {
               extend: 'pdf',
-              text: 'PDF',
-              className: 'new'
+              text: 'Export PDF',
+              className: 'new',
+              filename: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth()+1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0'+dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0'+mm
+                  }
+
+                  today = yyyy + '_' + mm + '_' + dd;
+
+                  filename = 'LandscapeProjectHabitatWithinAOI_' + today;
+
+                  return filename;
+              },
+              title: 'Landscape Project v3.3 Present Within Selected Area of Interest',
+              messageTop: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth() + 1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0' + dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0' + mm
+                  }
+
+                  today = mm + '/' + dd + '/' + yyyy;
+
+                  exportDescription = 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.' + '<br>' + 'Exported on: ' + today;
+
+                  return exportDescription;
+              },
+              messageBottom: 'Source: https://njhabitat.azavea.com'
           }
       ],
-      searching: false,
-      responsive: true,
       columns: [
           { data: 'COMNAME', title: 'Common Name' },
           { data: 'FED_STATUS', title: 'Federal Status' },
-          { data: 'NJ_STATUS', title: 'NJ Status' },
-          { data: 'FEAT_LABEL', title: 'Feature Label' }
+          { data: 'NJ_STATUS', title: 'NJ Status' }
       ]
   });
 }
