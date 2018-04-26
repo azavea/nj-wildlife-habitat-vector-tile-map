@@ -7,7 +7,7 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
     <!-- Site info -->
-    <title>NJ Wildlife Habitat Viewer</title>
+    <title>NJ Wildlife Habitat Finder</title>
     <meta name="description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles.">
 
     <!-- Favicon -->
@@ -15,7 +15,7 @@
 
     <!-- Metatags -->
     <meta property="og:title" content="NJ Wildlife Habitat Viewer" />
-    <meta property="og:url" content="ADD URL HERE" />
+    <meta property="og:url" content="www.njhabitat.azavea.com" />
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
     <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
@@ -24,7 +24,7 @@
     <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
     <meta name="twitter:creator" content="@azavea" />
     <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
-    <meta name="twitter:url" content="ADD URL HERE" />
+    <meta name="twitter:url" content="www.njhabitat.azavea.com" />
     <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
 
     <!-- Main stylesheet -->
@@ -82,7 +82,7 @@
         <!-- Header -->
         <!-- Title -->
         <div class="title">
-            <h1>NJ Wildlife Habitat Viewer</h1>
+            <h1>NJ Wildlife Habitat Finder</h1>
         </div>
         <!-- Title -->
         <!-- Sidebar -->
@@ -101,24 +101,27 @@
         </div>
 
         <!-- Map -->
-        <maparea id="map"></maparea>
+        <div class="map-area" id="map"></div>
         <!-- Map -->
         <!-- Legend -->
-        <div id='heatmap-legend' class='legend' style='display: block;'>
-            <h4>Heatmap</h4>
-            <div><span style='background-color: rgba(236,222,239,0)'></span>0</div>
-            <div><span style='background-color: rgba(208,209,230,50)'></span>0.2</div>
-            <div><span style='background-color: rgba(166,189,219,100)'></span>0.4</div>
-            <div><span style='background-color: rgba(103,169,207,200)'></span>0.6</div>
-            <div><span style='background-color: rgba(28,144,153,255)'></span>0.8</div>
-        </div>
-        <div id='habitat-legend' class='legend' style='display: none;'>
-            <h4>Wildlife Habitat</h4>
-            <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
-            <div><span style='background-color: #e1cca2'></span>Special Concern</div>
-            <div><span style='background-color: #cce1a2'></span>State Threatened</div>
-            <div><span style='background-color: #9bb88f'></span>State Endangered</div>
-            <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+        <div class="legend-block">
+            <div id='heatmap-legend' class='legend' style='display: block;'>
+                <h4>Regions</h4>
+                <div><span style='background-color: #db9d9b'></span>Atlantic Coastal</div>
+                <div><span style='background-color: #faf46a'></span>Delaware Bay</div>
+                <div><span style='background-color: #edbc6b'></span>Piedmont</div>
+                <div><span style='background-color: #72a489'></span>Pinelands</div>
+                <div><span style='background-color: #73a25c'></span>Skylands</div>
+                <div><span style='background-color: #96e7fc'></span>Marine</div>
+            </div>
+            <div id='habitat-legend' class='legend' style='display: none;'>
+                <h4>Wildlife Habitat</h4>
+                <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
+                <div><span style='background-color: #e1cca2'></span>Special Concern</div>
+                <div><span style='background-color: #cce1a2'></span>State Threatened</div>
+                <div><span style='background-color: #9bb88f'></span>State Endangered</div>
+                <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+            </div>
         </div>
     </div>
     <!-- Legend -->
@@ -168,6 +171,8 @@ const NJ_MAP_LIMITS = {
   bounds: [[-77.663250, 38.549432],[-71.459113, 41.571781]]
 }
 
+const emptyFeatureCollection = { type: 'FeatureCollection', features: [] }
+
 // Object to manage application state
 const APP = {
   initialMapLoaded: false,
@@ -207,7 +212,72 @@ const DRAW = new MapboxDraw({
   controls: {
     polygon: true,
     trash: true
-  }
+  },
+  styles: [
+    // ACTIVE (being drawn)
+    // line stroke
+    {
+        "id": "gl-draw-line",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+        "layout": {
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "#ffa500",
+          "line-dasharray": [0.2, 2],
+          "line-width": 2
+        }
+    },
+    // polygon fill
+    {
+      "id": "gl-draw-polygon-fill",
+      "type": "fill",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "paint": {
+        "fill-color": "#ffa500",
+        "fill-outline-color": "#ffa500",
+        "fill-opacity": 0.1
+      }
+    },
+    // polygon outline stroke
+    // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
+    {
+      "id": "gl-draw-polygon-stroke-active",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#ffa500",
+        "line-dasharray": [0.2, 2],
+        "line-width": 2
+      }
+    },
+    // vertex point halos
+    {
+      "id": "gl-draw-polygon-and-line-vertex-halo-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": "#FFF"
+      }
+    },
+    // vertex points
+    {
+      "id": "gl-draw-polygon-and-line-vertex-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 4,
+        "circle-color": "#ffa500",
+      }
+    }
+  ]
 });
 MAP.addControl(DRAW);
 
@@ -266,55 +336,29 @@ MAP.on('load', () => {
 }, firstSymbolId);
 
   // Add Habitat Overview (point data)
-  MAP.addSource('nj-habitat-overview', {
+  MAP.addSource('nj-habitat-regions', {
     type: 'vector',
-    url: TILE_SOURCES.habitatOverview
+    url: TILE_SOURCES.habitatRegions
   });
   MAP.addLayer({
-    "id": "nj-habitat-overview",
-    "source": "nj-habitat-overview",
-    "source-layer": "habitatoverview2017",
+    "id": "nj-habitat-regions",
+    "source": "nj-habitat-regions",
+    "source-layer": "landscape_regions_v3_3-clq87r",
     "maxzoom": 13,
-    "type": "heatmap",
+    "type": "fill",
     "paint": {
-      // increase weight as acreage of associated habitat polygon increases
-      'heatmap-weight': {
-        property: 'acres',
-        type: 'exponential',
-        stops: [
-          [1, 0],
-          [10, 1]
-        ]
-      },
-      'heatmap-intensity': {
-        stops: [
-          [7, 0.2],
-          [11, 0.5]
-        ]
-      },
-      'heatmap-color': [
-        'interpolate',
-        ['linear'],
-        ['heatmap-density'],
-        0, 'rgba(236,222,239,0)',
-        0.2, 'rgba(208,209,230,50)',
-        0.4, 'rgba(166,189,219,100)',
-        0.6, 'rgba(103,169,207,200)',
-        0.8, 'rgba(28,144,153,255)'
-      ],
-      'heatmap-radius': {
-        stops: [
-          [9, 2],
-          [13, 8]
-        ]
-      },
-      'heatmap-opacity': {
-        default: 1,
-        stops: [
-          [12, 1],
-          [14, 0]
-        ]
-      }
+      "fill-color": {
+            property: 'REGION_ID',
+            stops: [
+                [1, '#db9d9b'],
+                [2, '#faf46a'],
+                [3, '#edbc6b'],
+                [4, '#72a489'],
+                [5, '#73a25c'],
+                [6, '#96e7fc']]
+            },
+      "fill-opacity": 0.7,
+      "fill-outline-color": "#fff"
     }
 }, firstSymbolId);
 
@@ -407,7 +451,6 @@ function setLoading() {
 
 // Render Application State 0: Prompt user to zoom to an area of interest
 function renderZoomPrompt() {
-  console.log('Zoom to a region.');
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'none';
@@ -416,19 +459,19 @@ function renderZoomPrompt() {
   const appState0 =
       '<div class="sidebar" id="app-state-0"> \
       <!-- App State 0 --> \
+          <div class="block"> \
+              <p>Enter an address or zoom to your Area of Interest.</p> \
+          </div> \
           <!-- Geocoder --> \
           <div class="block"> \
               <div id="geocoder-container" class="geocoder-container"></div> \
           </div> \
           <div class="block"></div> \
           <!-- Geocoder --> \
-          <div class="block"> \
-              <p>Enter an address to zoom to an area on the map.</p> \
-          </div> \
       <!-- App State 0 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 0 Sidebar
   $(".sidebar").replaceWith($(appState0));
 
   document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
@@ -438,8 +481,6 @@ function renderZoomPrompt() {
 // Render Application State 1: Prompt user to select an area of interest
 function renderSelectAreaOfInterestPrompt() {
 
-  console.log('Select an area.');
-
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'block';
   document.getElementById('heatmap-legend').style.display = 'none';
@@ -447,16 +488,17 @@ function renderSelectAreaOfInterestPrompt() {
   const appState1 =
       '<div class="sidebar" id="app-state-1"> \
       <!-- App State 1 --> \
-          <div class="block"> \
-              <p>Draw a custom area.</p> \
+          <div class="description"> \
+              <p>Draw your Area of Interest.</p> \
+              <p>Double click or click on the first node to complete the shape.</p> \
           </div> \
-          <div class="drawing-tools"> \
+          <div class="block drawing-tools"> \
               <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
           </div> \
       <!-- App State 1 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
 
   var drawBtn = document.getElementById("draw-btn");
@@ -467,9 +509,9 @@ function renderSelectAreaOfInterestPrompt() {
   }
 }
 
+// Render Application State 2: Report on user's selected area of interest
 let fullList = [];
 
-// Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
 
   fullList = [];
@@ -507,62 +549,100 @@ function renderAreaOfInterestReport() {
 
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
-      <!-- App State 1 --> \
+      <!-- App State 2 --> \
+          <div class="description"> \
+              <p>To draw a new Area of Interest, click the button below.</p> \
+              <p class="warning">This will discard the current results table.</p> \
+          </div> \
           <div class="drawing-tools"> \
               <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
           </div> \
           <div class="block"> \
-              <p>Area of Interest Habitat List</p> \
+              <h4>Area of Interest Habitat List</h4> \
           </div> \
-          <div> \
-            <table id="table" class="display compact" width="100%"></table> \
+          <div class="block"> \
+            <table id="table" class="cell-border" width="100%"></table> \
           </div> \
-      <!-- App State 1 --> \
+      <!-- App State 2 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 2 Sidebar
   $(".sidebar").replaceWith($(appState2));
 
   let trashBtn = document.getElementById("trash-btn");
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   trashBtn.onclick = function() {
-      DRAW.trash();
-      DRAW.changeMode('draw_polygon');
+      DRAW.deleteAll();
+      unconstrainMap();
+      APP.areaOfInterest = emptyFeatureCollection;
+      renderSelectAreaOfInterestPrompt();
+      // DRAW.trash();
+      // DRAW.changeMode('draw_polygon');
   }
 
   $('#table').DataTable( {
       data: uniquesList,
-      scrollX: "300px",
-      scrollY: "400px",
-      scrollCollapse: true,
+      dom: 'Bfrtip',
+      scrollCollapse: false,
       paging: false,
       info: false,
-      dom: 'Bfrtip',
+      compact: true,
+      searching: false,
+      responsive: false,
       buttons: [
           {
-              extend: 'copy',
-              text: 'Copy',
-              className: 'new'
-          },
-          {
-              extend: 'excel',
-              text: 'Excel',
-              className: 'new'
-          },
-          {
               extend: 'pdf',
-              text: 'PDF',
-              className: 'new'
+              text: 'Export PDF',
+              className: 'new',
+              filename: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth()+1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0'+dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0'+mm
+                  }
+
+                  today = yyyy + '_' + mm + '_' + dd;
+
+                  filename = 'LandscapeProjectHabitatWithinAOI_' + today;
+
+                  return filename;
+              },
+              title: 'Landscape Project v3.3 Present Within Selected Area of Interest',
+              messageTop: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth() + 1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0' + dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0' + mm
+                  }
+
+                  today = mm + '/' + dd + '/' + yyyy;
+
+                  exportDescription = 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.' + '<br>' + 'Exported on: ' + today;
+
+                  return exportDescription;
+              },
+              messageBottom: 'Source: https://njhabitat.azavea.com'
           }
       ],
-      searching: false,
-      responsive: true,
       columns: [
           { data: 'COMNAME', title: 'Common Name' },
           { data: 'FED_STATUS', title: 'Federal Status' },
-          { data: 'NJ_STATUS', title: 'NJ Status' },
-          { data: 'FEAT_LABEL', title: 'Feature Label' }
+          { data: 'NJ_STATUS', title: 'NJ Status' }
       ]
   });
 }

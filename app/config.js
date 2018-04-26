@@ -9,5 +9,5 @@ const HOST = 'http://localhost:4000/app';
 // These should be Mapbox Tilesets created by uploading the MBTiles files in app/tiles/
 const TILE_SOURCES = {
   habitatAreas: 'mapbox://danjford.ccm620fv',
-  habitatOverview: 'mapbox://danjford.5kxue5mn'
+  habitatRegions: 'mapbox://danjford.89yecrvp'
 }
