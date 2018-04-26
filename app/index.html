@@ -210,7 +210,72 @@ const DRAW = new MapboxDraw({
   controls: {
     polygon: true,
     trash: true
-  }
+  },
+  styles: [
+    // ACTIVE (being drawn)
+    // line stroke
+    {
+        "id": "gl-draw-line",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+        "layout": {
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "#ffa500",
+          "line-dasharray": [0.2, 2],
+          "line-width": 2
+        }
+    },
+    // polygon fill
+    {
+      "id": "gl-draw-polygon-fill",
+      "type": "fill",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "paint": {
+        "fill-color": "#ffa500",
+        "fill-outline-color": "#ffa500",
+        "fill-opacity": 0.1
+      }
+    },
+    // polygon outline stroke
+    // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
+    {
+      "id": "gl-draw-polygon-stroke-active",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#ffa500",
+        "line-dasharray": [0.2, 2],
+        "line-width": 2
+      }
+    },
+    // vertex point halos
+    {
+      "id": "gl-draw-polygon-and-line-vertex-halo-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": "#FFF"
+      }
+    },
+    // vertex points
+    {
+      "id": "gl-draw-polygon-and-line-vertex-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 4,
+        "circle-color": "#ffa500",
+      }
+    }
+  ]
 });
 MAP.addControl(DRAW);
 
