@@ -171,6 +171,8 @@ const NJ_MAP_LIMITS = {
   bounds: [[-77.663250, 38.549432],[-71.459113, 41.571781]]
 }
 
+const emptyFeatureCollection = { type: 'FeatureCollection', features: [] }
+
 // Object to manage application state
 const APP = {
   initialMapLoaded: false,
@@ -449,7 +451,6 @@ function setLoading() {
 
 // Render Application State 0: Prompt user to zoom to an area of interest
 function renderZoomPrompt() {
-  console.log('Zoom to a region.');
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'none';
@@ -458,19 +459,19 @@ function renderZoomPrompt() {
   const appState0 =
       '<div class="sidebar" id="app-state-0"> \
       <!-- App State 0 --> \
+          <div class="block"> \
+              <p>Enter an address or zoom to your Area of Interest.</p> \
+          </div> \
           <!-- Geocoder --> \
           <div class="block"> \
               <div id="geocoder-container" class="geocoder-container"></div> \
           </div> \
           <div class="block"></div> \
           <!-- Geocoder --> \
-          <div class="block"> \
-              <p>Enter an address to zoom to an area on the map.</p> \
-          </div> \
       <!-- App State 0 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 0 Sidebar
   $(".sidebar").replaceWith($(appState0));
 
   document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
@@ -480,8 +481,6 @@ function renderZoomPrompt() {
 // Render Application State 1: Prompt user to select an area of interest
 function renderSelectAreaOfInterestPrompt() {
 
-  console.log('Select an area.');
-
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'block';
   document.getElementById('heatmap-legend').style.display = 'none';
@@ -489,16 +488,17 @@ function renderSelectAreaOfInterestPrompt() {
   const appState1 =
       '<div class="sidebar" id="app-state-1"> \
       <!-- App State 1 --> \
-          <div class="block"> \
-              <p>Draw a custom area.</p> \
+          <div class="description"> \
+              <p>Draw your Area of Interest.</p> \
+              <p>Double click or click on the first node to complete the shape.</p> \
           </div> \
-          <div class="drawing-tools"> \
+          <div class="block drawing-tools"> \
               <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
           </div> \
       <!-- App State 1 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
 
   var drawBtn = document.getElementById("draw-btn");
@@ -509,9 +509,9 @@ function renderSelectAreaOfInterestPrompt() {
   }
 }
 
+// Render Application State 2: Report on user's selected area of interest
 let fullList = [];
 
-// Render Application State 2: Report on user's selected area of interest
 function renderAreaOfInterestReport() {
 
   fullList = [];
@@ -549,28 +549,36 @@ function renderAreaOfInterestReport() {
 
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
-      <!-- App State 1 --> \
+      <!-- App State 2 --> \
+          <div class="description"> \
+              <p>To draw a new Area of Interest, click the button below.</p> \
+              <p class="warning">This will discard the current results table.</p> \
+          </div> \
           <div class="drawing-tools"> \
               <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
           </div> \
           <div class="block"> \
-              <p>Area of Interest Habitat List</p> \
+              <h4>Area of Interest Habitat List</h4> \
           </div> \
-          <div> \
-            <table id="table" class="display compact" width="100%"></table> \
+          <div class="block"> \
+            <table id="table" class="cell-border" width="100%"></table> \
           </div> \
-      <!-- App State 1 --> \
+      <!-- App State 2 --> \
       </div>';
 
-  // Replace App State 0 Sidebar with App State 1 Sidebar
+  // Replace Sidebar with App State 2 Sidebar
   $(".sidebar").replaceWith($(appState2));
 
   let trashBtn = document.getElementById("trash-btn");
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   trashBtn.onclick = function() {
-      DRAW.trash();
-      DRAW.changeMode('draw_polygon');
+      DRAW.deleteAll();
+      unconstrainMap();
+      APP.areaOfInterest = emptyFeatureCollection;
+      renderSelectAreaOfInterestPrompt();
+      // DRAW.trash();
+      // DRAW.changeMode('draw_polygon');
   }
 
   $('#table').DataTable( {
