@@ -187,7 +187,7 @@ a:hover, a:focus {
     justify-content: space-between;
 }
 
-maparea {
+.map-area {
     grid-area: maparea;
     border-left: 1px solid #888;
     border-bottom: 1px solid #888;
