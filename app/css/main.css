@@ -12,7 +12,7 @@ body {
     height: 100%;
     padding: 0;
     overflow: hidden;
-    font-family: "Roboto";
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
     color: #444;
 }
 
@@ -70,6 +70,10 @@ p {
     color: #444;
     margin-top: 5px;
 }
+
+.warning {
+    font-style: italic;
+}
 /*Text*/
 
 /* Links */
@@ -111,7 +115,6 @@ a:hover, a:focus {
 /*Links*/
 
 /*Grid Elements*/
-
 .grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -175,16 +178,14 @@ a:hover, a:focus {
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 25px;
-    text-align: left;
+    text-align: center;
     align-items: center;
-    align-content: left;
     border-bottom: 1px solid #888;
     overflow-y: scroll;
 }
 
 .drawing-tools {
-    display: flex;
-    justify-content: space-between;
+    display: block;
 }
 
 .map-area {
@@ -228,9 +229,23 @@ a:hover, a:focus {
     align-items: left;
 }
 
+.sidebar .description {
+    display: block;
+}
+
 .block .geocoder-container {
     padding-top: 40px;
 }
+
+hr {
+    background-color: #fff;
+    width: 80%;
+}
+
+#app-state-2 {
+    min-width: 500px;
+}
+
 /*Grid Elements*/
 
 
