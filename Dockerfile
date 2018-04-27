@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:17.10
 
 # Install Python and other dependencies
 RUN apt-get update -y && \
@@ -6,7 +6,7 @@ RUN apt-get update -y && \
     apt-get install -y git python3 python3-pip build-essential libsqlite3-dev zlib1g-dev wget curl unzip parallel
 
 # Install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash && \
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash && \
     apt-get install -y nodejs
 
 # Install GDAL

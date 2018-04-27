@@ -24,7 +24,7 @@ Edit `app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/stud
 
 ## 5. Serve the contents of the `app/` directory.
 
-Start serving the contents of `app/` on a web server.
+Start serving the contents of `app/` on a web server. Remember to update the `HOST` property in the `app/config.js` to match how you are serving out the data.
 
 # Developing
 
