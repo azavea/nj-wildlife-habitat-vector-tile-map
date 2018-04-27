@@ -368,24 +368,68 @@ MAP.on('load', () => {
     POPUP.remove();
     if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
       let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
-
-      // If the features have no info, return nothing
+      // if the features have no info, return nothing
       if (!features.length) {
         return;
       }
 
+      let species = [];
+
+      //parse the species property that was stringified during queryRenderedFeatures
+      features.forEach((features) => {
+        let item = JSON.parse(features.properties.species);
+        species.push(item);
+      });
+
       let feature = features[0];
       let featureLINKID = feature.properties.LINKID;
+      let fed_status = {fed_endangered: "", fed_threatened: ""};
+      let nj_status = {nj_endangered: "", nj_threatened: "", nj_special: ""};
+      let nj = [];
+      let fed = [];
+
+      for (var i = 0; i < species[0].length; i++){
+        if (species[0][i].FED_STATUS == "Federally Listed Endangered"){
+          fed_status.fed_endangered = "Endangered";
+        } if (species[0][i].FED_STATUS == "Federally Listed Threatened"){
+          fed_status.fed_threatened = "Threatened";
+        } if (species[0][i].NJ_STATUS == "State Endangered"){
+          nj_status.nj_endangered = "Endangered";
+        } if (species[0][i].NJ_STATUS == "State Threatened"){
+          nj_status.nj_threatened = "Threatened";
+        } if (species[0][i].NJ_STATUS == "Special Concern"){
+          nj_status.nj_special = "Special Concern";
+        }
+      };
+
+      let list =[fed_status, nj_status];
+
+      list.forEach(function(i) {
+        Object.keys(i).forEach(function(key) {
+          if(i[key] !== ""){
+            if(i == fed_status){
+              fed.push(" " + i[key])
+            }
+            if(i == nj_status){
+              nj.push(" " + i[key])
+            }
+          }
+        });
+      });
+
+      if(nj.length < 1){
+        nj.push("Not Protected")
+      }
+      if(fed.length < 1){
+        fed.push("Not Protected")
+      }
 
       // Populate the popup and set its coordinates
       // based on the feature found
       POPUP.setLngLat(e.lngLat);
-      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat ' + featureLINKID + '</h3>' +
-      '<p><a href=\'' + HOST + '/habitat/' + featureLINKID + '.json' + '\' download>Download GeoJSON</a></p>' +
-      '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-      '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-      '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
-      '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
+      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3 class=hab>Habitat ' + featureLINKID + '</h3>' +
+      '<p class=fed>' + '<b>' + 'Federal Status' + '</b>' + ': ' + fed + ' </p>' +
+      '<p class=nj>' + '<b>' + 'State Status' + '</b>' + ': ' +  nj + ' </p></div>');
       POPUP.addTo(MAP);
     }
   });
