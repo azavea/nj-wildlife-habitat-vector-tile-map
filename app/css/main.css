@@ -570,9 +570,22 @@ table {
     display: none !important;
 }
 
-.mapboxgl-popup {
-  max-width: 200px;
+.mapboxgl-popup-content {
+  max-width: 400px;
   font: 8px/14px 'Roboto', Arial, sans-serif;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px !important;
+}
+
+.fed {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.nj { 
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 @media only screen and (min-width: 1028px)  {
