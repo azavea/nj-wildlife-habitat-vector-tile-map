@@ -12,7 +12,7 @@ body {
     height: 100%;
     padding: 0;
     overflow: hidden;
-    font-family: "Roboto";
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
     color: #444;
 }
 
@@ -70,6 +70,10 @@ p {
     color: #444;
     margin-top: 5px;
 }
+
+.warning {
+    font-style: italic;
+}
 /*Text*/
 
 /* Links */
@@ -111,7 +115,6 @@ a:hover, a:focus {
 /*Links*/
 
 /*Grid Elements*/
-
 .grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -175,19 +178,17 @@ a:hover, a:focus {
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 25px;
-    text-align: left;
+    text-align: center;
     align-items: center;
-    align-content: left;
     border-bottom: 1px solid #888;
     overflow-y: scroll;
 }
 
 .drawing-tools {
-    display: flex;
-    justify-content: space-between;
+    display: block;
 }
 
-maparea {
+.map-area {
     grid-area: maparea;
     border-left: 1px solid #888;
     border-bottom: 1px solid #888;
@@ -228,9 +229,23 @@ maparea {
     align-items: left;
 }
 
+.sidebar .description {
+    display: block;
+}
+
 .block .geocoder-container {
     padding-top: 40px;
 }
+
+hr {
+    background-color: #fff;
+    width: 80%;
+}
+
+#app-state-2 {
+    min-width: 500px;
+}
+
 /*Grid Elements*/
 
 
@@ -285,40 +300,72 @@ maparea {
     text-decoration: none;
 }
 
+div.dt-buttons {
+    display: flex;
+    justify-content: center;
+    float: inherit !important;
+}
+
 .dt-button.new {
-    font-family: "Roboto", Arial, Helvetica, sans-serif;
-    font-size: 0.9rem;
-    background-color: #75848b;
+    font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+    font-size: 0.85rem;
+    background-color: #f4f6f7;
     background-image: none;
-    color: #fff;
-    margin: 0;
-    padding: 10px 10px;
-    border: none;
+    color: #4a5357;
+    margin: 4px;
+    padding: 5px 10px;
+    border: 1.5px solid #75848b;
     border-radius: 3px;
     cursor: pointer;
 }
 
 .dt-button.new:hover, .dt-button.new:focus, .dt-button.new:active {
-    font-family: "Roboto", Arial, Helvetica, sans-serif;
-    font-size: 0.9rem;
-    background-color: #85949b;
+    font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+    font-size: 0.85rem;
+    background-color: #75848b;
     background-image: none;
     color: #fff;
-    margin: 0;
-    padding: 10px 10px;
-    border: none;
+    margin: 4px;
+    padding: 5px 10px;
+    border: 1.5px solid #75848b;
     border-radius: 3px;
     cursor: pointer;
     text-decoration: none;
 }
 
 .dt-button.new:hover:not(.disabled) {
-    background-color: #85949b;
+    font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+    font-size: 0.85rem;
+    background-color: #75848b;
     background-image: none;
     color: #fff;
+    margin: 4px;
+    padding: 5px 10px;
+    border: 1.5px solid #75848b;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 /*Buttons*/
+
+/* Data Table */
+.dataTables_wrapper {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    text-align: left;
+    padding-bottom: 30px;
+}
+
+.dataTables_scrollHead {
+}
+
+.dataTables_scrollBody {
+}
+
+
+
+/* Data Table */
 
 /*Footer Table*/
 table {
@@ -377,7 +424,6 @@ table {
     to {top:0; opacity:1}
 }
 
-/* The Close Button */
 .close {
     color: #999;
     float: right;
@@ -450,6 +496,31 @@ table {
     min-height: 500px;
 }
 
+@media only screen and (max-width: 1028px)  {
+    .legend-block:before {
+        content: "Legend";
+        font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+        font-size: 0.85rem;
+        background-color: #fff;
+        color: #4a5357;
+        postion: absolute;
+        margin-bottom: 1.0rem;
+        margin-right: 1.0rem;
+        border: 1.5px solid #75848b;
+        border-radius: 3px;
+        cursor: pointer;
+        z-index: 100 !important;
+    }
+
+    .legend-block:hover, .legend-block:after {
+        display: block;
+    }
+
+    .legend {
+        display: none;
+    }
+}
+
 .geocoder-container {
     display: flex;
     justify-content: center;
@@ -491,7 +562,52 @@ table {
     font-size: 12px;
 }
 
+.mapbox-gl-draw_polygon {
+    display: none !important;
+}
+
+.mapbox-gl-draw_trash {
+    display: none !important;
+}
+
+.mapboxgl-popup {
+  max-width: 200px;
+  font: 8px/14px 'Roboto', Arial, sans-serif;
+}
+
 @media only screen and (min-width: 1028px)  {
+    .legend-block {
+        display: block;
+    }
+
+    .legend {
+        background-color: #fff;
+        border-radius: 5px;
+        bottom: 30px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+        font: 12px/20px 'Roboto', Arial, sans-serif;
+        padding: 10px;
+        position: absolute;
+        right: 10px;
+        z-index: 100 !important;
+    }
+
+    .legend h4 {
+        font-size: 0.9rem;
+        font-weight: normal;
+        color: #444;
+        margin: 0 0 3px;
+    }
+
+    .legend div span {
+        border-radius: 50%;
+        border: 1px solid #999;
+        display: inline-block;
+        height: 10px;
+        margin-right: 5px;
+        width: 10px;
+    }
+
     .geocoder-container {
         display: flex;
         justify-content: center;
@@ -511,46 +627,12 @@ table {
         border-radius: 5px;
         border: 1px solid #999;
     }
-}
 
-.legend {
-    background-color: #fff;
-    border-radius: 5px;
-    bottom: 30px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
-    font: 12px/20px 'Roboto', Arial, sans-serif;
-    padding: 10px;
-    position: absolute;
-    right: 10px;
-    z-index: 1;
-}
-
-.legend h4 {
-    font-size: 0.9rem;
-    font-weight: normal;
-    color: #444;
-    margin: 0 0 3px;
-}
-
-.legend div span {
-    border-radius: 50%;
-    border: 1px solid #999;
-    display: inline-block;
-    height: 10px;
-    margin-right: 5px;
-    width: 10px;
-}
-
-.mapboxgl-popup {
-  max-width: 200px;
-  font: 8px/14px 'Roboto', Arial, sans-serif;
-}
-
-@media only screen and (min-width: 1028px)  {
     .mapboxgl-popup {
       max-width: 400px;
       font: 12px/20px 'Roboto', Arial, sans-serif;
     }
 }
+
 
 /*Map*/
