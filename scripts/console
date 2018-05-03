@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Opens an Ubuntu command line; binds app and src directories
+docker run -it \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap

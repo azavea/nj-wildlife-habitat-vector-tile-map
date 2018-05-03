@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Start serving application
-python -m SimpleHTTPServer 4000

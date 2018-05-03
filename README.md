@@ -4,6 +4,44 @@
 
 This Proof of Concept investigates a workflow to process this dataset into vector tiles that can be rendered responsively in a web browser with Mapbox services and Mapbox GL JS.
 
+### Requirements
+
+* Vagrant 1.8+
+* VirtualBox 4.3
+* Ansible 2+
+
+### Getting Started
+
+Install the application and all required dependencies.
+
+```sh
+./scripts/setup
+```
+
+### Preparing the data
+
+Download and process the data.
+
+```sh
+vagrant up
+vagrant ssh
+./scripts/update
+./scripts/data-prep
+```
+
+This will likely take a while. You might also see a bunch of lines like `ERROR 1: Error occurred in filegdbtable.cpp at line 2427`; the data is still being generated despite these error messages.
+
+#### Development
+
+Rebuild Docker images and run application.
+
+```sh
+vagrant up
+vagrant ssh
+./scripts/update.sh
+./scripts/server.sh
+```
+
 # Usage
 
 ## 1. Install dependencies with `script/bootstrap`.

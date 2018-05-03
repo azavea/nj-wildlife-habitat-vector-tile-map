@@ -1,6 +1,7 @@
 .git*
 
-app*
+src/data-prep/gen
+src/data-prep/data
 
 data*
 habitat*
