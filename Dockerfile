@@ -27,3 +27,10 @@ RUN pip3 install mapbox && \
 
 # Install Node.js packages
 RUN npm install turf @turf/random @turf/points-within-polygon @mapbox/polylabel
+
+RUN cd /opt && \
+    wget https://github.com/mapbox/mbutil/archive/v0.3.0.zip && \
+    unzip v0.3.0.zip && \
+    ln -s `pwd`/mbutil-0.3.0/mb-util /usr/local/bin/mb-util
+
+RUN apt-get install
