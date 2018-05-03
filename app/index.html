@@ -184,8 +184,9 @@ const APP = {
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/mapbox/satellite-streets-v9',
+     container: 'map',
+     style: 'mapbox://styles/mapbox/light-v9',
+     /* style: 'mapbox://styles/mapbox/satellite-streets-v9',*/
   zoom: 7,
   center: [-74.596258, 40.195586],
   hash: true,
@@ -311,14 +312,17 @@ MAP.on('load', () => {
 
   // Add Habitats Areas
   MAP.addSource('nj-habitat-areas', {
-    type: 'vector',
-    url: TILE_SOURCES.habitatAreas
+      type: 'vector',
+      /* url: TILE_SOURCES.habitatAreas*/
+      tiles: [TILE_SOURCES.habitatAreas],
+      "minzoom": 12,
+      "maxzoom": 14
   });
   MAP.addLayer({
     "id": "nj-habitat-areas",
     "source": "nj-habitat-areas",
-    "source-layer": "featurestxt",
-    "minzoom": 13,
+      "source-layer": "nj-habitat-areas",
+      "minzoom": 13,
     "type": "fill",
     "paint": {
       "fill-color": {
@@ -333,12 +337,14 @@ MAP.on('load', () => {
       "fill-opacity": 0.7,
       "fill-outline-color": "#fff"
     }
-}, firstSymbolId);
+  }, firstSymbolId);
 
-  // Add Habitat Overview (point data)
   MAP.addSource('nj-habitat-regions', {
-    type: 'vector',
-    url: TILE_SOURCES.habitatRegions
+      type: 'vector',
+      url: TILE_SOURCES.habitatRegions,
+      /* tiles: [TILE_SOURCES.habitatRegions],*/
+      /* "minzoom": 12,
+       * "maxzoom": 14*/
   });
   MAP.addLayer({
     "id": "nj-habitat-regions",
@@ -360,7 +366,7 @@ MAP.on('load', () => {
       "fill-opacity": 0.7,
       "fill-outline-color": "#fff"
     }
-}, firstSymbolId);
+  }, firstSymbolId);
 
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
