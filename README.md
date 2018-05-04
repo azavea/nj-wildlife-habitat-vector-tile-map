@@ -4,6 +4,39 @@
 
 This Proof of Concept investigates a workflow to process this dataset into vector tiles that can be rendered responsively in a web browser with Mapbox services and Mapbox GL JS.
 
+### Requirements
+
+* Docker 18_
+
+### Preparing the data
+
+Build the data preperation docker container
+
+```sh
+./scripts/update
+```
+
+
+Download and process the data.
+
+```sh
+./scripts/data-prep
+```
+
+### Run the development server
+
+```sh
+./scripts/server
+```
+
+And visit http://localhost:8000/
+
+If you want to point it at your own data that was prepared in the previous step,
+you'll need to serve it out in some publicly accessible endpoint, and modify
+the `HOST` configuration variable in `src/app/config.js` such that the GeoJSON data
+is located at `${HOST}/data/habitat/[ID].json` and the tiles are available at
+`${HOST}/tiles/[TILE SET]/{z}/{x}/{y}`.
+
 # Usage
 
 ## 1. Install dependencies with `script/bootstrap`.

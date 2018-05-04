@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${NJ_WILDLIFE_DEBUG}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n "Usage: $(basename "$0")
+Runs the data processing pipeline.
+
+Options:
+        run-all: Run the entire pipeline (default)
+        download-data: Download the data for the project
+        convert-data: Convert data from FileGDB to open formats
+        process-data: Convert data to line-delimited GeoJSON text file
+        prepare-app-data: Create final vector tiles and GeoJSON files
+"
+}
+
+function run_script() {
+    docker-compose \
+        -f docker-compose.data.yml \
+        run --rm --no-deps app \
+        scripts/${1}.sh;
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]
+then
+    if [ "${1:-}" = "--help" ]
+    then
+        usage;
+    elif [ -z "$1" ]
+    then
+        run_script run-all;
+    else
+        case "${1}" in
+            "run-all")
+                run_script run-all;
+                ;;
+            "download-data")
+                run_script download-data;
+                ;;
+            "convert-data")
+                run_script convert-data;
+                ;;
+            "process-data")
+                run_script process-data;
+                ;;
+            "prepare-app-data")
+                run_script prepare-app-data
+                ;;
+            *)
+                echo "We don't have command ${1}";
+                usage;
+                exit 1
+                ;;
+        esac
+    fi
+fi

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${NJ_WILDLIFE_DEBUG}" ]]; then
+    set -x
+fi
+
+DIR="$(dirname "$0")"
+
+# Check if Docker is installed
+docker -v
+if [ $? -ne 0 ]; then
+  echo "Docker needs to be installed."
+else
+  # Build Docker image
+  docker build --tag njmap-data ${DIR}
+fi
