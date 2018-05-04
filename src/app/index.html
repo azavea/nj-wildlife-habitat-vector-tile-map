@@ -387,7 +387,7 @@ MAP.on('load', () => {
       // based on the feature found
       POPUP.setLngLat(e.lngLat);
       POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat ' + featureLINKID + '</h3>' +
-      '<p><a href=\'' + HOST + '/habitat/' + featureLINKID + '.json' + '\' download>Download GeoJSON</a></p>' +
+      '<p><a href=\'' + HOST + '/data/habitat/' + featureLINKID + '.json' + '\' download>Download GeoJSON</a></p>' +
       '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
       '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
       '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
@@ -677,7 +677,7 @@ function updateAreaOfInterest() {
     // Make a request for the raw GeoJSON of each LINKID habitat
     for (var i = 0; i < LINKIDs.length; i++) {
       // Request GeoJSON files from `habitat` directory
-      q.defer(d3.json, HOST + '/habitat/' + LINKIDs[i] + '.json')
+      q.defer(d3.json, HOST + '/data/habitat/' + LINKIDs[i] + '.json')
     }
     // Wait for all the individual GeoJSON habitats to load
     q.awaitAll(function(error, data) {

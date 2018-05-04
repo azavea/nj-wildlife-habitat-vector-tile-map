@@ -3,7 +3,7 @@ const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuamZvcmQiLCJhIjoiY2pkZ2VieXQzMGtnODJx
 
 // Protocol, hostname, and port for application (e.g. http://localhost:4000/app)
 // {HOST}/habitat/ This where the app will look for the individual GeoJSON files.
-const HOST = 'http://localhost:8099';
+const HOST = 'https://s3.amazonaws.com/nj-wildlife-habitat-vector-tile-map';
 
 // URLs to the tile source TileJSON resources. Supported protocols are http:, https:, and mapbox://<mapid>.
 // These should be Mapbox Tilesets created by uploading the MBTiles files in app/tiles/
@@ -15,7 +15,7 @@ const HOST = 'http://localhost:8099';
 // };
 
 const TILE_SOURCES = {
-    habitatAreas: HOST + '/tiles/nj-habitat-areas-2/{z}/{x}/{y}',
+    habitatAreas: HOST + '/tiles/nj-habitat-areas/{z}/{x}/{y}',
     // habitatAreas: "http://njwildlife.azavea.com/tiles/nj-habitat-areas/{z}/{x}/{y}"
     // habitatRegions: 'http://localhost:8000/tiles/nj-habitat-overview/{z}/{x}/{y}.pbf.pbf'
     // habitatAreas: 'mapbox://danjford.ccm620fv',

@@ -6,41 +6,36 @@ This Proof of Concept investigates a workflow to process this dataset into vecto
 
 ### Requirements
 
-* Vagrant 1.8+
-* VirtualBox 4.3
-* Ansible 2+
-
-### Getting Started
-
-Install the application and all required dependencies.
-
-```sh
-./scripts/setup
-```
+* Docker 18_
 
 ### Preparing the data
+
+Build the data preperation docker container
+
+```sh
+./scripts/update
+```
+
 
 Download and process the data.
 
 ```sh
-vagrant up
-vagrant ssh
-./scripts/update
 ./scripts/data-prep
 ```
 
-This will likely take a while. You might also see a bunch of lines like `ERROR 1: Error occurred in filegdbtable.cpp at line 2427`; the data is still being generated despite these error messages.
-
-#### Development
-
-Rebuild Docker images and run application.
+### Run the development server
 
 ```sh
-vagrant up
-vagrant ssh
-./scripts/update.sh
-./scripts/server.sh
+./scripts/server
 ```
+
+And visit http://localhost:8000/
+
+If you want to point it at your own data that was prepared in the previous step,
+you'll need to serve it out in some publicly accessible endpoint, and modify
+the `HOST` configuration variable in `src/app/config.js` such that the GeoJSON data
+is located at `${HOST}/data/habitat/[ID].json` and the tiles are available at
+`${HOST}/tiles/[TILE SET]/{z}/{x}/{y}`.
 
 # Usage
 
