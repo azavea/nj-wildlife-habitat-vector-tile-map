@@ -724,22 +724,24 @@ function updateAreaOfInterest() {
       q.defer(d3.json, HOST + '/data/habitat/' + LINKIDs[i] + '.json')
     }
     // Wait for all the individual GeoJSON habitats to load
-    q.awaitAll(function(error, data) {
-      APP.contextFeatures = turf.featureCollection(data);
+      q.awaitAll(function(error, data) {
+          if(!error) {
+              APP.contextFeatures = turf.featureCollection(data);
 
-      let habitatData = APP.contextFeatures;
-      let intersectionArea = APP.areaOfInterest.features[0];
+              let habitatData = APP.contextFeatures;
+              let intersectionArea = APP.areaOfInterest.features[0];
 
-      // Clip each feature in the FeatureCollection by the drawing's area of interest
-      let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
-        let clippedFeature = turf.intersect(intersectionArea, f);
-        if (clippedFeature) { clippedFeature.properties = f.properties; }
-        return clippedFeature;
-      }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
+              // Clip each feature in the FeatureCollection by the drawing's area of interest
+              let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
+                  let clippedFeature = turf.intersect(intersectionArea, f);
+                  if (clippedFeature) { clippedFeature.properties = f.properties; }
+                  return clippedFeature;
+              }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
 
-      APP.featuresOfInterest = intersectingHabitat;
+              APP.featuresOfInterest = intersectingHabitat;
+          }
 
-      updateApp();
+          updateApp();
     });
   } else {
     APP.contextFeatures = turf.featureCollection([]);
