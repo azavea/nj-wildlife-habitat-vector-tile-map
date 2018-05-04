@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <!-- Site info -->
+    <title>NJ Wildlife Habitat Finder</title>
+    <meta name="description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles.">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/New-Jersey-favicon.png">
+
+    <!-- Metatags -->
+    <meta property="og:title" content="NJ Wildlife Habitat Viewer" />
+    <meta property="og:url" content="www.njhabitat.azavea.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
+    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
+    <meta name="twitter:creator" content="@azavea" />
+    <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
+    <meta name="twitter:url" content="www.njhabitat.azavea.com" />
+    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
+
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="css/main.css" />
+
+    <!-- Mapbox GL JS -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.css' rel='stylesheet' />
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+
+    <!-- Turf.js -->
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
+
+    <!-- Mapbox GL JS Draw -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
+
+    <!-- Mapbox GL JS Geocoder -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.css' type='text/css' />
+
+    <!-- Font Awesome icon library -->
+    <script src="https://use.fontawesome.com/e1061b6f05.js"></script>
+
+    <!-- jQuery -->
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+
+    <!-- jQuery Plugin: DataTables (and dependencies) -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.js"></script>
+
+</head>
+<body>
+    <div class="grid">
+        <!-- Header -->
+        <div class="header">
+            <div class="learn-more-btn">
+                <a href="#" id="modal-btn" class="btn btn-blue">Learn more</a>
+            </div>
+            <div class="logo">
+                <a href="https://www.azavea.com" target="_blank"><img src="images/azavea_rgb_solo.svg"></a>
+                <p class="subtitle"> an Azavea R&amp;D Project</p>
+            </div>
+        </div>
+        <!-- Header -->
+        <!-- Title -->
+        <div class="title">
+            <h1>NJ Wildlife Habitat Finder</h1>
+        </div>
+        <!-- Title -->
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- App State 0 -->
+            <!-- Geocoder -->
+            <div class="block">
+                <div id="geocoder-container" class="geocoder-container"></div>
+            </div>
+            <div class="block"></div>
+            <!-- Geocoder -->
+            <div class="block">
+                <p>Enter an address to zoom to an area on the map.</p>
+            </div>
+            <!-- App State 0 -->
+        </div>
+
+        <!-- Map -->
+        <div class="map-area" id="map"></div>
+        <!-- Map -->
+        <!-- Legend -->
+        <div class="legend-block">
+            <div id='heatmap-legend' class='legend' style='display: block;'>
+                <h4>Regions</h4>
+                <div><span style='background-color: #db9d9b'></span>Atlantic Coastal</div>
+                <div><span style='background-color: #faf46a'></span>Delaware Bay</div>
+                <div><span style='background-color: #edbc6b'></span>Piedmont</div>
+                <div><span style='background-color: #72a489'></span>Pinelands</div>
+                <div><span style='background-color: #73a25c'></span>Skylands</div>
+                <div><span style='background-color: #96e7fc'></span>Marine</div>
+            </div>
+            <div id='habitat-legend' class='legend' style='display: none;'>
+                <h4>Wildlife Habitat</h4>
+                <div><span style='background-color: #fffbb2'></span>Habitat Specific Requirements</div>
+                <div><span style='background-color: #e1cca2'></span>Special Concern</div>
+                <div><span style='background-color: #cce1a2'></span>State Threatened</div>
+                <div><span style='background-color: #9bb88f'></span>State Endangered</div>
+                <div><span style='background-color: #78aa94'></span>Federal Listed</div>
+            </div>
+        </div>
+    </div>
+    <!-- Legend -->
+    <!-- Learn More Modal -->
+    <div id="learn-more-modal" class="modal">
+    <!-- Modal Content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close"><i class="fa fa-times" aria-hidden="true"></i></span>
+                <h3>Making environmental inventory fast.</h3>
+            </div>
+            <div class="modal-body">
+                <h4>About this tool</h4>
+                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Wildlife habitat is displayed as a generalized heat map at low zoom levels and detailed land-use land-cover polygons at high zoom levels.</p>
+                <p>To use this tool, zoom to an area by typing an address into the search bar or by using the zoom navigation buttons. Then, draw a custom shape to display a list of wildlife habitat within the area of interest.</p>
+                <h4>About the data</h4>
+                <p><a href="http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm" target='_blank'>New Jersey Landscape Project</a> is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. The dataset in made up of hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife sighting records.</p>
+                <p>Landscape Project wildlife habitat areas are determined by running species-specific models on a wildlife observation point dataset. <a href="http://www.njfishandwildlife.com/ensphome.htm" target='_blank'>NJDEP ENSP</a> biologists create habitat models for each NJ Special Concern, Threatened, and Endangered species, including Federal Threatened and Endangered species, using a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide LULC polygons to create potential habitat areas. <a href="https://njdep.maps.arcgis.com/apps/Cascade/index.html?appid=6cd21ef042634609904beae390f34482" target='_blank'>View the story map</a> produced by the NJDEP to learn more about Landscape Project 3.3 data.</p>
+                <h4>Solving difficult problems</h4>
+                <p>It can be challenging to determine a list of wildlife habitat on a specific site, even if you’re in the environmental consulting/regulatory compliance world and have experience with GIS software. Other online tools that explore Landscape Project data exist, but load time is slow and retrieving lists for a user-selected area is not possible.</p>
+                <p>Through the creation of this Proof of Concept we investigated a workflow to process a large dataset into vector tiles that can be rendered responsively in a web browser with <a href="https://www.mapbox.com/" target='_blank'>Mapbox</a> services and <a href="https://www.mapbox.com/mapbox-gl-js/api/" target='_blank'>Mapbox GL JS.</a></p>
+                <p>Read in detail about the steps we took to create this tool in <a href="#" target='_blank'>this blog post</a> and explore other Azavea 10% Research Projects at <a href="https://www.azavea.com/research/" target='_blank'>azavea.com/research</a>.
+                <h4>Future possibilities</h4>
+                <p>This tool solves a specific set of problems, but it is an example of what is possible if we apply the methods used in this Proof of Concept to a similar need.</p>
+                <p>What is your current process for conducting environmental inventories? If you would like to hear more about how we can help you build a tool that maximizes efficiency and accuracy for site inventories, <a href="#" target='_blank'>contact us today.</a></p>
+            </div>
+            <div class="modal-footer">
+                <table>
+                    <tbody>
+                        <tr><td class="table-center"><a href="https://www.azavea.com/blog/" target="_blank"><i class="fa fa-external-link"></i></a></td><td class="table-column"><a href="https://www.azavea.com/blog/" target="_blank">learn how we built this tool</a></td></tr>
+                        <tr><td class="table-center"><a href="#" target="_blank"><i class="fa fa-envelope"></i></a></td><td class="table-column"><a href="#" target="_blank">contact our team to build your own</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Learn More Modal -->
+
+<!-- IMPORTANT: Configuration of application tokens, tilesources, and host URL is in a seperate script "config.js". This script must be manually updated.-->
+<script src="config.js"></script>
+
+<script>
+
+// Map pan and zoom contraints for New Jersey
+const NJ_MAP_LIMITS = {
+  minZoom: 7,
+  bounds: [[-77.663250, 38.549432],[-71.459113, 41.571781]]
+}
+
+const emptyFeatureCollection = { type: 'FeatureCollection', features: [] }
+
+// Object to manage application state
+const APP = {
+  initialMapLoaded: false,
+  mode: 'draw',
+  areaOfInterest: { type: 'FeatureCollection', features: [] },
+  contextFeatures: { type: 'FeatureCollection', features: [] },
+  featuresOfInterest: { type: 'FeatureCollection', features: [] }
+}
+
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+const MAP = new mapboxgl.Map({
+     container: 'map',
+     style: 'mapbox://styles/mapbox/light-v9',
+     /* style: 'mapbox://styles/mapbox/satellite-streets-v9',*/
+  zoom: 7,
+  center: [-74.596258, 40.195586],
+  hash: true,
+  minZoom: NJ_MAP_LIMITS.minZoom,
+  maxBounds: NJ_MAP_LIMITS.bounds
+});
+
+MAP.addControl(new mapboxgl.NavigationControl());
+
+const GEOCODER = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    placeholder:"Type address here",
+    proximity: {
+        latitude: 40.195586,
+        longitude: -74.596258
+    }
+});
+
+document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
+
+// Setup drawing tool
+const DRAW = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    polygon: true,
+    trash: true
+  },
+  styles: [
+    // ACTIVE (being drawn)
+    // line stroke
+    {
+        "id": "gl-draw-line",
+        "type": "line",
+        "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+        "layout": {
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        "paint": {
+          "line-color": "#ffa500",
+          "line-dasharray": [0.2, 2],
+          "line-width": 2
+        }
+    },
+    // polygon fill
+    {
+      "id": "gl-draw-polygon-fill",
+      "type": "fill",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "paint": {
+        "fill-color": "#ffa500",
+        "fill-outline-color": "#ffa500",
+        "fill-opacity": 0.1
+      }
+    },
+    // polygon outline stroke
+    // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
+    {
+      "id": "gl-draw-polygon-stroke-active",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#ffa500",
+        "line-dasharray": [0.2, 2],
+        "line-width": 2
+      }
+    },
+    // vertex point halos
+    {
+      "id": "gl-draw-polygon-and-line-vertex-halo-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": "#FFF"
+      }
+    },
+    // vertex points
+    {
+      "id": "gl-draw-polygon-and-line-vertex-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 4,
+        "circle-color": "#ffa500",
+      }
+    }
+  ]
+});
+MAP.addControl(DRAW);
+
+// Add popup data window for habitat vector tile data
+const POPUP = new mapboxgl.Popup ({
+    closeButton: true,
+    closeOnClick: false
+});
+
+MAP.on('render', updateApp);
+MAP.on('moveend', updateApp);
+
+// Listen for updates to the drawing
+MAP.on('draw.create', updateAreaOfInterest);
+MAP.on('draw.delete', updateAreaOfInterest);
+MAP.on('draw.update', updateAreaOfInterest);
+
+MAP.on('load', () => {
+  APP.initialMapLoaded = true;
+
+  // Define map style layers to enable search
+  let mapStyleLayers = MAP.getStyle().layers;
+  // Find the index of the first symbol layer in the map style
+  let firstSymbolId;
+  for (let i = 0; i < mapStyleLayers.length; i++) {
+      if (mapStyleLayers[i].type === 'symbol') {
+          firstSymbolId = mapStyleLayers[i].id;
+          break;
+      }
+  }
+
+  // Add Habitats Areas
+  MAP.addSource('nj-habitat-areas', {
+      type: 'vector',
+      /* url: TILE_SOURCES.habitatAreas*/
+      tiles: [TILE_SOURCES.habitatAreas],
+      "minzoom": 12,
+      "maxzoom": 14
+  });
+  MAP.addLayer({
+    "id": "nj-habitat-areas",
+    "source": "nj-habitat-areas",
+      "source-layer": "nj-habitat-areas",
+      "minzoom": 13,
+    "type": "fill",
+    "paint": {
+      "fill-color": {
+            property: 'LNDR',
+            stops: [
+                [1, '#fffbb2'],
+                [2, '#e1cca2'],
+                [3, '#cce1a2'],
+                [4, '#9bb88f'],
+                [5, '#78aa94']]
+            },
+      "fill-opacity": 0.7,
+      "fill-outline-color": "#fff"
+    }
+  }, firstSymbolId);
+
+  MAP.addSource('nj-habitat-regions', {
+      type: 'vector',
+      url: TILE_SOURCES.habitatRegions,
+      /* tiles: [TILE_SOURCES.habitatRegions],*/
+      /* "minzoom": 12,
+       * "maxzoom": 14*/
+  });
+  MAP.addLayer({
+    "id": "nj-habitat-regions",
+    "source": "nj-habitat-regions",
+    "source-layer": "landscape_regions_v3_3-clq87r",
+    "maxzoom": 13,
+    "type": "fill",
+    "paint": {
+      "fill-color": {
+            property: 'REGION_ID',
+            stops: [
+                [1, '#db9d9b'],
+                [2, '#faf46a'],
+                [3, '#edbc6b'],
+                [4, '#72a489'],
+                [5, '#73a25c'],
+                [6, '#96e7fc']]
+            },
+      "fill-opacity": 0.7,
+      "fill-outline-color": "#fff"
+    }
+  }, firstSymbolId);
+
+  // When a click event occurs near a place, open a popup at the location of
+  // the feature, with HTML description from its properties
+  MAP.on('click', function(e) {
+    POPUP.remove();
+    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
+      let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
+      // if the features have no info, return nothing
+      if (!features.length) {
+        return;
+      }
+
+      let species = [];
+
+      //parse the species property that was stringified during queryRenderedFeatures
+      features.forEach((features) => {
+        let item = JSON.parse(features.properties.species);
+        species.push(item);
+      });
+
+      let feature = features[0];
+      let featureLINKID = feature.properties.LINKID;
+      let fed_status = {fed_endangered: "", fed_threatened: ""};
+      let nj_status = {nj_endangered: "", nj_threatened: "", nj_special: ""};
+      let nj = [];
+      let fed = [];
+
+      for (var i = 0; i < species[0].length; i++){
+        if (species[0][i].FED_STATUS == "Federally Listed Endangered"){
+          fed_status.fed_endangered = "Endangered";
+        } if (species[0][i].FED_STATUS == "Federally Listed Threatened"){
+          fed_status.fed_threatened = "Threatened";
+        } if (species[0][i].NJ_STATUS == "State Endangered"){
+          nj_status.nj_endangered = "Endangered";
+        } if (species[0][i].NJ_STATUS == "State Threatened"){
+          nj_status.nj_threatened = "Threatened";
+        } if (species[0][i].NJ_STATUS == "Special Concern"){
+          nj_status.nj_special = "Special Concern";
+        }
+      };
+
+      let list =[fed_status, nj_status];
+
+      list.forEach(function(i) {
+        Object.keys(i).forEach(function(key) {
+          if(i[key] !== ""){
+            if(i == fed_status){
+              fed.push(" " + i[key])
+            }
+            if(i == nj_status){
+              nj.push(" " + i[key])
+            }
+          }
+        });
+      });
+
+      if(nj.length < 1){
+        nj.push("Not Protected")
+      }
+      if(fed.length < 1){
+        fed.push("Not Protected")
+      }
+
+      // Populate the popup and set its coordinates
+      // based on the feature found
+      POPUP.setLngLat(e.lngLat);
+      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3 class=hab>Habitat ' + featureLINKID + '</h3>' +
+      '<p class=fed>' + '<b>' + 'Federal Status' + '</b>' + ': ' + fed + ' </p>' +
+      '<p class=nj>' + '<b>' + 'State Status' + '</b>' + ': ' +  nj + ' </p></div>');
+      POPUP.addTo(MAP);
+    }
+  });
+
+  // Use the same approach as above to indicate that the symbols are clickable
+  // by changing the cursor style to 'pointer'
+  MAP.on('mousemove', function(e) {
+    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getSelectedIds().length === 0) {
+      var features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
+      MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    } else if (DRAW.getMode() === 'draw_polygon') {
+      MAP.getCanvas().style.cursor = 'crosshair';
+    } else if (DRAW.getMode() === 'simple_select') {
+      MAP.getCanvas().style.cursor = 'pointer';
+    }
+  });
+});
+
+function updateApp() {
+  // Immediately remove map annotation if zoom is less than 13
+  if (MAP.getZoom() < 13) {
+    POPUP.remove();
+  }
+
+  // determine if loaded
+  if (APP.initialMapLoaded && MAP.loaded()) {
+    setReady();
+
+    let zoom = MAP.getZoom();
+
+    if (zoom < 13) {
+      // Render "Search for Address or Zoom to Region"
+      renderZoomPrompt();
+      APP.state = 0;
+    } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0) {
+      // Render "Select Area of Interest"
+      APP.state = 1;
+      renderSelectAreaOfInterestPrompt();
+    } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
+      if (APP.state !== 2) {
+        // Wait if processing not complete
+        if (APP.featuresOfInterest.features.length > 0) {
+          // Render "Display Area of Interest Analysis with Species List"
+          APP.state = 2;
+          renderAreaOfInterestReport();
+        } else {
+          setLoading();
+        }
+      }
+    }
+  } else {
+    setLoading();
+  }
+}
+
+function setReady() {
+  //console.log('ready');
+}
+
+function setLoading() {
+  //console.log('loading');
+}
+
+// Render Application State 0: Prompt user to zoom to an area of interest
+function renderZoomPrompt() {
+
+  // Set legend display properties
+  document.getElementById('habitat-legend').style.display = 'none';
+  document.getElementById('heatmap-legend').style.display = 'block';
+
+  const appState0 =
+      '<div class="sidebar" id="app-state-0"> \
+      <!-- App State 0 --> \
+          <div class="block"> \
+              <p>Enter an address or zoom to your Area of Interest.</p> \
+          </div> \
+          <!-- Geocoder --> \
+          <div class="block"> \
+              <div id="geocoder-container" class="geocoder-container"></div> \
+          </div> \
+          <div class="block"></div> \
+          <!-- Geocoder --> \
+      <!-- App State 0 --> \
+      </div>';
+
+  // Replace Sidebar with App State 0 Sidebar
+  $(".sidebar").replaceWith($(appState0));
+
+  document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
+
+}
+
+// Render Application State 1: Prompt user to select an area of interest
+function renderSelectAreaOfInterestPrompt() {
+
+  // Set legend display properties
+  document.getElementById('habitat-legend').style.display = 'block';
+  document.getElementById('heatmap-legend').style.display = 'none';
+
+  const appState1 =
+      '<div class="sidebar" id="app-state-1"> \
+      <!-- App State 1 --> \
+          <div class="description"> \
+              <p>Draw your Area of Interest.</p> \
+              <p>Double click or click on the first node to complete the shape.</p> \
+          </div> \
+          <div class="block drawing-tools"> \
+              <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
+          </div> \
+      <!-- App State 1 --> \
+      </div>';
+
+  // Replace Sidebar with App State 1 Sidebar
+  $(".sidebar").replaceWith($(appState1));
+
+  var drawBtn = document.getElementById("draw-btn");
+  // When the user clicks the button, trash the current drawing and Start
+  // new drawing session
+  drawBtn.onclick = function() {
+      DRAW.changeMode('draw_polygon');
+  }
+}
+
+// Render Application State 2: Report on user's selected area of interest
+let fullList = [];
+
+function renderAreaOfInterestReport() {
+
+  fullList = [];
+
+  console.log(JSON.stringify(APP.featuresOfInterest));
+  APP.featuresOfInterest.features.map(function(f) {
+    f.properties.species.map(function(s) {
+      fullList.push(s);
+    });
+  });
+
+  // // remove duplicates function
+  function removeDuplicates(arr, key) {
+
+      if (!(arr instanceof Array) || key && typeof key !== 'string') {
+          return false;
+      }
+
+      if (key && typeof key === 'string') {
+          return arr.filter((obj, index, arr) => {
+              return arr.map(mapObj => mapObj[key]).indexOf(obj[key]) === index;
+          });
+
+      } else {
+          return arr.filter(function(item, index, arr) {
+              return arr.indexOf(item) == index;
+          });
+      }
+  };
+
+  let uniquesList = removeDuplicates(fullList, 'COMNAME');
+
+  console.log(fullList);
+  console.log(uniquesList);
+
+  const appState2 =
+      '<div class="sidebar" id="app-state-2"> \
+      <!-- App State 2 --> \
+          <div class="description"> \
+              <p>To draw a new Area of Interest, click the button below.</p> \
+              <p class="warning">This will discard the current results table.</p> \
+          </div> \
+          <div class="drawing-tools"> \
+              <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
+          </div> \
+          <div class="block"> \
+              <h4>Area of Interest Habitat List</h4> \
+          </div> \
+          <div class="block"> \
+            <table id="table" class="cell-border" width="100%"></table> \
+          </div> \
+      <!-- App State 2 --> \
+      </div>';
+
+  // Replace Sidebar with App State 2 Sidebar
+  $(".sidebar").replaceWith($(appState2));
+
+  let trashBtn = document.getElementById("trash-btn");
+  // When the user clicks the button, trash the current drawing and Start
+  // new drawing session
+  trashBtn.onclick = function() {
+      DRAW.deleteAll();
+      unconstrainMap();
+      APP.areaOfInterest = emptyFeatureCollection;
+      renderSelectAreaOfInterestPrompt();
+      // DRAW.trash();
+      // DRAW.changeMode('draw_polygon');
+  }
+
+  $('#table').DataTable( {
+      data: uniquesList,
+      dom: 'Bfrtip',
+      scrollCollapse: false,
+      paging: false,
+      info: false,
+      compact: true,
+      searching: false,
+      responsive: false,
+      buttons: [
+          {
+              extend: 'pdf',
+              text: 'Export PDF',
+              className: 'new',
+              filename: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth()+1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0'+dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0'+mm
+                  }
+
+                  today = yyyy + '_' + mm + '_' + dd;
+
+                  filename = 'LandscapeProjectHabitatWithinAOI_' + today;
+
+                  return filename;
+              },
+              title: 'Landscape Project v3.3 Present Within Selected Area of Interest',
+              messageTop: function() {
+                  var today = new Date();
+                  var dd = today.getDate();
+                  var mm = today.getMonth() + 1;
+                  var yyyy = today.getFullYear();
+
+                  if(dd<10) {
+                      dd = '0' + dd
+                  }
+
+                  if(mm<10) {
+                      mm = '0' + mm
+                  }
+
+                  today = mm + '/' + dd + '/' + yyyy;
+
+                  exportDescription = 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.' + '<br>' + 'Exported on: ' + today;
+
+                  return exportDescription;
+              },
+              messageBottom: 'Source: https://njhabitat.azavea.com'
+          }
+      ],
+      columns: [
+          { data: 'COMNAME', title: 'Common Name' },
+          { data: 'FED_STATUS', title: 'Federal Status' },
+          { data: 'NJ_STATUS', title: 'NJ Status' }
+      ]
+  });
+}
+
+function updateAreaOfInterest() {
+  APP.areaOfInterest = turf.combine(DRAW.getAll());
+
+  if (APP.areaOfInterest.features.length > 0) {
+
+    frameMap();
+    constrainMap();
+
+    let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'nj-habitat-areas' ] });
+
+    let tileFeatureLINKIDs = tileFeatures.map((feature) => {
+      return feature.properties.LINKID;
+    });
+
+    let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
+      return tileFeatureLINKIDs.indexOf(id) === index;
+    }).sort();
+
+    // Download GeoJSON //
+    // Initialize a queue of requests
+    var q = d3.queue()
+    // Make a request for the raw GeoJSON of each LINKID habitat
+    for (var i = 0; i < LINKIDs.length; i++) {
+      // Request GeoJSON files from `habitat` directory
+      q.defer(d3.json, HOST + '/data/habitat/' + LINKIDs[i] + '.json')
+    }
+    // Wait for all the individual GeoJSON habitats to load
+    q.awaitAll(function(error, data) {
+      APP.contextFeatures = turf.featureCollection(data);
+
+      let habitatData = APP.contextFeatures;
+      let intersectionArea = APP.areaOfInterest.features[0];
+
+      // Clip each feature in the FeatureCollection by the drawing's area of interest
+      let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
+        let clippedFeature = turf.intersect(intersectionArea, f);
+        if (clippedFeature) { clippedFeature.properties = f.properties; }
+        return clippedFeature;
+      }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
+
+      APP.featuresOfInterest = intersectingHabitat;
+
+      updateApp();
+    });
+  } else {
+    APP.contextFeatures = turf.featureCollection([]);
+    APP.featuresOfInterest = turf.featureCollection([]);
+    unconstrainMap();
+    updateApp();
+  }
+}
+
+function frameMap() {
+  if (APP.areaOfInterest.features.length > 0) {
+    let bounds = turf.bbox(APP.areaOfInterest);
+    MAP.fitBounds(bounds, { duration: 0, padding: 100}); // duration: 0 makes this synchronous
+  }
+}
+
+// Limit the map zooming and panning to within the current frame
+function constrainMap() {
+  MAP.setMaxBounds(MAP.getBounds());
+  MAP.setMinZoom(MAP.getZoom());
+}
+
+// Limit the map zooming and panning to only within NJ limits
+function unconstrainMap() {
+  MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
+  MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
+}
+
+</script>
+
+<script src="js/learn-more-modal.js"></script>
+
+</body>
+</html>

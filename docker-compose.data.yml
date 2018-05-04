@@ -1,0 +1,11 @@
+version: '3'
+services:
+  app:
+    image: nj-wildlife-data
+    build:
+      context: ./src/data-prep
+      dockerfile: Dockerfile
+    working_dir: /usr/src
+    volumes:
+        - ./src/data-prep:/usr/src
+    command: scripts/process-data

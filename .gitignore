@@ -1,9 +1,21 @@
-app/data/*
-app/habitat/*
-app/tiles/*
+# Ansible
+deployment/ansible/roles/azavea.*
 
-data/*
-habitat/*
-tiles/*
+*.retry
 
-notes.txt
+# Vagrant
+.vagrant
+
+# Data
+src/data-prep/gen
+src/data-prep/data
+
+# Terraform
+.terraform
+*.tfplan
+*.tfvars
+*.tfstate
+*.tfstate.backup
+
+# macOS
+.DS_Store

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${NJ_WILDLIFE_DEBUG}" ]]; then
+    set -x
+fi
+
+DIR="$(dirname "$0")"
+source ${DIR}/util/realpath.sh
+
+DATA_ROOT=$(realpath "$(dirname "$(dirname "$(readlink -f "${0}")")")")
+
+SRC="$PROJECT_ROOT/src"
+
+# Download Landscape Project Version 3.3 Species-Based Habitat Data & Parcel Data
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap-data sh /usr/local/src/download-data.sh
+
+# Convert data from FileGDB related tables to open formats
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap-data sh /usr/local/src/convert-data.sh
+
+# Process data to line delimited GeoJSON
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap-data sh /usr/local/src/process-data.sh
+
+# Prepare tile and data resources used by web application
+docker run \
+  --mount type=bind,source=${PWD}/app,target=/app \
+  --mount type=bind,source=${PWD}/src,target=/usr/local/src \
+  njmap-data /usr/local/src/prepare-app-data.sh
