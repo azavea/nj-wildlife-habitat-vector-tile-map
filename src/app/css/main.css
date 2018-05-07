@@ -71,8 +71,23 @@ p {
     margin-top: 5px;
 }
 
-.warning {
+.italic {
     font-style: italic;
+}
+
+.note {
+    border-radius: 5px;
+    border: 1px solid #999;
+    font-style: italic;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 50px;
+    padding: 8px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 150%;
+    color: #444;
+    background-color: rgba(255, 255, 255, 0.6);
 }
 /*Text*/
 
@@ -225,12 +240,22 @@ a:hover, a:focus {
 .sidebar .block {
     display: flex;
     justify-content: space-around;
-    align-content: left;
-    align-items: left;
+    flex-direction: column;
 }
 
 .sidebar .description {
     display: block;
+}
+
+.results-table {
+    border-radius: 5px;
+    border: 1px solid #999;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    min-height: fit-content;
 }
 
 .block .geocoder-container {
@@ -243,7 +268,7 @@ hr {
 }
 
 #app-state-2 {
-    min-width: 500px;
+    min-width: 520px;
 }
 
 /*Grid Elements*/
@@ -309,7 +334,7 @@ div.dt-buttons {
 .dt-button.new {
     font-family: "Roboto", Arial, Helvetica, sans-serif !important;
     font-size: 0.85rem;
-    background-color: #f4f6f7;
+    background-color: #fff;
     background-image: none;
     color: #4a5357;
     margin: 4px;
@@ -429,6 +454,7 @@ table {
     float: right;
     font-size: 18px;
     font-weight: bold;
+
 }
 
 .close:hover,
@@ -497,26 +523,52 @@ table {
 }
 
 @media only screen and (max-width: 1028px)  {
+    .legend-block {
+        position: absolute;
+        bottom: 190px;
+        left: 10px;
+        z-index: 10;
+    }
+
     .legend-block:before {
         content: "Legend";
+        display: block;
         font-family: "Roboto", Arial, Helvetica, sans-serif !important;
         font-size: 0.85rem;
+        padding: 10px;
         background-color: #fff;
         color: #4a5357;
-        postion: absolute;
-        margin-bottom: 1.0rem;
-        margin-right: 1.0rem;
         border: 1.5px solid #75848b;
         border-radius: 3px;
         cursor: pointer;
         z-index: 100 !important;
     }
 
-    .legend-block:hover, .legend-block:after {
-        display: block;
+    .legend-block:hover .legend {
+        opacity: 1;
     }
 
     .legend {
+        position: absolute;
+        bottom: 100%;
+        width: 180px;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .legend-block:hover ~ .legend-click-listener {
+        display: block !important;
+    }
+
+
+    .legend-click-listener {
+        position: absolute;
+        top: 70px;
+        bottom: 160px;
+        left: 0;
+        right: 0;
         display: none;
     }
 }
@@ -570,43 +622,74 @@ table {
     display: none !important;
 }
 
-.mapboxgl-popup {
-  max-width: 200px;
+.mapboxgl-popup-close-button {
+    color: #444;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.mapboxgl-popup-close-button:hover {
+    background-color: #eef0f2 !important;
+}
+
+.mapboxgl-popup-content {
+  max-width: 360px;
   font: 8px/14px 'Roboto', Arial, sans-serif;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0px !important;
+}
+
+.popup-heading {
+    font-size: 1.1rem;
+    font-weight: normal;
+    color: #444;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 15px;
+    padding-bottom: 12px;
+    background-color: #d4dce0;
+}
+
+.popup-text {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.legend-block {
+    display: block;
+}
+
+.legend {
+    background-color: #fff;
+    border-radius: 5px;
+    bottom: 30px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    font: 12px/20px 'Roboto', Arial, sans-serif;
+    padding: 10px;
+    position: absolute;
+    right: 10px;
+    z-index: 100 !important;
+}
+
+.legend h4 {
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: #444;
+    margin: 0 0 3px;
+}
+
+.legend div span {
+    border-radius: 50%;
+    border: 1px solid #999;
+    display: inline-block;
+    height: 10px;
+    margin-right: 5px;
+    width: 10px;
 }
 
 @media only screen and (min-width: 1028px)  {
-    .legend-block {
-        display: block;
-    }
-
-    .legend {
-        background-color: #fff;
-        border-radius: 5px;
-        bottom: 30px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.10);
-        font: 12px/20px 'Roboto', Arial, sans-serif;
-        padding: 10px;
-        position: absolute;
-        right: 10px;
-        z-index: 100 !important;
-    }
-
-    .legend h4 {
-        font-size: 0.9rem;
-        font-weight: normal;
-        color: #444;
-        margin: 0 0 3px;
-    }
-
-    .legend div span {
-        border-radius: 50%;
-        border: 1px solid #999;
-        display: inline-block;
-        height: 10px;
-        margin-right: 5px;
-        width: 10px;
-    }
 
     .geocoder-container {
         display: flex;

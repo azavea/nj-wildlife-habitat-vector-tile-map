@@ -105,7 +105,7 @@
         <!-- Map -->
         <!-- Legend -->
         <div class="legend-block">
-            <div id='heatmap-legend' class='legend' style='display: block;'>
+            <div id='regions-legend' class='legend' style='display: block;'>
                 <h4>Regions</h4>
                 <div><span style='background-color: #db9d9b'></span>Atlantic Coastal</div>
                 <div><span style='background-color: #faf46a'></span>Delaware Bay</div>
@@ -123,6 +123,7 @@
                 <div><span style='background-color: #78aa94'></span>Federal Listed</div>
             </div>
         </div>
+        <div class="legend-click-listener"></div>
     </div>
     <!-- Legend -->
     <!-- Learn More Modal -->
@@ -185,8 +186,8 @@ const APP = {
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
      container: 'map',
-     style: 'mapbox://styles/mapbox/light-v9',
-     /* style: 'mapbox://styles/mapbox/satellite-streets-v9',*/
+     // style: 'mapbox://styles/mapbox/light-v9',
+     style: 'mapbox://styles/mapbox/satellite-streets-v9',
   zoom: 7,
   center: [-74.596258, 40.195586],
   hash: true,
@@ -227,8 +228,8 @@ const DRAW = new MapboxDraw({
         },
         "paint": {
           "line-color": "#ffa500",
-          "line-dasharray": [0.2, 2],
-          "line-width": 2
+          "line-dasharray": [0.2, 3],
+          "line-width": 3
         }
     },
     // polygon fill
@@ -239,7 +240,7 @@ const DRAW = new MapboxDraw({
       "paint": {
         "fill-color": "#ffa500",
         "fill-outline-color": "#ffa500",
-        "fill-opacity": 0.1
+        "fill-opacity": 0.25
       }
     },
     // polygon outline stroke
@@ -254,8 +255,8 @@ const DRAW = new MapboxDraw({
       },
       "paint": {
         "line-color": "#ffa500",
-        "line-dasharray": [0.2, 2],
-        "line-width": 2
+        "line-dasharray": [0.2, 3],
+        "line-width": 3
       }
     },
     // vertex point halos
@@ -339,6 +340,28 @@ MAP.on('load', () => {
     }
   }, firstSymbolId);
 
+  MAP.addLayer({
+    "id": "nj-habitat-areas-hover",
+    "source": "nj-habitat-areas",
+      "source-layer": "nj-habitat-areas",
+      "minzoom": 13,
+    "filter": ["==", "LINKID", ""],
+    "type": "fill",
+    "paint": {
+      "fill-color": {
+            property: 'LNDR',
+            stops: [
+                [1, '#fffbb2'],
+                [2, '#e1cca2'],
+                [3, '#cce1a2'],
+                [4, '#9bb88f'],
+                [5, '#78aa94']]
+            },
+      "fill-opacity": 0.9,
+      "fill-outline-color": "#fff"
+    }
+  }, firstSymbolId);
+
   MAP.addSource('nj-habitat-regions', {
       type: 'vector',
       url: TILE_SOURCES.habitatRegions,
@@ -371,42 +394,106 @@ MAP.on('load', () => {
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
   MAP.on('click', function(e) {
-    POPUP.remove();
-    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
-      let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
+      POPUP.remove();
+      if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
+          let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
 
-      // If the features have no info, return nothing
-      if (!features.length) {
-        return;
+          // If the features have no info, return nothing
+          // if the features have no info, return nothing
+          if (!features.length) {
+              return;
+          }
+
+          let species = [];
+
+          //parse the species property that was stringified during queryRenderedFeatures
+          features.forEach((features) => {
+              let item = JSON.parse(features.properties.species);
+              species.push(item);
+          });
+
+          let feature = features[0];
+          let featureLINKID = feature.properties.LINKID;
+          let featureLanduseCaps = feature.properties.LABEL12;
+          let fed_status = {fed_endangered: "", fed_threatened: ""};
+          let nj_status = {nj_endangered: "", nj_threatened: "", nj_special: ""};
+          let nj = [];
+          let fed = [];
+
+          String.prototype.toTitleCase = function () {
+              return this.replace(/\w\S*/g, function(txt){
+                  return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+              });
+          };
+
+          featureLanduse = featureLanduseCaps.toTitleCase();
+
+          for (var i = 0; i < species[0].length; i++){
+              if (species[0][i].FED_STATUS == "Federally Listed Endangered"){
+                  fed_status.fed_endangered = "Endangered";
+              } if (species[0][i].FED_STATUS == "Federally Listed Threatened"){
+                  fed_status.fed_threatened = "Threatened";
+              } if (species[0][i].NJ_STATUS == "State Endangered"){
+                  nj_status.nj_endangered = "Endangered";
+              } if (species[0][i].NJ_STATUS == "State Threatened"){
+                  nj_status.nj_threatened = "Threatened";
+              } if (species[0][i].NJ_STATUS == "Special Concern"){
+                  nj_status.nj_special = "Special Concern";
+              }
+          };
+
+          let list =[fed_status, nj_status];
+
+          list.forEach(function(i) {
+              Object.keys(i).forEach(function(key) {
+                  if(i[key] !== ""){
+                      if(i == fed_status){
+                          fed.push(" " + i[key])
+                      }
+                      if(i == nj_status){
+                          nj.push(" " + i[key])
+                      }
+                  }
+              });
+          });
+
+          if(nj.length < 1){
+              nj.push("No habitat mapped")
+          }
+          if(fed.length < 1){
+              fed.push("No habitat mapped")
+          }
+          // Populate the popup and set its coordinates
+          // based on the feature found
+          POPUP.setLngLat(e.lngLat);
+          POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <div class=popup-heading>Habitat ' + featureLINKID + '</div>' +
+          '<p class=popup-text>' + '<b>' + featureLanduse + '</b></p>' +
+          '<p class=popup-text>' + '<b>' + 'Federal Status' + '</b>' + ': ' + fed + ' </p>' +
+          '<p class=popup-text>' + '<b>' + 'State Status' + '</b>' + ': ' +  nj + ' </p></div>');
+          POPUP.addTo(MAP);
       }
-
-      let feature = features[0];
-      let featureLINKID = feature.properties.LINKID;
-
-      // Populate the popup and set its coordinates
-      // based on the feature found
-      POPUP.setLngLat(e.lngLat);
-      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3>Habitat ' + featureLINKID + '</h3>' +
-      '<p><a href=\'' + HOST + '/data/habitat/' + featureLINKID + '.json' + '\' download>Download GeoJSON</a></p>' +
-      '<p> Federal Endangered: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-      '<p> Federal Threatened: ' + feature.properties['insert-federal-listed'] + ' </p>' +
-      '<p> State Endangered: ' + feature.properties['insert-state-listed'] + ' </p>' +
-      '<p> State Threatened: ' + feature.properties['insert-state-listed'] + ' </p></div>');
-      POPUP.addTo(MAP);
-    }
   });
 
   // Use the same approach as above to indicate that the symbols are clickable
   // by changing the cursor style to 'pointer'
   MAP.on('mousemove', function(e) {
-    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getSelectedIds().length === 0) {
-      var features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
-      MAP.getCanvas().style.cursor = features.length ? 'pointer' : '';
-    } else if (DRAW.getMode() === 'draw_polygon') {
-      MAP.getCanvas().style.cursor = 'crosshair';
-    } else if (DRAW.getMode() === 'simple_select') {
-      MAP.getCanvas().style.cursor = 'pointer';
-    }
+      if (DRAW.getMode() !== 'draw_polygon' && DRAW.getSelectedIds().length === 0) {
+          let habitat = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
+          if (habitat && habitat[0] && habitat[0].properties && habitat[0].properties.LINKID) {
+              MAP.getCanvas().style.cursor = habitat.length ? 'pointer' : '';
+              MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", habitat[0].properties.LINKID]);
+          }
+          else {
+              MAP.getCanvas().style.cursor = 'auto';
+              MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
+          }
+      } else if (DRAW.getMode() === 'draw_polygon') {
+          MAP.getCanvas().style.cursor = 'crosshair';
+          MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
+      } else if (DRAW.getMode() === 'simple_select') {
+          MAP.getCanvas().style.cursor = 'pointer';
+          MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
+      }
   });
 });
 
@@ -460,7 +547,7 @@ function renderZoomPrompt() {
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'none';
-  document.getElementById('heatmap-legend').style.display = 'block';
+  document.getElementById('regions-legend').style.display = 'block';
 
   const appState0 =
       '<div class="sidebar" id="app-state-0"> \
@@ -489,17 +576,24 @@ function renderSelectAreaOfInterestPrompt() {
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'block';
-  document.getElementById('heatmap-legend').style.display = 'none';
+  document.getElementById('regions-legend').style.display = 'none';
 
   const appState1 =
       '<div class="sidebar" id="app-state-1"> \
       <!-- App State 1 --> \
           <div class="description"> \
               <p>Draw your Area of Interest.</p> \
-              <p>Double click or click on the first node to complete the shape.</p> \
+              <p>Double click to complete the shape.</p> \
           </div> \
           <div class="block drawing-tools"> \
               <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
+          </div> \
+          <div class="note"> \
+          <table> \
+              <tbody> \
+                  <tr><td class="table-center"><i class="fa fa-hand-pointer-o"></i></td><td class="table-column">Click on a habitat area to learn about the status of species for the selected land-use.</td></tr> \
+              </tbody> \
+          </table> \
           </div> \
       <!-- App State 1 --> \
       </div>';
@@ -519,6 +613,10 @@ function renderSelectAreaOfInterestPrompt() {
 let fullList = [];
 
 function renderAreaOfInterestReport() {
+
+  // Set legend display properties
+  document.getElementById('habitat-legend').style.display = 'none';
+  document.getElementById('regions-legend').style.display = 'none';
 
   fullList = [];
 
@@ -550,23 +648,18 @@ function renderAreaOfInterestReport() {
 
   let uniquesList = removeDuplicates(fullList, 'COMNAME');
 
-  console.log(fullList);
-  console.log(uniquesList);
-
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
       <!-- App State 2 --> \
           <div class="description"> \
               <p>To draw a new Area of Interest, click the button below.</p> \
-              <p class="warning">This will discard the current results table.</p> \
+              <p class="italic">This will discard the current results table.</p> \
           </div> \
           <div class="drawing-tools"> \
               <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
           </div> \
-          <div class="block"> \
-              <h4>Area of Interest Habitat List</h4> \
-          </div> \
-          <div class="block"> \
+          <div class="block results-table"> \
+            <h4>Area of Interest Habitat List</h4> \
             <table id="table" class="cell-border" width="100%"></table> \
           </div> \
       <!-- App State 2 --> \
