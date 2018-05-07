@@ -105,7 +105,7 @@
         <!-- Map -->
         <!-- Legend -->
         <div class="legend-block">
-            <div id='heatmap-legend' class='legend' style='display: block;'>
+            <div id='regions-legend' class='legend' style='display: block;'>
                 <h4>Regions</h4>
                 <div><span style='background-color: #db9d9b'></span>Atlantic Coastal</div>
                 <div><span style='background-color: #faf46a'></span>Delaware Bay</div>
@@ -504,7 +504,7 @@ function renderZoomPrompt() {
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'none';
-  document.getElementById('heatmap-legend').style.display = 'block';
+  document.getElementById('regions-legend').style.display = 'block';
 
   const appState0 =
       '<div class="sidebar" id="app-state-0"> \
@@ -533,7 +533,7 @@ function renderSelectAreaOfInterestPrompt() {
 
   // Set legend display properties
   document.getElementById('habitat-legend').style.display = 'block';
-  document.getElementById('heatmap-legend').style.display = 'none';
+  document.getElementById('regions-legend').style.display = 'none';
 
   const appState1 =
       '<div class="sidebar" id="app-state-1"> \
@@ -563,6 +563,10 @@ function renderSelectAreaOfInterestPrompt() {
 let fullList = [];
 
 function renderAreaOfInterestReport() {
+
+  // Set legend display properties
+  document.getElementById('habitat-legend').style.display = 'none';
+  document.getElementById('regions-legend').style.display = 'none';
 
   fullList = [];
 

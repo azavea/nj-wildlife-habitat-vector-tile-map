@@ -497,26 +497,52 @@ table {
 }
 
 @media only screen and (max-width: 1028px)  {
+    .legend-block {
+        position: absolute;
+        bottom: 190px;
+        left: 10px;
+        z-index: 10;
+    }
+
     .legend-block:before {
         content: "Legend";
+        display: block;
         font-family: "Roboto", Arial, Helvetica, sans-serif !important;
         font-size: 0.85rem;
+        padding: 10px;
         background-color: #fff;
         color: #4a5357;
-        postion: absolute;
-        margin-bottom: 1.0rem;
-        margin-right: 1.0rem;
         border: 1.5px solid #75848b;
         border-radius: 3px;
         cursor: pointer;
         z-index: 100 !important;
     }
 
-    .legend-block:hover, .legend-block:after {
-        display: block;
+    .legend-block:hover .legend {
+        opacity: 1;
     }
 
     .legend {
+        position: absolute;
+        bottom: 100%;
+        width: 180px;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .legend-block:hover ~ .legend-click-listener {
+        display: block !important;
+    }
+
+
+    .legend-click-listener {
+        position: absolute;
+        top: 70px;
+        bottom: 160px;
+        left: 0;
+        right: 0;
         display: none;
     }
 }
@@ -588,38 +614,39 @@ table {
   padding-right: 10px;
 }
 
+.legend-block {
+    display: block;
+}
+
+.legend {
+    background-color: #fff;
+    border-radius: 5px;
+    bottom: 30px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    font: 12px/20px 'Roboto', Arial, sans-serif;
+    padding: 10px;
+    position: absolute;
+    right: 10px;
+    z-index: 100 !important;
+}
+
+.legend h4 {
+    font-size: 0.9rem;
+    font-weight: normal;
+    color: #444;
+    margin: 0 0 3px;
+}
+
+.legend div span {
+    border-radius: 50%;
+    border: 1px solid #999;
+    display: inline-block;
+    height: 10px;
+    margin-right: 5px;
+    width: 10px;
+}
+
 @media only screen and (min-width: 1028px)  {
-    .legend-block {
-        display: block;
-    }
-
-    .legend {
-        background-color: #fff;
-        border-radius: 5px;
-        bottom: 30px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.10);
-        font: 12px/20px 'Roboto', Arial, sans-serif;
-        padding: 10px;
-        position: absolute;
-        right: 10px;
-        z-index: 100 !important;
-    }
-
-    .legend h4 {
-        font-size: 0.9rem;
-        font-weight: normal;
-        color: #444;
-        margin: 0 0 3px;
-    }
-
-    .legend div span {
-        border-radius: 50%;
-        border: 1px solid #999;
-        display: inline-block;
-        height: 10px;
-        margin-right: 5px;
-        width: 10px;
-    }
 
     .geocoder-container {
         display: flex;
