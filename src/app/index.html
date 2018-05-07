@@ -571,10 +571,17 @@ function renderSelectAreaOfInterestPrompt() {
       <!-- App State 1 --> \
           <div class="description"> \
               <p>Draw your Area of Interest.</p> \
-              <p>Double click or click on the first node to complete the shape.</p> \
+              <p>Double click to complete the shape.</p> \
           </div> \
           <div class="block drawing-tools"> \
               <a href="#" id="draw-btn" class="btn btn-grey">Start Drawing</a> \
+          </div> \
+          <div class="note"> \
+          <table> \
+              <tbody> \
+                  <tr><td class="table-center"><i class="fa fa-hand-pointer-o"></i></td><td class="table-column">Click on a habitat area to learn about the status of species for the selected land-use.</td></tr> \
+              </tbody> \
+          </table> \
           </div> \
       <!-- App State 1 --> \
       </div>';
@@ -629,23 +636,18 @@ function renderAreaOfInterestReport() {
 
   let uniquesList = removeDuplicates(fullList, 'COMNAME');
 
-  console.log(fullList);
-  console.log(uniquesList);
-
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
       <!-- App State 2 --> \
           <div class="description"> \
               <p>To draw a new Area of Interest, click the button below.</p> \
-              <p class="warning">This will discard the current results table.</p> \
+              <p class="italic">This will discard the current results table.</p> \
           </div> \
           <div class="drawing-tools"> \
               <a href="#" id="trash-btn" class="btn btn-grey">Draw New Area</a> \
           </div> \
-          <div class="block"> \
-              <h4>Area of Interest Habitat List</h4> \
-          </div> \
-          <div class="block"> \
+          <div class="block results-table"> \
+            <h4>Area of Interest Habitat List</h4> \
             <table id="table" class="cell-border" width="100%"></table> \
           </div> \
       <!-- App State 2 --> \
@@ -759,24 +761,22 @@ function updateAreaOfInterest() {
       q.defer(d3.json, HOST + '/data/habitat/' + LINKIDs[i] + '.json')
     }
     // Wait for all the individual GeoJSON habitats to load
-      q.awaitAll(function(error, data) {
-          if(!error) {
-              APP.contextFeatures = turf.featureCollection(data);
+    q.awaitAll(function(error, data) {
+      APP.contextFeatures = turf.featureCollection(data);
 
-              let habitatData = APP.contextFeatures;
-              let intersectionArea = APP.areaOfInterest.features[0];
+      let habitatData = APP.contextFeatures;
+      let intersectionArea = APP.areaOfInterest.features[0];
 
-              // Clip each feature in the FeatureCollection by the drawing's area of interest
-              let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
-                  let clippedFeature = turf.intersect(intersectionArea, f);
-                  if (clippedFeature) { clippedFeature.properties = f.properties; }
-                  return clippedFeature;
-              }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
+      // Clip each feature in the FeatureCollection by the drawing's area of interest
+      let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
+        let clippedFeature = turf.intersect(intersectionArea, f);
+        if (clippedFeature) { clippedFeature.properties = f.properties; }
+        return clippedFeature;
+      }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
 
-              APP.featuresOfInterest = intersectingHabitat;
-          }
+      APP.featuresOfInterest = intersectingHabitat;
 
-          updateApp();
+      updateApp();
     });
   } else {
     APP.contextFeatures = turf.featureCollection([]);
