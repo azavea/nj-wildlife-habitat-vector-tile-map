@@ -185,8 +185,8 @@ const APP = {
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
      container: 'map',
-     style: 'mapbox://styles/mapbox/light-v9',
-     /* style: 'mapbox://styles/mapbox/satellite-streets-v9',*/
+     // style: 'mapbox://styles/mapbox/light-v9',
+     style: 'mapbox://styles/mapbox/satellite-streets-v9',
   zoom: 7,
   center: [-74.596258, 40.195586],
   hash: true,
@@ -393,73 +393,84 @@ MAP.on('load', () => {
   // When a click event occurs near a place, open a popup at the location of
   // the feature, with HTML description from its properties
   MAP.on('click', function(e) {
-    POPUP.remove();
-    if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
-      let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
-      // if the features have no info, return nothing
-      if (!features.length) {
-        return;
-      }
+      POPUP.remove();
+      if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
+          let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
 
-      let species = [];
-
-      //parse the species property that was stringified during queryRenderedFeatures
-      features.forEach((features) => {
-        let item = JSON.parse(features.properties.species);
-        species.push(item);
-      });
-
-      let feature = features[0];
-      let featureLINKID = feature.properties.LINKID;
-      let fed_status = {fed_endangered: "", fed_threatened: ""};
-      let nj_status = {nj_endangered: "", nj_threatened: "", nj_special: ""};
-      let nj = [];
-      let fed = [];
-
-      for (var i = 0; i < species[0].length; i++){
-        if (species[0][i].FED_STATUS == "Federally Listed Endangered"){
-          fed_status.fed_endangered = "Endangered";
-        } if (species[0][i].FED_STATUS == "Federally Listed Threatened"){
-          fed_status.fed_threatened = "Threatened";
-        } if (species[0][i].NJ_STATUS == "State Endangered"){
-          nj_status.nj_endangered = "Endangered";
-        } if (species[0][i].NJ_STATUS == "State Threatened"){
-          nj_status.nj_threatened = "Threatened";
-        } if (species[0][i].NJ_STATUS == "Special Concern"){
-          nj_status.nj_special = "Special Concern";
-        }
-      };
-
-      let list =[fed_status, nj_status];
-
-      list.forEach(function(i) {
-        Object.keys(i).forEach(function(key) {
-          if(i[key] !== ""){
-            if(i == fed_status){
-              fed.push(" " + i[key])
-            }
-            if(i == nj_status){
-              nj.push(" " + i[key])
-            }
+          // If the features have no info, return nothing
+          // if the features have no info, return nothing
+          if (!features.length) {
+              return;
           }
-        });
-      });
 
-      if(nj.length < 1){
-        nj.push("Not Protected")
-      }
-      if(fed.length < 1){
-        fed.push("Not Protected")
-      }
+          let species = [];
 
-      // Populate the popup and set its coordinates
-      // based on the feature found
-      POPUP.setLngLat(e.lngLat);
-      POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <h3 class=hab>Habitat ' + featureLINKID + '</h3>' +
-      '<p class=fed>' + '<b>' + 'Federal Status' + '</b>' + ': ' + fed + ' </p>' +
-      '<p class=nj>' + '<b>' + 'State Status' + '</b>' + ': ' +  nj + ' </p></div>');
-      POPUP.addTo(MAP);
-    }
+          //parse the species property that was stringified during queryRenderedFeatures
+          features.forEach((features) => {
+              let item = JSON.parse(features.properties.species);
+              species.push(item);
+          });
+
+          let feature = features[0];
+          let featureLINKID = feature.properties.LINKID;
+          let featureLanduseCaps = feature.properties.LABEL12;
+          let fed_status = {fed_endangered: "", fed_threatened: ""};
+          let nj_status = {nj_endangered: "", nj_threatened: "", nj_special: ""};
+          let nj = [];
+          let fed = [];
+
+          String.prototype.toTitleCase = function () {
+              return this.replace(/\w\S*/g, function(txt){
+                  return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+              });
+          };
+
+          featureLanduse = featureLanduseCaps.toTitleCase();
+
+          for (var i = 0; i < species[0].length; i++){
+              if (species[0][i].FED_STATUS == "Federally Listed Endangered"){
+                  fed_status.fed_endangered = "Endangered";
+              } if (species[0][i].FED_STATUS == "Federally Listed Threatened"){
+                  fed_status.fed_threatened = "Threatened";
+              } if (species[0][i].NJ_STATUS == "State Endangered"){
+                  nj_status.nj_endangered = "Endangered";
+              } if (species[0][i].NJ_STATUS == "State Threatened"){
+                  nj_status.nj_threatened = "Threatened";
+              } if (species[0][i].NJ_STATUS == "Special Concern"){
+                  nj_status.nj_special = "Special Concern";
+              }
+          };
+
+          let list =[fed_status, nj_status];
+
+          list.forEach(function(i) {
+              Object.keys(i).forEach(function(key) {
+                  if(i[key] !== ""){
+                      if(i == fed_status){
+                          fed.push(" " + i[key])
+                      }
+                      if(i == nj_status){
+                          nj.push(" " + i[key])
+                      }
+                  }
+              });
+          });
+
+          if(nj.length < 1){
+              nj.push("No habitat mapped")
+          }
+          if(fed.length < 1){
+              fed.push("No habitat mapped")
+          }
+          // Populate the popup and set its coordinates
+          // based on the feature found
+          POPUP.setLngLat(e.lngLat);
+          POPUP.setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> <div class=popup-heading>Habitat ' + featureLINKID + '</div>' +
+          '<p class=popup-text>' + '<b>' + featureLanduse + '</b></p>' +
+          '<p class=popup-text>' + '<b>' + 'Federal Status' + '</b>' + ': ' + fed + ' </p>' +
+          '<p class=popup-text>' + '<b>' + 'State Status' + '</b>' + ': ' +  nj + ' </p></div>');
+          POPUP.addTo(MAP);
+      }
   });
 
   // Use the same approach as above to indicate that the symbols are clickable

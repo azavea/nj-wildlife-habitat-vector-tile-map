@@ -622,20 +622,37 @@ table {
     display: none !important;
 }
 
+.mapboxgl-popup-close-button {
+    color: #444;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.mapboxgl-popup-close-button:hover {
+    background-color: #eef0f2 !important;
+}
+
 .mapboxgl-popup-content {
-  max-width: 400px;
+  max-width: 360px;
   font: 8px/14px 'Roboto', Arial, sans-serif;
   margin-top: 0px;
   margin-bottom: 0px;
   padding: 0px !important;
 }
 
-.fed {
-  padding-left: 10px;
-  padding-right: 10px;
+.popup-heading {
+    font-size: 1.1rem;
+    font-weight: normal;
+    color: #444;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 15px;
+    padding-bottom: 12px;
+    background-color: #d4dce0;
 }
 
-.nj { 
+.popup-text {
   padding-left: 10px;
   padding-right: 10px;
 }
