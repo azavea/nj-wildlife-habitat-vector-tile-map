@@ -217,7 +217,8 @@ const MAP = new mapboxgl.Map({
   center: [-74.596258, 40.195586],
   hash: true,
   minZoom: NJ_MAP_LIMITS.minZoom,
-  maxBounds: NJ_MAP_LIMITS.bounds
+  maxBounds: NJ_MAP_LIMITS.bounds,
+  preserveDrawingBuffer: true
 });
 
 MAP.addControl(new mapboxgl.NavigationControl());
@@ -701,8 +702,6 @@ function renderAreaOfInterestReport() {
       unconstrainMap();
       APP.areaOfInterest = emptyFeatureCollection;
       renderSelectAreaOfInterestPrompt();
-      // DRAW.trash();
-      // DRAW.changeMode('draw_polygon');
   }
 
   $('#table').DataTable( {
@@ -740,7 +739,8 @@ function renderAreaOfInterestReport() {
                   return filename;
               },
               title: 'Landscape Project v3.3 Present Within Selected Area of Interest',
-              messageTop: function() {
+              messageTop: 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.',
+              messageBottom: function() {
                   var today = new Date();
                   var dd = today.getDate();
                   var mm = today.getMonth() + 1;
@@ -756,11 +756,25 @@ function renderAreaOfInterestReport() {
 
                   today = mm + '/' + dd + '/' + yyyy;
 
-                  exportDescription = 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.' + '<br>' + 'Exported on: ' + today;
+                  exportDescription = '\n' + 'Exported on: ' + today + '\n \n' + 'Data source: NJDEP Landscape Project Version 3.3 species-based habitat data, 2017' + '\n \n' + 'Created using: https://njwildlife.azavea.com';
 
                   return exportDescription;
               },
-              messageBottom: 'Source: https://njhabitat.azavea.com'
+              customize: function (doc) {
+
+                  var img = new Image();
+                  var mapCanvas = MAP.getCanvas(document.querySelector('.mapboxgl-canvas'));
+                  img.src = mapCanvas.toDataURL();
+
+                  doc.content.splice(1, 0,
+                      {
+                          margin: [0, 0, 0, 12],
+                          alignment: 'left',
+                          width: 300,
+                          image: img.src,
+                      },
+                  );
+              }
           }
       ],
       columns: [
