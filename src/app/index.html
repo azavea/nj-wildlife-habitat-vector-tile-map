@@ -841,6 +841,14 @@ function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
     MAP.fitBounds(bounds, { duration: 0, padding: 100}); // duration: 0 makes this synchronous
+    // set map canvas equal to div.#map width
+    // let mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+    // let mapDiv = document.getElementById('map');
+    // mapCanvas.style.width = mapDiv.style.width;
+    // mapCanvas.style.height = mapDiv.style.height;
+
+    // if zoom at bounds =<13, print message asking user to draw smaller AOI
+
   }
 }
 
@@ -854,6 +862,7 @@ function constrainMap() {
 function unconstrainMap() {
   MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
   MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
+  MAP.resize();
 }
 
 </script>
