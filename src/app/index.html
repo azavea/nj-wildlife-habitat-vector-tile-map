@@ -211,7 +211,6 @@ const APP = {
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const MAP = new mapboxgl.Map({
      container: 'map',
-     // style: 'mapbox://styles/mapbox/light-v9',
      style: 'mapbox://styles/mapbox/satellite-streets-v9',
   zoom: 7,
   center: [-74.596258, 40.195586],
@@ -337,14 +336,14 @@ MAP.on('load', () => {
       }
   }
 
-  // Add Habitats Areas
+  // Add layers
   MAP.addSource('nj-habitat-areas', {
       type: 'vector',
-      /* url: TILE_SOURCES.habitatAreas*/
       tiles: [TILE_SOURCES.habitatAreas],
-      "minzoom": 12,
-      "maxzoom": 14
+      minzoom: 12,
+      maxzoom: 14
   });
+
   MAP.addLayer({
     "id": "nj-habitat-areas",
     "source": "nj-habitat-areas",
@@ -391,9 +390,10 @@ MAP.on('load', () => {
   MAP.addSource('nj-landscape-regions', {
       type: 'vector',
       tiles: [TILE_SOURCES.landscapeRegions],
-      "minzoom": 7,
-      "maxzoom": 13
+      minzoom: 7,
+      maxzoom: 13
   });
+
   MAP.addLayer({
     "id": "nj-landscape-regions",
     "source": "nj-landscape-regions",
