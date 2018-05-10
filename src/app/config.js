@@ -6,7 +6,7 @@ const HOST = 'https://s3.amazonaws.com/nj-wildlife-habitat-vector-tile-map';
 
 // URLs to the tile source TileJSON resources. Supported protocols are http:, https:, and mapbox://<mapid>.
 const TILE_SOURCES = {
-    habitatAreas: HOST + '/tiles/nj-habitat-areas/{z}/{x}/{y}',
-    // habitatRegions: 'http://localhost:8000/tiles/nj-habitat-overview/{z}/{x}/{y}.pbf.pbf'
-    habitatRegions: 'mapbox://danjford.89yecrvp'
+  habitatAreas: HOST + '/tiles/nj-habitat-areas/{z}/{x}/{y}',
+  landscapeRegions: HOST + '/tiles/landscape-regions/{z}/{x}/{y}'
+
 };
