@@ -5,6 +5,11 @@ mkdir -p /usr/src/gen/downloads
 mkdir -p /usr/src/gen/landscape-project-3-3
 mkdir -p /usr/src/gen/parcels
 
+# download Landscape Project Version 3.3 Regions from http://www.nj.gov/dep/gis/landscape.html
+wget -P /usr/src/gen/downloads http://www.nj.gov/dep/gis/digidownload/zips/landscape/landscape_regions_v3_3_gdb.zip
+unzip -d /usr/src/gen/downloads/landscape_regions /usr/src/gen/downloads/landscape_regions_v3_3_gdb.zip
+mv /usr/src/gen/downloads/landscape_regions/landscape_regions_v3_3.gdb /usr/src/gen/landscape-project-3-3/landscape_regions.gdb
+
 # download Landscape Project Version 3.3 File Geodatabases from http://www.nj.gov/dep/gis/landscape.html
 for region in $(cat /usr/src/nj-habitat-regions.txt)
 do
