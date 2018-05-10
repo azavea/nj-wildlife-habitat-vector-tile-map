@@ -388,17 +388,16 @@ MAP.on('load', () => {
     }
   }, firstSymbolId);
 
-  MAP.addSource('nj-habitat-regions', {
+  MAP.addSource('nj-landscape-regions', {
       type: 'vector',
-      url: TILE_SOURCES.habitatRegions,
-      /* tiles: [TILE_SOURCES.habitatRegions],*/
-      /* "minzoom": 12,
-       * "maxzoom": 14*/
+      tiles: [TILE_SOURCES.landscapeRegions],
+      "minzoom": 7,
+      "maxzoom": 13
   });
   MAP.addLayer({
-    "id": "nj-habitat-regions",
-    "source": "nj-habitat-regions",
-    "source-layer": "landscape_regions_v3_3-clq87r",
+    "id": "nj-landscape-regions",
+    "source": "nj-landscape-regions",
+    "source-layer": "landscape-regions",
     "maxzoom": 13,
     "type": "fill",
     "paint": {
