@@ -89,6 +89,10 @@ p {
     color: #444;
     background-color: rgba(255, 255, 255, 0.6);
 }
+
+sup {
+    line-height: 3;
+}
 /*Text*/
 
 /* Links */
@@ -325,6 +329,22 @@ hr {
     text-decoration: none;
 }
 
+.btn-modal {
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    background-color: #536066;
+    color: #fff;
+    padding: 10px 20px;
+    vertical-align: middle;
+}
+
+.btn-modal:hover, .btn-grey:active {
+    background-color: #75848b;
+    color: #fff;
+    text-decoration: none;
+}
+
 div.dt-buttons {
     display: flex;
     justify-content: center;
@@ -374,6 +394,139 @@ div.dt-buttons {
 
 /*Buttons*/
 
+/* Contact Form */
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: lighten(#f4f6f7, 30%);
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: lighten(#f4f6f7, 30%);
+}
+:-ms-input-placeholder { /* IE 10+ */
+  color: lighten(#f4f6f7, 30%);
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: lighten(#f4f6f7, 30%);
+}
+
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
+  max-width: 100%;
+  outline: 0;
+  -webkit-tap-highlight-color: rgba(255,255,255,0);
+  text-align: left;
+  padding: .6rem 1rem;
+  background: #fff;
+  border: none;
+  color: #444;
+  border-radius: 2px;
+  transition: .2s ease-in-out box-shadow, .2s ease-in-out border-color ;
+  box-shadow: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+
+  &:focus,
+  &:active {
+    box-shadow: #f4f6f7;
+  }
+}
+
+select {
+  background-image: url(../assets/icons/icon-select-arrows.svg);
+  background-size: 12px;
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+}
+
+textarea {
+  min-height: 5rem;
+}
+
+form {
+
+  .btn,
+  [type="submit"] {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 400;
+  font-size: 1.4rem;
+
+  input,
+  select,
+  textarea {
+    margin-top: 0;
+  }
+}
+
+.form-group {
+    margin: .5rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+
+  &.disabled {
+    user-select: none;
+    cursor: not-allowed;
+    opacity: .6;
+
+    label,
+    input,
+    select,
+    textarea {
+      cursor: not-allowed;
+      user-select: none;
+    }
+  }
+}
+
+.form {
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    width: 100%;
+    border: 1px solid rgba(#999, .1);
+
+    &:hover,
+    &:focus {
+      border-color: #444;
+    }
+  }
+
+  input[type="submit"],
+  button[type="submit"] {
+    color: #999;
+  }
+
+
+  label {
+    color: #444;
+  }
+}
+
+.form-action {
+  margin-left: 20px;
+}
+
+/* Contact Form */
+
 /* Data Table */
 .dataTables_wrapper {
     white-space: nowrap;
@@ -387,9 +540,6 @@ div.dt-buttons {
 
 .dataTables_scrollBody {
 }
-
-
-
 /* Data Table */
 
 /*Footer Table*/
@@ -410,7 +560,6 @@ table {
 /*Footer Table*/
 
 /*Modal*/
-/* The Modal (background) */
 .modal {
     display: none;
     position: fixed;
@@ -422,7 +571,6 @@ table {
     background-color: rgba(0,0,0,0.4);
 }
 
-/* Modal Content */
 .modal-content {
     display: flex;
     flex-direction: column;
@@ -438,7 +586,6 @@ table {
     animation-duration: 0.4s
 }
 
-/* Add Animation */
 @-webkit-keyframes animatetop {
     from {top:-300px; opacity:0}
     to {top:0; opacity:1}
@@ -480,11 +627,14 @@ table {
 }
 
 .modal-footer {
-    padding: 20px;
+    padding-left: 20px;
+    padding-bottom: 5px;
     background-color: #a9b1b5;
-    color: #333;
-    font-size: 0.9rem;
-    max-height: 50px;
+}
+
+.modal-footer p {
+    color: #111;
+    font-weight: 600;
 }
 
 @media only screen and (min-width: 700px)  {
@@ -687,6 +837,56 @@ table {
     height: 10px;
     margin-right: 5px;
     width: 10px;
+}
+
+.regions-legend-info-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: 10px;
+    padding-top: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.habitat-legend-info-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: 10px;
+    padding-top: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.regions-legend-info-btn:hover ~ .regions-legend-info {
+    opacity: 1;
+    transition-duration: 250ms;
+    transition-property: opacity;
+}
+
+.habitat-legend-info-btn:hover ~ .habitat-legend-info {
+    opacity: 1;
+    transition-duration: 250ms;
+    transition-property: opacity;
+}
+
+.regions-legend-info {
+    opacity: 0;
+    position: absolute;
+    height: 120px;
+    background-color: #fff;
+    font-size: 0.75rem;
+    z-index: 110 !important;
+}
+
+.habitat-legend-info {
+    opacity: 0;
+    position: absolute;
+    height: 100px;
+    background-color: #fff;
+    font-size: 0.75rem;
+    z-index: 110 !important;
 }
 
 @media only screen and (min-width: 1028px)  {

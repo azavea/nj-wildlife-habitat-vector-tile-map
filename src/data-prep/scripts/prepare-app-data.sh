@@ -31,4 +31,13 @@ function export-mbtiles() {
         popd;
 }
 
-export-mbtiles /usr/src/data/nj-habitat-areas.mbtiles /usr/src/data/tiles/nj-habitat-areas
+# export-mbtiles /usr/src/data/nj-habitat-areas.mbtiles /usr/src/data/tiles/nj-habitat-areas
+
+
+tippecanoe --read-parallel \
+  -n "NJ Landscape Project Regions" -A "<a href='http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm'>NJDEP</a>" \
+  -l "landscape-regions" -z 13 -Z 7 \
+  -f -o /usr/src/data/landscape-regions.mbtiles \
+  /usr/src/gen/landscape_regions.geojson
+
+export-mbtiles /usr/src/data/landscape-regions.mbtiles /usr/src/data/tiles/landscape-regions

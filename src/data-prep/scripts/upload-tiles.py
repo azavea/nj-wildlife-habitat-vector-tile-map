@@ -8,7 +8,7 @@ dir = os.path.dirname(__file__)
 
 tilesets = [
   { 'mapid': 'habitat-areas-2017', 'path': '/app/tiles/habitat-areas-2017.mbtiles' },
-  { 'mapid': 'habitat-overview-2017',     'path': '/app/tiles/habitat-overview-2017.mbtiles' },
+  { 'mapid': 'landscape_regions-2017', 'path': '/app/tiles/landscape_regions-2017.mbtiles' },
 ]
 
 for tileset in tilesets:

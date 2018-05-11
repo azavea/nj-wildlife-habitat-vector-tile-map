@@ -23,42 +23,20 @@ Download and process the data.
 ./scripts/data-prep
 ```
 
+### Edit access token and host information
+
+Edit `src/app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/studio/account/tokens/)
+
+To point at your own data that was prepared in the previous step,
+you'll need to serve it out in some publicly accessible endpoint, and modify
+the `HOST` configuration variable in `src/app/config.js` such that the GeoJSON data
+is located at `${HOST}/data/habitat/[ID].json` and the tiles are available at
+`${HOST}/tiles/[TILE SET]/{z}/{x}/{y}`.
+
 ### Run the development server
 
 ```sh
 ./scripts/server
 ```
 
-And visit http://localhost:8000/
-
-If you want to point it at your own data that was prepared in the previous step,
-you'll need to serve it out in some publicly accessible endpoint, and modify
-the `HOST` configuration variable in `src/app/config.js` such that the GeoJSON data
-is located at `${HOST}/data/habitat/[ID].json` and the tiles are available at
-`${HOST}/tiles/[TILE SET]/{z}/{x}/{y}`.
-
-# Usage
-
-## 1. Install dependencies with `script/bootstrap`.
-
-The project downloads, processes, and prepares data resources all within a Docker container. To build the Docker image, run `script/bootstrap`.
-
-## 2. Prepare the data with `script/setup`.
-
-Setup the web app by running `script/setup`. This will download the NJ Landscape Project data and prepares app resources in the `app/` directory.
-
-## 3. Upload the prepared MBTiles files to Mapbox Tilesets.
-
-Go to the [Mapbox Tilesets](https://www.mapbox.com/studio/tilesets/) page and upload the MBTiles files in `app/tiles/`. Once processing is complete, copy the Tileset IDs and use them in the next configuration step.
-
-## 4. Configure the website application by editing `app/config.js`.
-
-Edit `app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/studio/account/tokens/), your Tileset IDs, and the hostname where `app/` will be served.
-
-## 5. Serve the contents of the `app/` directory.
-
-Start serving the contents of `app/` on a web server. Remember to update the `HOST` property in the `app/config.js` to match how you are serving out the data.
-
-# Developing
-
-You can get into the Docker container by running `script/console`.
+Visit: [http://localhost:8000/](http://localhost:8000/)

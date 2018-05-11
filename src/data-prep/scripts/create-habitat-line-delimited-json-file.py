@@ -50,29 +50,6 @@ for region in region_list:
                     # Add this feature to the habitats collection under its LINKID
                     habitats[link] = feature
 
-            # Manual iterate over features and skip over problematic ones.
-            # I believe this has to do with a newer version of GDAL and fiona's ability
-            # to handle info coming from GEOS. ogr2ogr also issues this ERROR message,
-            # but as a warning.
-            # try:
-            #     temp = habitat_data.__iter__()
-            # except AttributeError():
-            #     raise TypeError("'{}' object is not iterable".format(type(iterable).__name__))
-            # else:
-            #     while True:
-            #         try:
-            #             feature = temp.__next__()
-            #         except StopIteration:
-            #             break
-            #         except fiona.errors.UnsupportedGeometryTypeError:
-            #             print("HIT IT!")
-            #             # Hack around this error:
-            #             # fiona.errors.UnsupportedGeometryTypeError: 12
-            #             pass
-            #         except AttributeError:
-            #             raise TypeError("iter() returned non-iterator of type '{}'".format(type(temp).__name__))
-            #         # this is the "body" of the for loop
-            #         process_feature(feature)
 
     # Open the species csv data
     with open(file=species_path) as species_data:
