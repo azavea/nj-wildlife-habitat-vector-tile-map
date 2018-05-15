@@ -630,8 +630,14 @@ function renderSelectAreaOfInterestPrompt() {
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   drawBtn.onclick = function() {
-      DRAW.changeMode('draw_polygon');
-  }
+        let zoom = MAP.getZoom();
+        if (zoom > 14.0) {
+            DRAW.changeMode('draw_polygon');
+        }
+        else {
+            alert("Please zoom in and draw a smaller area.");
+        }
+      }
 }
 
 // Render Application State 2: Report on user's selected area of interest
