@@ -9,3 +9,5 @@ const TILE_SOURCES = {
   habitatAreas: HOST + '/tiles/nj-habitat-areas/{z}/{x}/{y}.pbf',
   landscapeRegions: HOST + '/tiles/landscape-regions/{z}/{x}/{y}.pbf'
 };
+
+const HOST_JSON = 'https://s3.amazonaws.com/nj-wildlife-habitat-vector-tile-map';

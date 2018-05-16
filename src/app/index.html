@@ -828,7 +828,7 @@ function updateAreaOfInterest() {
     // Make a request for the raw GeoJSON of each LINKID habitat
     for (var i = 0; i < LINKIDs.length; i++) {
       // Request GeoJSON files from `habitat` directory
-      q.defer(d3.json, HOST + '/data/habitat/' + LINKIDs[i] + '.json')
+      q.defer(d3.json, HOST_JSON + '/data/habitat/' + LINKIDs[i] + '.json')
     }
     // Wait for all the individual GeoJSON habitats to load
     q.awaitAll(function(error, data) {
