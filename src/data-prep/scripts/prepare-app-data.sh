@@ -11,6 +11,7 @@ mkdir -p /usr/src/data/habitat
 # Habitat Polygon Vector Tiles
 # Read habitat features and convert to vector tiles
 tippecanoe --read-parallel \
+  --no-polygon-splitting \
   -n "NJ Landscape Project Habitat Areas" -A "<a href='http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm'>NJDEP</a>" \
   -l "nj-habitat-areas" -z 14 -Z 12 \
   -f -o /usr/src/data/nj-habitat-areas.mbtiles \
@@ -35,6 +36,7 @@ function export-mbtiles() {
 
 
 tippecanoe --read-parallel \
+  --no-polygon-splitting \
   -n "NJ Landscape Project Regions" -A "<a href='http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm'>NJDEP</a>" \
   -l "landscape-regions" -z 13 -Z 7 \
   -f -o /usr/src/data/landscape-regions.mbtiles \
