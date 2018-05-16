@@ -15,17 +15,17 @@
 
     <!-- Metatags -->
     <meta property="og:title" content="NJ Wildlife Habitat Viewer" />
-    <meta property="og:url" content="www.njhabitat.azavea.com" />
+    <meta property="og:url" content="https://njwildlife.azavea.com" />
     <meta property="og:type" content="website" />
     <meta property="og:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
-    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
+    <meta property="og:image" content="images/area-of-interest.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
     <meta name="twitter:creator" content="@azavea" />
     <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
-    <meta name="twitter:url" content="www.njhabitat.azavea.com" />
-    <meta property="og:image" content="images/ADD COVER IMAGE HERE.png" />
+    <meta name="twitter:url" content="https://njwildlife.azavea.com" />
+    <meta property="og:image" content="images/area-of-interest.png" />
 
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/main.css" />
@@ -147,7 +147,7 @@
                 <h4>Solving difficult problems</h4>
                 <p>It can be challenging to determine a list of wildlife habitat on a specific site, even if you’re in the environmental consulting/regulatory compliance world and have experience with GIS software. Other online tools that explore Landscape Project data exist, but load time is slow and retrieving lists for a user-selected area is not possible.</p>
                 <p>Through the creation of this Proof of Concept we investigated a workflow to process a large dataset of about 1 million polygons into vector tiles that can be rendered responsively in a web browser using open source libraries, including <a href="https://www.mapbox.com/mapbox-gl-js/api/" target='_blank'>Mapbox GL JS</a>.</p>
-                <p>Read in detail about the steps we took to create this tool in <a href="#" target='_blank'>this blog post</a> and explore other Azavea 10% Time Projects at <a href="https://www.azavea.com/research/" target='_blank'>azavea.com/research</a>.
+                <!-- <p>Read in detail about the steps we took to create this tool in <a href="#" target='_blank'>this blog post</a> and explore other Azavea 10% Time Projects at <a href="https://www.azavea.com/research/" target='_blank'>azavea.com/research</a>.</p> -->
                 <h4>Future possibilities</h4>
                 <p>This tool solves a specific set of problems, but it is an example of what is possible if we apply the methods used in this Proof of Concept to a similar need.</p>
                 <p>What is your current process for conducting environmental inventories? If you would like to hear more about how we can help you build a tool that maximizes efficiency and accuracy for site inventories, submit your email below.</a></p>
@@ -578,7 +578,7 @@ function renderZoomPrompt() {
       '<div class="sidebar" id="app-state-0"> \
       <!-- App State 0 --> \
           <div class="block"> \
-              <h4>Enter an address or zoom to your Area of Interest.</h4> \
+              <h4>Enter an address or zoom to your <br>Area of Interest.</h4> \
           </div> \
           <!-- Geocoder --> \
           <div class="block"> \
@@ -623,6 +623,13 @@ function renderSelectAreaOfInterestPrompt() {
       <!-- App State 1 --> \
       </div>';
 
+  // set map canvas equal to div.#map width
+  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  var mapDiv = document.getElementById('map');
+  mapDiv.style.width = '100%';
+  mapCanvas.style.width = '100%';
+  MAP.resize();
+
   // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
 
@@ -630,8 +637,14 @@ function renderSelectAreaOfInterestPrompt() {
   // When the user clicks the button, trash the current drawing and Start
   // new drawing session
   drawBtn.onclick = function() {
-      DRAW.changeMode('draw_polygon');
-  }
+        let zoom = MAP.getZoom();
+        if (zoom > 14.0) {
+            DRAW.changeMode('draw_polygon');
+        }
+        else {
+            alert("Please zoom in and draw a smaller area.");
+        }
+      }
 }
 
 // Render Application State 2: Report on user's selected area of interest
@@ -703,6 +716,13 @@ function renderAreaOfInterestReport() {
       renderSelectAreaOfInterestPrompt();
   }
 
+  // set map canvas equal to div.#map width
+  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  var mapDiv = document.getElementById('map');
+  mapDiv.style.width = '100%';
+  mapCanvas.style.width = '100%';
+  MAP.resize();
+
   $('#table').DataTable( {
       data: uniquesList,
       dom: 'Bfrtip',
@@ -737,7 +757,7 @@ function renderAreaOfInterestReport() {
 
                   return filename;
               },
-              title: 'Landscape Project v3.3 Present Within Selected Area of Interest',
+              title: 'Wildlife Habitat Present Within Selected Area of Interest',
               messageTop: 'This is a list of Landscape Project v3.3 species habitat within the selected Area of Interest.',
               messageBottom: function() {
                   var today = new Date();
@@ -839,16 +859,8 @@ function updateAreaOfInterest() {
 function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, { duration: 0, padding: 100}); // duration: 0 makes this synchronous
-    // set map canvas equal to div.#map width
-    // let mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-    // let mapDiv = document.getElementById('map');
-    // mapCanvas.style.width = mapDiv.style.width;
-    // mapCanvas.style.height = mapDiv.style.height;
-
-    // if zoom at bounds =<13, print message asking user to draw smaller AOI
-
-  }
+    MAP.fitBounds(bounds, {duration: 0, padding: 100}); // duration: 0 makes this synchronous
+    }
 }
 
 // Limit the map zooming and panning to within the current frame
@@ -861,7 +873,6 @@ function constrainMap() {
 function unconstrainMap() {
   MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
   MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
-  MAP.resize();
 }
 
 </script>
