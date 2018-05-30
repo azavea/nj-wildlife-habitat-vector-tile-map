@@ -10,8 +10,11 @@ Multiple open source libraries/tools like GDAL ogr2ogr, Mapbox Tippecanoe, and M
 ### Demo
 Draw an Area of Interest, get list of wildlife habitat.
 
+Checking a Greenfield property habitat inventory during permitting process:
+![njwildlife.azavea.com demo](src/app/images/2018_05_15_NJWildlifeHabitatFinderProofofConcept_DanFordAzavea.gif)
 
-
+Linear utility right-of-way environmental inventory:
+![njwildlife.azavea.com: utility right-of-way Area of Interest demo](src/app/images/2018_05_29_NJWildlifeHabitatFinderProofofConcept_DanFordAzavea.gif)
 
 ### Goals
 
