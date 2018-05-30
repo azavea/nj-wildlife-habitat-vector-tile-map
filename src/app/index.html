@@ -648,6 +648,7 @@ function renderSelectAreaOfInterestPrompt() {
 
 // Render Application State 2: Report on user's selected area of interest
 let fullList = [];
+let uniquesList = [];
 
 function renderAreaOfInterestReport() {
 
@@ -683,7 +684,7 @@ function renderAreaOfInterestReport() {
       }
   };
 
-  let uniquesList = removeDuplicates(fullList, 'COMNAME');
+  uniquesList = removeDuplicates(fullList, 'COMNAME');
 
   const appState2 =
       '<div class="sidebar" id="app-state-2"> \
