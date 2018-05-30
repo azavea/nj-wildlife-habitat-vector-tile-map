@@ -1,8 +1,24 @@
-# Background
+### Background
+[NJ Landscape Project data](http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm) is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. Landscape Project species habitat areas are determined by running species-specific models on a wildlife observation point dataset. NJDEP ENSP biologists create habitat models for each NJ Special Concern, Threatened, or Endangered species, including Federally Threatened or Endangered species. These models use a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide land-use land-cover polygons to create potential habitat areas ([see Landscape Project Report v3.3, page 18-23](http://www.state.nj.us/dep/fgw/ensp/landscape/lp_report_3_3.pdf)).
 
-[NJ Landscape Project data](http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm) is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. Landscape Project species habitat areas are determined by running species-specific models on a species observation point dataset. NJDEP ENSP biologists create habitat models for each NJ Special Concern, Threatened, or Endangered species, including Federally Threatened or Endangered species. These models use a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide land-use land-cover polygons to create potential habitat areas ([see Landscape Project Report v3.3, page 18-23](http://www.state.nj.us/dep/fgw/ensp/landscape/lp_report_3_3.pdf)). The dataset has hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife.
+The dataset has hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife. In total, the dataset includes about 1 million polygons. This open data set is provided as a Geodatabase that includes vector data and related tabular data. Basic geospatial operations can take minutes or hours to process due to the size of the dataset and the workflow required.
 
-This Proof of Concept investigates a workflow to process this dataset into vector tiles that can be rendered responsively in a web browser with Mapbox services and Mapbox GL JS.
+This Proof of Concept investigates a workflow to process this dataset into vector tiles that can be rendered responsively in a web browser. Now a user can draw a custom area in a browser window and return results in seconds, enabling efficient compliance with environmental regulations.
+
+Multiple open source libraries/tools like GDAL ogr2ogr, Mapbox Tippecanoe, and Mapbox GL JS are used in this workflow.
+
+### Demo
+Draw an Area of Interest, get list of wildlife habitat.
+
+
+
+
+### Goals
+
+- define a process for interacting with large vector data sets in a browser using open source libraries
+- create a Proof of Concept that can be applied to similar situations
+- free up consultant time for other tasks
+- encourage industry-adoption of open source tools
 
 ### Requirements
 
