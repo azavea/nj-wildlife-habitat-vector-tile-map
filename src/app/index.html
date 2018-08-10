@@ -204,7 +204,7 @@ const APP = {
   mode: 'draw',
   areaOfInterest: { type: 'FeatureCollection', features: [] },
   contextFeatures: { type: 'FeatureCollection', features: [] },
-  featuresOfInterest: { type: 'FeatureCollection', features: [] }
+  featuresOfInterest: []
 }
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -422,7 +422,6 @@ MAP.on('load', () => {
       if (DRAW.getMode() !== 'draw_polygon' && DRAW.getAll().features.length === 0) {
           let features = MAP.queryRenderedFeatures(e.point, { layers: ['nj-habitat-areas'] });
 
-          // If the features have no info, return nothing
           // if the features have no info, return nothing
           if (!features.length) {
               return;
@@ -544,7 +543,7 @@ function updateApp() {
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
-        if (APP.featuresOfInterest.features.length > 0) {
+        if (APP.featuresOfInterest.length > 0) {
           // Render "Display Area of Interest Analysis with Species List"
           APP.state = 2;
           renderAreaOfInterestReport();
@@ -656,14 +655,7 @@ function renderAreaOfInterestReport() {
   document.getElementById('habitat-legend').style.display = 'none';
   document.getElementById('regions-legend').style.display = 'none';
 
-  fullList = [];
-
-  console.log(JSON.stringify(APP.featuresOfInterest));
-  APP.featuresOfInterest.features.map(function(f) {
-    f.properties.species.map(function(s) {
-      fullList.push(s);
-    });
-  });
+  fullList = APP.featuresOfInterest;
 
   // // remove duplicates function
   function removeDuplicates(arr, key) {
@@ -805,61 +797,48 @@ function renderAreaOfInterestReport() {
 }
 
 function updateAreaOfInterest() {
-  APP.areaOfInterest = turf.combine(DRAW.getAll());
+    APP.areaOfInterest = turf.combine(DRAW.getAll());
 
-  if (APP.areaOfInterest.features.length > 0) {
+    if (APP.areaOfInterest.features.length > 0) {
 
-    frameMap();
-    constrainMap();
+        frameMap();
+        constrainMap();
 
-    let tileFeatures = MAP.queryRenderedFeatures({ layers: [ 'nj-habitat-areas' ] });
+        let bbox = turf.bbox(APP.areaOfInterest.features[0]);
 
-    let tileFeatureLINKIDs = tileFeatures.map((feature) => {
-      return feature.properties.LINKID;
-    });
+        let southWest = [bbox[0], bbox[1]];
+        let northEast = [bbox[2], bbox[3]];
+        let northEastPointPixel = MAP.project(northEast);
+        let southWestPointPixel = MAP.project(southWest);
 
-    let LINKIDs = tileFeatureLINKIDs.filter((id, index) => {
-      return tileFeatureLINKIDs.indexOf(id) === index;
-    }).sort();
+        let tileFeatures = MAP.queryRenderedFeatures([southWestPointPixel, northEastPointPixel], { layers: [ 'nj-habitat-areas' ] });
 
-    // Download GeoJSON //
-    // Initialize a queue of requests
-    var q = d3.queue()
-    // Make a request for the raw GeoJSON of each LINKID habitat
-    for (var i = 0; i < LINKIDs.length; i++) {
-      // Request GeoJSON files from `habitat` directory
-      q.defer(d3.json, HOST_JSON + '/data/habitat/' + LINKIDs[i] + '.json')
+        let species = [];
+
+        //parse the species property that was stringified during queryRenderedFeatures
+        tileFeatures.forEach((feature) => {
+            if (turf.intersect(APP.areaOfInterest.features[0], feature)) {
+                let item = JSON.parse(feature.properties.species);
+                species = species.concat(item);
+            }
+        });
+
+        APP.featuresOfInterest = species;
+
+        updateApp();
+
+    } else {
+        APP.contextFeatures = turf.featureCollection([]);
+        APP.featuresOfInterest = turf.featureCollection([]);
+        unconstrainMap();
+        updateApp();
     }
-    // Wait for all the individual GeoJSON habitats to load
-    q.awaitAll(function(error, data) {
-      APP.contextFeatures = turf.featureCollection(data);
-
-      let habitatData = APP.contextFeatures;
-      let intersectionArea = APP.areaOfInterest.features[0];
-
-      // Clip each feature in the FeatureCollection by the drawing's area of interest
-      let intersectingHabitat = turf.featureCollection(habitatData.features.map((f) => {
-        let clippedFeature = turf.intersect(intersectionArea, f);
-        if (clippedFeature) { clippedFeature.properties = f.properties; }
-        return clippedFeature;
-      }).filter(function(f) { return f; })); // Filter out null features (didn't intersect with area of interest)
-
-      APP.featuresOfInterest = intersectingHabitat;
-
-      updateApp();
-    });
-  } else {
-    APP.contextFeatures = turf.featureCollection([]);
-    APP.featuresOfInterest = turf.featureCollection([]);
-    unconstrainMap();
-    updateApp();
-  }
 }
 
 function frameMap() {
   if (APP.areaOfInterest.features.length > 0) {
     let bounds = turf.bbox(APP.areaOfInterest);
-    MAP.fitBounds(bounds, {duration: 0, padding: 100}); // duration: 0 makes this synchronous
+    MAP.fitBounds(bounds, {duration: 0, padding: 150}); // duration: 0 makes this synchronous
     }
 }
 
