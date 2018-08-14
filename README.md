@@ -48,8 +48,7 @@ Edit `src/app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/
 
 To point at your own data that was prepared in the previous step,
 you'll need to serve it out in some publicly accessible endpoint, and modify
-the `HOST` configuration variable in `src/app/config.js` such that the GeoJSON data
-is located at `${HOST}/data/habitat/[ID].json` and the tiles are available at
+the `HOST` configuration variable in `src/app/config.js` such that the tiles are available at
 `${HOST}/tiles/[TILE SET]/{z}/{x}/{y}`.
 
 ### Run the development server
