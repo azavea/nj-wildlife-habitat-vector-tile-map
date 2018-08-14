@@ -3,9 +3,6 @@
 # Directory for tiles
 mkdir -p /usr/src/data/tiles
 
-#Directory for individual habitat files
-mkdir -p /usr/src/data/habitat
-
 # Tippecanoe options https://github.com/mapbox/tippecanoe#options
 
 # Habitat Polygon Vector Tiles
