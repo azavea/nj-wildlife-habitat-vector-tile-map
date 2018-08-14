@@ -17,11 +17,6 @@ tippecanoe --read-parallel \
   -f -o /usr/src/data/nj-habitat-areas.mbtiles \
   /usr/src/gen/features.txt
 
-# Individual Habitat GeoJSON Files
-# Save habitat features to individual GeoJSON files named by LINKID
-echo 'Writing individual GeoJSON files to /app/habitat/...'
-parallel --pipepart -a /usr/src/gen/features.txt node /usr/src/scripts/create-habitat-individual-json-files.js
-
 # Export the mbtiles to pbf files
 function export-mbtiles() {
     mkdir -p $2
@@ -32,9 +27,8 @@ function export-mbtiles() {
         popd;
 }
 
-# export-mbtiles /usr/src/data/nj-habitat-areas.mbtiles /usr/src/data/tiles/nj-habitat-areas
-
-
+# Landscape Regions Vector Tiles
+# Read region features and convert to vector tiles
 tippecanoe --read-parallel \
   --no-polygon-splitting \
   -n "NJ Landscape Project Regions" -A "<a href='http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm'>NJDEP</a>" \
@@ -42,4 +36,5 @@ tippecanoe --read-parallel \
   -f -o /usr/src/data/landscape-regions.mbtiles \
   /usr/src/gen/landscape_regions.geojson
 
+# Export the mbtiles to pbf files
 export-mbtiles /usr/src/data/landscape-regions.mbtiles /usr/src/data/tiles/landscape-regions
