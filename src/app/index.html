@@ -543,7 +543,7 @@ function updateApp() {
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
-        if (APP.featuresOfInterest.length > 0) {
+        if (APP.speciesFullList.length > 0) {
           // Render "Display Area of Interest Analysis with Species List"
           APP.state = 2;
           renderAreaOfInterestReport();
@@ -655,7 +655,7 @@ function renderAreaOfInterestReport() {
   document.getElementById('habitat-legend').style.display = 'none';
   document.getElementById('regions-legend').style.display = 'none';
 
-  fullList = APP.featuresOfInterest;
+  fullList = APP.speciesFullList;
 
   // // remove duplicates function
   function removeDuplicates(arr, key) {
@@ -823,7 +823,7 @@ function updateAreaOfInterest() {
             }
         });
 
-        APP.featuresOfInterest = species;
+        APP.speciesFullList = species;
 
         updateApp();
 
