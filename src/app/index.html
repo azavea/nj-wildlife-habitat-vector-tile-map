@@ -189,7 +189,6 @@
 <script src="config.js"></script>
 
 <script>
-
 // Map pan and zoom contraints for New Jersey
 const NJ_MAP_LIMITS = {
   minZoom: 7,
@@ -521,6 +520,7 @@ MAP.on('load', () => {
 });
 
 function updateApp() {
+console.log(APP.areaOfInterest.features.length);
   // Immediately remove map annotation if zoom is less than 13
   if (MAP.getZoom() < 13) {
     POPUP.remove();
@@ -531,15 +531,17 @@ function updateApp() {
     setReady();
 
     let zoom = MAP.getZoom();
-
     if (zoom < 13) {
       // Render "Search for Address or Zoom to Region"
       renderZoomPrompt();
+      buildSpotlightsList(spotlights);
       APP.state = 0;
     } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0) {
       // Render "Select Area of Interest"
+
       APP.state = 1;
       renderSelectAreaOfInterestPrompt();
+      buildSpotlightsList(spotlights);
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
@@ -555,6 +557,7 @@ function updateApp() {
   } else {
     setLoading();
   }
+  return;
 }
 
 function setReady() {
@@ -573,7 +576,7 @@ function renderZoomPrompt() {
   document.getElementById('regions-legend').style.display = 'block';
 
   const appState0 =
-      '<div class="sidebar" id="app-state-0"> \
+      '<div class="sidebar" id="sidebar"> \
       <!-- App State 0 --> \
           <div class="block"> \
               <h4>Enter an address or zoom to your <br>Area of Interest.</h4> \
@@ -584,6 +587,7 @@ function renderZoomPrompt() {
           </div> \
           <div class="block"></div> \
           <!-- Geocoder --> \
+          <div id="spotlights" class="spotlights"></div> \
       <!-- App State 0 --> \
       </div>';
 
@@ -591,7 +595,6 @@ function renderZoomPrompt() {
   $(".sidebar").replaceWith($(appState0));
 
   document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
-
 }
 
 // Render Application State 1: Prompt user to select an area of interest
@@ -602,7 +605,7 @@ function renderSelectAreaOfInterestPrompt() {
   document.getElementById('regions-legend').style.display = 'none';
 
   const appState1 =
-      '<div class="sidebar" id="app-state-1"> \
+      '<div class="sidebar" id="sidebar"> \
       <!-- App State 1 --> \
           <div class="description"> \
               <h4>Draw your Area of Interest.</h4> \
@@ -618,6 +621,7 @@ function renderSelectAreaOfInterestPrompt() {
               </tbody> \
           </table> \
           </div> \
+          <div id="spotlights" class="spotlights"></div> \
       <!-- App State 1 --> \
       </div>';
 
@@ -850,10 +854,74 @@ function constrainMap() {
 
 // Limit the map zooming and panning to only within NJ limits
 function unconstrainMap() {
-  MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
-  MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
+    MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
+    MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
 }
 
+// Spotlight locations for flyTo feature
+let spotlights = {
+    'location1': {
+        title: "Cape May Bird Observation Deck",
+        description: "This popular birding spot is home to resident protected species habitat in addition to housing thousands of migratory birds each year.",
+        center: [-74.957859, 38.933034],
+        zoom: 15.5,
+        id: 1
+    },
+    'location2': {
+        title: "Delaware Water Gap National Recreation Area",
+        description: "The Appalachian Trail runs up the middle of this large swath of public land that includes suitable habitat for more than 25 species.",
+        center: [-75.126345, 40.971842],
+        zoom: 15.5,
+        id: 2
+    },
+    'location3': {
+        title: "Wharton State Forest",
+        description: "This area in South 'Jersey includes habitat for protected wildlife found only in the unique National Pinelands Reserve.",
+        center: [-74.725852, 39.740231],
+        zoom: 15.5,
+        id: 3
+    }
+};
+
+function buildSpotlightsList(data) {
+    for (i in data) {
+            let currentLocation = data[i];
+            let locations = document.getElementById('spotlights');
+            let newDiv = document.createElement('div');
+            let location = locations.appendChild(newDiv);
+            location.className = 'item';
+            location.id = 'spotlight-' + i;
+
+            let link = location.appendChild(document.createElement('a'));
+            link.href = '#';
+            link.className = 'spotlight-title';
+            link.dataPosition = i ;
+            link.innerHTML = currentLocation.title;
+
+            $(".item").click(function() {
+                window.location = $(this).find("a").attr("href");
+                return false;
+            });
+
+            let details = location.appendChild(document.createElement('p'));
+            details.innerHTML = currentLocation.description;
+
+            // Add an event listener for the links in the sidebar listing
+            link.addEventListener('click', function(e) {
+                let clickedLocation = data[this.dataPosition];
+                // Fly to the point associated with the clicked link
+                MAP.flyTo({
+                    center: clickedLocation.center,
+                    zoom: clickedLocation.zoom
+                });
+                let activeItem = document.getElementsByClassName('active');
+                if (activeItem[0]) {
+                    activeItem[0].classList.remove('active');
+                }
+                this.parentNode.classList.add('active');
+            });
+    }
+}
 </script>
 
 <script src="js/learn-more-modal.js"></script>
