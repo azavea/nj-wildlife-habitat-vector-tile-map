@@ -148,7 +148,7 @@ a:hover, a:focus {
 }
 
 .block {
-    background-color: #f4f6f7;
+    background-color: #f4f6f8;
     color: #444;
     padding-left: 20px;
     padding-right: 20px;
@@ -163,7 +163,7 @@ a:hover, a:focus {
     justify-content: space-between;
     align-items: center;
     padding: 0 1rem;
-    background-color: #d4dce0;
+    background-color: #d0d9e1;
     border-bottom: 1px solid #888;
 }
 
@@ -191,7 +191,7 @@ a:hover, a:focus {
     grid-area: sidebar;
     display: flex;
     flex-direction: column;
-    background-color: #f4f6f7;
+    background-color: #f4f6f8;
     color: #444;
     padding-top: 25px;
     padding-left: 10px;
@@ -236,7 +236,7 @@ a:hover, a:focus {
         display: flex;
         justify-content: center;
         padding: 0 1rem;
-        background-color: #d4dce0;
+        background-color: #d0d9e1;
         border-bottom: 1px solid #888;
     }
 }
@@ -317,14 +317,14 @@ hr {
     font-family: "Roboto", Arial, Helvetica, sans-serif;
     font-size: 0.9rem;
     font-weight: 400;
-    background-color: #75848b;
+    background-color: #4d6379;
     color: #fff;
     padding: 10px 20px;
     vertical-align: middle;
 }
 
 .btn-grey:hover, .btn-grey:active {
-    background-color: #85949b;
+    background-color: #7c94ac;
     color: #fff;
     text-decoration: none;
 }
@@ -333,14 +333,15 @@ hr {
     font-family: "Roboto", Arial, Helvetica, sans-serif;
     font-size: 0.9rem;
     font-weight: 400;
-    background-color: #536066;
-    color: #fff;
+    background-color: #fff;
+    border: 1.5px solid #4d6379;
+    color: #4d6379;
     padding: 10px 20px;
     vertical-align: middle;
 }
 
 .btn-modal:hover, .btn-grey:active {
-    background-color: #75848b;
+    background-color: #4d6379;
     color: #fff;
     text-decoration: none;
 }
@@ -356,10 +357,10 @@ div.dt-buttons {
     font-size: 0.85rem;
     background-color: #fff;
     background-image: none;
-    color: #4a5357;
+    color: #4d6379;
     margin: 4px;
     padding: 5px 10px;
-    border: 1.5px solid #75848b;
+    border: 1.5px solid #4d6379;
     border-radius: 3px;
     cursor: pointer;
 }
@@ -367,12 +368,12 @@ div.dt-buttons {
 .dt-button.new:hover, .dt-button.new:focus, .dt-button.new:active {
     font-family: "Roboto", Arial, Helvetica, sans-serif !important;
     font-size: 0.85rem;
-    background-color: #75848b;
+    background-color: #4d6379;
     background-image: none;
     color: #fff;
     margin: 4px;
     padding: 5px 10px;
-    border: 1.5px solid #75848b;
+    border: 1.5px solid #4d6379;
     border-radius: 3px;
     cursor: pointer;
     text-decoration: none;
@@ -381,12 +382,12 @@ div.dt-buttons {
 .dt-button.new:hover:not(.disabled) {
     font-family: "Roboto", Arial, Helvetica, sans-serif !important;
     font-size: 0.85rem;
-    background-color: #75848b;
+    background-color: #4d6379;
     background-image: none;
     color: #fff;
     margin: 4px;
     padding: 5px 10px;
-    border: 1.5px solid #75848b;
+    border: 1.5px solid #4d6379;
     border-radius: 3px;
     cursor: pointer;
     text-decoration: none;
@@ -396,16 +397,16 @@ div.dt-buttons {
 
 /* Contact Form */
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-  color: lighten(#f4f6f7, 30%);
+  color: lighten(#f4f6f8, 30%);
 }
 ::-moz-placeholder { /* Firefox 19+ */
-  color: lighten(#f4f6f7, 30%);
+  color: lighten(#f4f6f8, 30%);
 }
 :-ms-input-placeholder { /* IE 10+ */
-  color: lighten(#f4f6f7, 30%);
+  color: lighten(#f4f6f8, 30%);
 }
 :-moz-placeholder { /* Firefox 18- */
-  color: lighten(#f4f6f7, 30%);
+  color: lighten(#f4f6f8, 30%);
 }
 
 input,
@@ -430,7 +431,7 @@ textarea {
 
   &:focus,
   &:active {
-    box-shadow: #f4f6f7;
+    box-shadow: #f4f6f8;
   }
 }
 
@@ -613,7 +614,7 @@ table {
 
 .modal-header {
     padding: 25px;
-    background-color: #f4f6f7;
+    background-color: #f4f6f8;
     max-height: 100px;
 }
 
@@ -688,7 +689,7 @@ table {
         padding: 10px;
         background-color: #fff;
         color: #4a5357;
-        border: 1.5px solid #75848b;
+        border: 1.5px solid #4d6379;
         border-radius: 3px;
         cursor: pointer;
         z-index: 100 !important;
@@ -799,7 +800,7 @@ table {
     padding-right: 10px;
     padding-top: 15px;
     padding-bottom: 12px;
-    background-color: #d4dce0;
+    background-color: #d0d9e1;
 }
 
 .popup-text {
