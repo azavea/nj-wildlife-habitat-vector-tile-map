@@ -86,7 +86,7 @@
         </div>
         <!-- Title -->
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
         <!-- App State 0 -->
             <div class="block">
                 <h4>Enter an address or zoom to your <br>Area of Interest.</h4>
@@ -97,6 +97,9 @@
             </div>
             <div class="block"></div>
             <!-- Geocoder -->
+            <!-- Spotlight Locations -->
+            <div id="spotlights" class="spotlights"></div>
+            <!-- Spotlight Locations -->
         <!-- App State 0 -->
         </div>
         <!-- Map -->
@@ -170,7 +173,7 @@
                                 <input id="email" name="email" type="email" required="required" type="email">
                             </label>
                             <div class="form-action">
-                                <button type="submit" class="btn btn-modal">Get in Touch</button>
+                                <button type="submit" class="btn btn-grey">Get in Touch</button>
                             </div>
                         </div>
                         <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
@@ -203,7 +206,7 @@ const APP = {
   mode: 'draw',
   areaOfInterest: { type: 'FeatureCollection', features: [] },
   contextFeatures: { type: 'FeatureCollection', features: [] },
-  featuresOfInterest: []
+  speciesFullList: []
 }
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -312,8 +315,7 @@ const POPUP = new mapboxgl.Popup ({
     closeOnClick: false
 });
 
-MAP.on('render', updateApp);
-MAP.on('moveend', updateApp);
+MAP.on('zoomend', function() { console.log("ZOOMEND"); updateApp(); });
 
 // Listen for updates to the drawing
 MAP.on('draw.create', updateAreaOfInterest);
@@ -322,6 +324,8 @@ MAP.on('draw.update', updateAreaOfInterest);
 
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
+
+  buildSpotlightsList(spotlights);
 
   // Define map style layers to enable search
   let mapStyleLayers = MAP.getStyle().layers;
@@ -358,7 +362,7 @@ MAP.on('load', () => {
                 [4, '#9bb88f'],
                 [5, '#78aa94']]
             },
-      "fill-opacity": 0.7,
+      "fill-opacity": 0.6,
       "fill-outline-color": "#fff"
     }
   }, firstSymbolId);
@@ -517,17 +521,17 @@ MAP.on('load', () => {
           MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
       }
   });
+
 });
 
 function updateApp() {
-console.log(APP.areaOfInterest.features.length);
   // Immediately remove map annotation if zoom is less than 13
   if (MAP.getZoom() < 13) {
     POPUP.remove();
   }
 
   // determine if loaded
-  if (APP.initialMapLoaded && MAP.loaded()) {
+  if (APP.initialMapLoaded) {
     setReady();
 
     let zoom = MAP.getZoom();
@@ -538,10 +542,8 @@ console.log(APP.areaOfInterest.features.length);
       APP.state = 0;
     } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0) {
       // Render "Select Area of Interest"
-
       APP.state = 1;
       renderSelectAreaOfInterestPrompt();
-      buildSpotlightsList(spotlights);
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
@@ -579,7 +581,7 @@ function renderZoomPrompt() {
       '<div class="sidebar" id="sidebar"> \
       <!-- App State 0 --> \
           <div class="block"> \
-              <h4>Enter an address or zoom to your <br>Area of Interest.</h4> \
+              <h4>Enter an address or zoom to your Area of Interest or choose one of the spotlight locations.</h4> \
           </div> \
           <!-- Geocoder --> \
           <div class="block"> \
@@ -621,7 +623,6 @@ function renderSelectAreaOfInterestPrompt() {
               </tbody> \
           </table> \
           </div> \
-          <div id="spotlights" class="spotlights"></div> \
       <!-- App State 1 --> \
       </div>';
 
@@ -629,7 +630,8 @@ function renderSelectAreaOfInterestPrompt() {
   var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
   var mapDiv = document.getElementById('map');
   mapDiv.style.width = '100%';
-  mapCanvas.style.width = '100%';
+  mapCanvas.style.width = mapDiv.style.width;
+  console.log("mapresize2");
   MAP.resize();
 
   // Replace Sidebar with App State 1 Sidebar
@@ -861,23 +863,23 @@ function unconstrainMap() {
 // Spotlight locations for flyTo feature
 let spotlights = {
     'location1': {
-        title: "Cape May Bird Observation Deck",
-        description: "This popular birding spot is home to resident protected species habitat in addition to housing thousands of migratory birds each year.",
-        center: [-74.957859, 38.933034],
-        zoom: 15.5,
-        id: 1
-    },
-    'location2': {
         title: "Delaware Water Gap National Recreation Area",
         description: "The Appalachian Trail runs up the middle of this large swath of public land that includes suitable habitat for more than 25 species.",
         center: [-75.126345, 40.971842],
         zoom: 15.5,
+        id: 1
+    },
+    'location2': {
+        title: "Wharton State Forest",
+        description: "This area in South Jersey includes habitat for protected wildlife found only in the unique National Pinelands Reserve.",
+        center: [-74.725852, 39.740231],
+        zoom: 15.5,
         id: 2
     },
     'location3': {
-        title: "Wharton State Forest",
-        description: "This area in South 'Jersey includes habitat for protected wildlife found only in the unique National Pinelands Reserve.",
-        center: [-74.725852, 39.740231],
+        title: "Cape May Bird Observation Deck",
+        description: "This popular birding spot is home to resident protected species habitat in addition to housing thousands of migratory birds each year.",
+        center: [-74.957859, 38.933034],
         zoom: 15.5,
         id: 3
     }
@@ -898,10 +900,10 @@ function buildSpotlightsList(data) {
             link.dataPosition = i ;
             link.innerHTML = currentLocation.title;
 
-            $(".item").click(function() {
-                window.location = $(this).find("a").attr("href");
-                return false;
-            });
+            // $(".item").click(function() {
+            //     window.location = $(this).find("a").attr("href");
+            //     return false;
+            // });
 
             let details = location.appendChild(document.createElement('p'));
             details.innerHTML = currentLocation.description;
@@ -910,16 +912,23 @@ function buildSpotlightsList(data) {
             link.addEventListener('click', function(e) {
                 let clickedLocation = data[this.dataPosition];
                 // Fly to the point associated with the clicked link
-                MAP.flyTo({
-                    center: clickedLocation.center,
-                    zoom: clickedLocation.zoom
-                });
+
+                flyToLocation(clickedLocation);
+
                 let activeItem = document.getElementsByClassName('active');
                 if (activeItem[0]) {
                     activeItem[0].classList.remove('active');
                 }
                 this.parentNode.classList.add('active');
             });
+
+            function flyToLocation(clickedLocation) {
+                MAP.flyTo({
+                    center: clickedLocation.center,
+                    zoom: clickedLocation.zoom
+                });
+
+        }
     }
 }
 </script>
