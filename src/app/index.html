@@ -525,6 +525,7 @@ MAP.on('load', () => {
 });
 
 function updateApp() {
+console.log(APP.areaOfInterest.features.length);
   // Immediately remove map annotation if zoom is less than 13
   if (MAP.getZoom() < 13) {
     POPUP.remove();
@@ -542,8 +543,10 @@ function updateApp() {
       APP.state = 0;
     } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0) {
       // Render "Select Area of Interest"
+
       APP.state = 1;
       renderSelectAreaOfInterestPrompt();
+      buildSpotlightsList(spotlights);
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
@@ -623,6 +626,7 @@ function renderSelectAreaOfInterestPrompt() {
               </tbody> \
           </table> \
           </div> \
+          <div id="spotlights" class="spotlights"></div> \
       <!-- App State 1 --> \
       </div>';
 
