@@ -27,6 +27,15 @@
     <meta name="twitter:url" content="https://njwildlife.azavea.com" />
     <meta property="og:image" content="images/blog-featured-image-blog01.png" />
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-970854-30"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-970854-30');
+    </script>
+
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/main.css" />
 
@@ -83,8 +92,9 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
         <!-- App State 0 -->
-            <div class="block">
-                <h4>Zoom to your Area of Interest.<br>Enter an address or choose one of the featured locations.</h4>
+            <div class="description">
+                <h4>Zoom to your Area of Interest.</h4>
+                <p class="italic">Enter an address or choose one of the featured locations.</p>
             </div>
             <!-- Geocoder -->
             <div class="block">
