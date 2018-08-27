@@ -1,27 +1,35 @@
+## NJ Wildlife Habitat Finder
+
 ### Background
-[NJ Landscape Project data](http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm) is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. Landscape Project species habitat areas are determined by running species-specific models on a wildlife observation point dataset. NJDEP ENSP biologists create habitat models for each NJ Special Concern, Threatened, or Endangered species, including Federally Threatened or Endangered species. These models use a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide land-use land-cover polygons to create potential habitat areas ([see Landscape Project Report v3.3, page 18-23](http://www.state.nj.us/dep/fgw/ensp/landscape/lp_report_3_3.pdf)).
+The NJDEP maintains a statewide wildlife habitat data set that details conservation requirements. Using desktop GIS software, a site-specific search is a time-intensive process, taking minutes or hours to run geoprocessing operations for specific properties.
 
-The dataset has hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife. In total, the dataset includes about 1 million polygons. This open data set is provided as a Geodatabase that includes vector data and related tabular data. Basic geospatial operations can take minutes or hours to process due to the size of the dataset and the workflow required.
+Now, by leveraging advances in web-based mapping technology, a user can draw a custom area in a browser window and return results in seconds.
 
-This Proof of Concept investigates a workflow to process this dataset into vector tiles that can be rendered responsively in a web browser. Now a user can draw a custom area in a browser window and return results in seconds, enabling efficient compliance with environmental regulations.
-
-Multiple open source libraries/tools like GDAL ogr2ogr, Mapbox Tippecanoe, and Mapbox GL JS are used in this workflow.
+### More information
+- [Project overview and data description](http://www.azavea.com/blog/2018/08/23/new-jersey-wildlife-habitat)
+- [Convert Geodatabase Vector Data with Related Tables to Vector Tiles]()
+- [How to Save a Mapbox GL Web Map Extent as an Image]()
 
 ### Demo
-Draw an Area of Interest, get list of wildlife habitat.
+Try the tool ([NJ Wildlife Habitat Finder](https://njwildlife.azavea.com/app/index.html#7/40.196/-74.596)): zoom to an area by typing an address into the search bar or by using the zoom navigation buttons. Then, draw a custom shape to display a list of wildlife habitat within the selected area.
 
-Checking a Greenfield property habitat inventory during permitting process:
-![njwildlife.azavea.com demo](src/app/images/2018_05_15_NJWildlifeHabitatFinderProofofConcept_DanFordAzavea.gif)
-
-Linear utility right-of-way environmental inventory:
-![njwildlife.azavea.com: utility right-of-way Area of Interest demo](src/app/images/2018_05_29_NJWildlifeHabitatFinderProofofConcept_DanFordAzavea.gif)
+Checking a property habitat inventory during environmental permitting process:
+![NJ Wildlife Habitat Finder demo](src/app/images/2018_08_23_NJWildlifeHabitatFinder_DanFordAzavea.gif)
 
 ### Goals
 
-- define a process for interacting with large vector data sets in a browser using open source libraries
-- create a Proof of Concept that can be applied to similar situations
-- free up consultant time for other tasks
-- encourage industry-adoption of open source tools
+- Define a process for interacting with large vector data sets in a browser using open source libraries
+- Test a method for appending related table data to vector tiles as JSON objects
+- Create a Proof of Concept data processing workflow that can be applied to similar situations
+- Design an application that allows a user to interact with the data in a browser
+
+### Results
+
+- Established a repeatable workflow for a common scenario across sectors: processing geodatabase files to vector tiles for access in web applications
+- Provided a resource for planners and conservationists in New Jersey
+
+
+## Development
 
 ### Requirements
 
@@ -44,7 +52,7 @@ Download and process the data.
 
 ### Edit access token and host information
 
-Edit `src/app/config.js` with your [Mapbox Access Token](https://www.mapbox.com/studio/account/tokens/)
+Edit `src/app/config.js`: add your [Mapbox Access Token](https://www.mapbox.com/studio/account/tokens/)
 
 To point at your own data that was prepared in the previous step,
 you'll need to serve it out in some publicly accessible endpoint, and modify
