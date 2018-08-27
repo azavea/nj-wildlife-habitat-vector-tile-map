@@ -17,26 +17,22 @@
     <meta property="og:title" content="NJ Wildlife Habitat Viewer" />
     <meta property="og:url" content="https://njwildlife.azavea.com" />
     <meta property="og:type" content="website" />
-    <meta property="og:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
-    <meta property="og:image" content="images/area-of-interest.png" />
+    <meta property="og:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea 10&#37; Time Project leveraging vector tiles." />
+    <meta property="og:image" content="images/blog-featured-image-blog01.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
     <meta name="twitter:creator" content="@azavea" />
-    <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
+    <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea 10&#37; Time Project leveraging vector tiles." />
     <meta name="twitter:url" content="https://njwildlife.azavea.com" />
-    <meta property="og:image" content="images/area-of-interest.png" />
+    <meta property="og:image" content="images/blog-featured-image-blog01.png" />
 
     <!-- Main stylesheet -->
     <link rel="stylesheet" href="css/main.css" />
 
     <!-- Mapbox GL JS -->
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.css' rel='stylesheet' />
-
-    <!-- D3.js -->
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet' />
 
     <!-- Turf.js -->
     <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
@@ -60,7 +56,6 @@
     </script>
 
     <!-- jQuery Plugin: DataTables (and dependencies) -->
-
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.css"/>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
@@ -86,17 +81,18 @@
         </div>
         <!-- Title -->
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
         <!-- App State 0 -->
             <div class="block">
-                <h4>Enter an address or zoom to your <br>Area of Interest.</h4>
+                <h4>Zoom to your Area of Interest.<br>Enter an address or choose one of the featured locations.</h4>
             </div>
             <!-- Geocoder -->
             <div class="block">
                 <div id="geocoder-container" class="geocoder-container"></div>
             </div>
-            <div class="block"></div>
             <!-- Geocoder -->
+            <div class="block"></div>
+            <div id="spotlights" class="block spotlights"></div>
         <!-- App State 0 -->
         </div>
         <!-- Map -->
@@ -138,18 +134,15 @@
             </div>
             <div class="modal-body">
                 <h4>About this tool</h4>
-                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Landscape regions are displayed at low zoom levels and detailed wildlife habitat areas are shown at high zoom levels.</p>
-                <p>To use this tool, zoom to an area by typing an address into the search bar or by using the zoom navigation buttons. Then, draw a custom shape to display a list of wildlife habitat within the area of interest.</p>
-                <h4>About the data</h4>
-                <p><a href="http://www.state.nj.us/dep/fgw/ensp/landscape/index.htm" target='_blank'>New Jersey Landscape Project</a> is a database that combines imperiled and priority species location information with land-use/land-cover (LULC) data. The dataset in made up of hundreds of thousands of polygons with continuous, topological coverage for the entire state and several associated tables with rich attribute information about habitat type and wildlife sighting records.</p>
-                <p>Landscape Project wildlife habitat areas are determined by running species-specific models on a wildlife observation point dataset. <a href="http://www.njfishandwildlife.com/ensphome.htm" target='_blank'>NJDEP ENSP</a> biologists create habitat models for each NJ Special Concern, Threatened, and Endangered species, including Federal Threatened and Endangered species, using a combination of species biology (i.e. movement patterns, habitat preferences, home ranges, etc) and statewide LULC polygons to create potential habitat areas. <a href="https://njdep.maps.arcgis.com/apps/Cascade/index.html?appid=6cd21ef042634609904beae390f34482" target='_blank'>View the story map</a> produced by the NJDEP to learn more about Landscape Project 3.3 data.</p>
-                <h4>Solving difficult problems</h4>
-                <p>It can be challenging to determine a list of wildlife habitat on a specific site, even if you’re in the environmental consulting/regulatory compliance world and have experience with GIS software. Other online tools that explore Landscape Project data exist, but load time is slow and retrieving lists for a user-selected area is not possible.</p>
-                <p>Through the creation of this Proof of Concept we investigated a workflow to process a large dataset of about 1 million polygons into vector tiles that can be rendered responsively in a web browser using open source libraries, including <a href="https://www.mapbox.com/mapbox-gl-js/api/" target='_blank'>Mapbox GL JS</a>.</p>
-                <!-- <p>Read in detail about the steps we took to create this tool in <a href="#" target='_blank'>this blog post</a> and explore other Azavea 10% Time Projects at <a href="https://www.azavea.com/research/" target='_blank'>azavea.com/research</a>.</p> -->
+                <p>This map displays NJDEP Landscape Project 3.3 wildlife habitat for the state of New Jersey. Landscape regions are displayed at low zoom levels and detailed wildlife habitat areas are shown at high zoom levels. <a href="http://www.azavea.com/blog/2018/08/23/new-jersey-wildlife-habitat" target="_blank" rel="noopener">Read more about the story</a> of this tool on the Azavea blog.</p>
+                <p>To use this tool, zoom to an area by typing an address into the search bar or by selecting a featured location. Then, draw a custom shape to get a list of wildlife habitat within the area of interest.</p>
+                <h4>Mapping for environmental impact</h4>
+                <p>Through the creation of this tool we investigated a workflow to process a large dataset of about 1 million polygons into vector tiles that can be rendered responsively in a web browser.</p>
+                <p>Read in detail about the steps we took to create this tool in <a href="#" target="_blank" rel="noopener">this blog post</a> and explore other Azavea 10% Time Projects at <a href="https://www.azavea.com/research/" target="_blank" rel="noopener">azavea.com/research</a>.</p>
                 <h4>Future possibilities</h4>
-                <p>This tool solves a specific set of problems, but it is an example of what is possible if we apply the methods used in this Proof of Concept to a similar need.</p>
-                <p>What is your current process for conducting environmental inventories? If you would like to hear more about how we can help you build a tool that maximizes efficiency and accuracy for site inventories, submit your email below.</a></p>
+                <p>This tool solves a specific set of problems - it’s an example of what’s possible if we apply the methods used in this project workflow to a similar need.</p>
+                <p>If you’re a landowner in New Jersey, visit the <a href="https://www.fws.gov/northeast/njfieldoffice/youcan.html" target="_blank" rel="noopener">US Fish and Wildlife Service Field Office website</a> to learn about what you can do to protect or enhance habitat on your property. Similar to much of our work, the <a href="https://github.com/azavea/nj-wildlife-habitat-vector-tile-map" target="_blank" rel="noopener">source code is available</a> under an open source license. Leverage the data processing pipeline on similar source data and let us know how it goes!</p>
+                <p>Does your team work on repetitive processes like environmental inventories? If you would like to hear more about how we can help you build a tool that maximizes efficiency and accuracy, submit your email below.</p>
             </div>
             <div class="modal-footer">
                 <p>We can help you create a custom tool that fits your project. Enter your email and we'll be in touch!</p>
@@ -170,7 +163,7 @@
                                 <input id="email" name="email" type="email" required="required" type="email">
                             </label>
                             <div class="form-action">
-                                <button type="submit" class="btn btn-modal">Get in Touch</button>
+                                <button type="submit" class="btn btn-grey">Get in Touch</button>
                             </div>
                         </div>
                         <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
@@ -189,7 +182,6 @@
 <script src="config.js"></script>
 
 <script>
-
 // Map pan and zoom contraints for New Jersey
 const NJ_MAP_LIMITS = {
   minZoom: 7,
@@ -204,7 +196,7 @@ const APP = {
   mode: 'draw',
   areaOfInterest: { type: 'FeatureCollection', features: [] },
   contextFeatures: { type: 'FeatureCollection', features: [] },
-  featuresOfInterest: []
+  speciesFullList: []
 }
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
@@ -313,8 +305,7 @@ const POPUP = new mapboxgl.Popup ({
     closeOnClick: false
 });
 
-MAP.on('render', updateApp);
-MAP.on('moveend', updateApp);
+MAP.on('zoomend', function() { updateApp(); });
 
 // Listen for updates to the drawing
 MAP.on('draw.create', updateAreaOfInterest);
@@ -323,6 +314,8 @@ MAP.on('draw.update', updateAreaOfInterest);
 
 MAP.on('load', () => {
   APP.initialMapLoaded = true;
+
+  buildSpotlightsList(spotlights);
 
   // Define map style layers to enable search
   let mapStyleLayers = MAP.getStyle().layers;
@@ -359,7 +352,7 @@ MAP.on('load', () => {
                 [4, '#9bb88f'],
                 [5, '#78aa94']]
             },
-      "fill-opacity": 0.7,
+      "fill-opacity": 0.6,
       "fill-outline-color": "#fff"
     }
   }, firstSymbolId);
@@ -381,7 +374,7 @@ MAP.on('load', () => {
                 [4, '#9bb88f'],
                 [5, '#78aa94']]
             },
-      "fill-opacity": 0.9,
+      "fill-opacity": 0.8,
       "fill-outline-color": "#fff"
     }
   }, firstSymbolId);
@@ -518,6 +511,7 @@ MAP.on('load', () => {
           MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
       }
   });
+  updateApp();
 });
 
 function updateApp() {
@@ -525,21 +519,20 @@ function updateApp() {
   if (MAP.getZoom() < 13) {
     POPUP.remove();
   }
-
   // determine if loaded
-  if (APP.initialMapLoaded && MAP.loaded()) {
-    setReady();
-
+  if (APP.initialMapLoaded) {
     let zoom = MAP.getZoom();
-
     if (zoom < 13) {
       // Render "Search for Address or Zoom to Region"
       renderZoomPrompt();
+      buildSpotlightsList(spotlights);
       APP.state = 0;
     } else if (zoom >= 13 && APP.areaOfInterest.features.length === 0) {
       // Render "Select Area of Interest"
+
       APP.state = 1;
       renderSelectAreaOfInterestPrompt();
+      resizeMap();
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
@@ -547,22 +540,21 @@ function updateApp() {
           // Render "Display Area of Interest Analysis with Species List"
           APP.state = 2;
           renderAreaOfInterestReport();
-        } else {
-          setLoading();
+          resizeMap();
         }
       }
     }
-  } else {
-    setLoading();
   }
+  return;
 }
 
-function setReady() {
-  //console.log('ready');
-}
-
-function setLoading() {
-  //console.log('loading');
+function resizeMap() {
+    // set map canvas equal to div.#map width
+    var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+    var mapDiv = document.getElementById('map');
+    mapDiv.style.width = '100%';
+    mapCanvas.style.width = '100%';
+    MAP.resize();
 }
 
 // Render Application State 0: Prompt user to zoom to an area of interest
@@ -573,17 +565,19 @@ function renderZoomPrompt() {
   document.getElementById('regions-legend').style.display = 'block';
 
   const appState0 =
-      '<div class="sidebar" id="app-state-0"> \
+      '<div class="sidebar" id="sidebar"> \
       <!-- App State 0 --> \
-          <div class="block"> \
-              <h4>Enter an address or zoom to your <br>Area of Interest.</h4> \
+          <div class="description"> \
+              <h4>Zoom to your Area of Interest.</h4> \
+              <p class="italic">Enter an address or choose one of the featured locations.</p> \
           </div> \
           <!-- Geocoder --> \
           <div class="block"> \
               <div id="geocoder-container" class="geocoder-container"></div> \
           </div> \
-          <div class="block"></div> \
           <!-- Geocoder --> \
+          <div class="block"></div> \
+          <div id="spotlights" class="block spotlights"></div> \
       <!-- App State 0 --> \
       </div>';
 
@@ -591,7 +585,6 @@ function renderZoomPrompt() {
   $(".sidebar").replaceWith($(appState0));
 
   document.getElementById('geocoder-container').appendChild(GEOCODER.onAdd(MAP))
-
 }
 
 // Render Application State 1: Prompt user to select an area of interest
@@ -602,7 +595,7 @@ function renderSelectAreaOfInterestPrompt() {
   document.getElementById('regions-legend').style.display = 'none';
 
   const appState1 =
-      '<div class="sidebar" id="app-state-1"> \
+      '<div class="sidebar" id="sidebar"> \
       <!-- App State 1 --> \
           <div class="description"> \
               <h4>Draw your Area of Interest.</h4> \
@@ -620,13 +613,6 @@ function renderSelectAreaOfInterestPrompt() {
           </div> \
       <!-- App State 1 --> \
       </div>';
-
-  // set map canvas equal to div.#map width
-  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  var mapDiv = document.getElementById('map');
-  mapDiv.style.width = '100%';
-  mapCanvas.style.width = '100%';
-  MAP.resize();
 
   // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
@@ -705,15 +691,8 @@ function renderAreaOfInterestReport() {
       DRAW.deleteAll();
       unconstrainMap();
       APP.areaOfInterest = emptyFeatureCollection;
-      renderSelectAreaOfInterestPrompt();
+      updateApp();
   }
-
-  // set map canvas equal to div.#map width
-  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  var mapDiv = document.getElementById('map');
-  mapDiv.style.width = '100%';
-  mapCanvas.style.width = '100%';
-  MAP.resize();
 
   $('#table').DataTable( {
       data: uniquesList,
@@ -850,10 +829,76 @@ function constrainMap() {
 
 // Limit the map zooming and panning to only within NJ limits
 function unconstrainMap() {
-  MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
-  MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
+    MAP.setMaxBounds(NJ_MAP_LIMITS.bounds);
+    MAP.setMinZoom(NJ_MAP_LIMITS.minZoom);
 }
 
+// Spotlight locations for flyTo feature
+let spotlights = {
+    'location1': {
+        title: "Delaware Water Gap National Recreation Area",
+        description: "The Appalachian Trail runs up the middle of this large swath of public land that includes suitable habitat for more than 25 protected species.",
+        center: [-75.126345, 40.971842],
+        zoom: 15.5,
+        id: 1
+    },
+    'location2': {
+        title: "Wharton State Forest",
+        description: "This area in South Jersey includes habitat for protected wildlife found only in the unique National Pinelands Reserve.",
+        center: [-74.725852, 39.740231],
+        zoom: 15.5,
+        id: 2
+    },
+    'location3': {
+        title: "Cape May Bird Observation Deck",
+        description: "This popular birding spot is home to resident protected species habitat in addition to housing thousands of migratory birds each year.",
+        center: [-74.957859, 38.933034],
+        zoom: 15.5,
+        id: 3
+    }
+};
+
+function buildSpotlightsList(data) {
+    for (i in data) {
+            let currentLocation = data[i];
+            let locations = document.getElementById('spotlights');
+            let newDiv = document.createElement('div');
+            let location = locations.appendChild(newDiv);
+            location.className = 'item';
+            location.id = 'spotlight-' + i;
+
+            let link = location.appendChild(document.createElement('a'));
+            link.href = '#';
+            link.className = 'spotlight-title';
+            link.dataPosition = i ;
+            link.innerHTML = currentLocation.title;
+
+            let details = location.appendChild(document.createElement('p'));
+            details.innerHTML = currentLocation.description;
+
+            // Add an event listener for the links in the sidebar listing
+            link.addEventListener('click', function(e) {
+                let clickedLocation = data[this.dataPosition];
+                // Fly to the point associated with the clicked link
+
+                flyToLocation(clickedLocation);
+
+                let activeItem = document.getElementsByClassName('active');
+                if (activeItem[0]) {
+                    activeItem[0].classList.remove('active');
+                }
+                this.parentNode.classList.add('active');
+            });
+
+            function flyToLocation(clickedLocation) {
+                MAP.flyTo({
+                    center: clickedLocation.center,
+                    zoom: clickedLocation.zoom
+                });
+
+        }
+    }
+}
 </script>
 
 <script src="js/learn-more-modal.js"></script>
