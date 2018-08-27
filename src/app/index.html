@@ -521,7 +521,6 @@ function updateApp() {
   }
   // determine if loaded
   if (APP.initialMapLoaded) {
-    setReady();
     let zoom = MAP.getZoom();
     if (zoom < 13) {
       // Render "Search for Address or Zoom to Region"
@@ -542,21 +541,11 @@ function updateApp() {
           APP.state = 2;
           renderAreaOfInterestReport();
           resizeMap();
-        } else {
-          setLoading();
         }
       }
     }
-  } else {
-    setLoading();
   }
   return;
-}
-
-function setReady() {
-}
-
-function setLoading() {
 }
 
 function resizeMap() {
@@ -624,13 +613,6 @@ function renderSelectAreaOfInterestPrompt() {
           </div> \
       <!-- App State 1 --> \
       </div>';
-
-  // // set map canvas equal to div.#map width
-  // var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  // var mapDiv = document.getElementById('map');
-  // mapDiv.style.width = '100%';
-  // mapCanvas.style.width = '100%';
-  // MAP.resize();
 
   // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
@@ -709,16 +691,8 @@ function renderAreaOfInterestReport() {
       DRAW.deleteAll();
       unconstrainMap();
       APP.areaOfInterest = emptyFeatureCollection;
-      // renderSelectAreaOfInterestPrompt();
       updateApp();
   }
-
-  // // set map canvas equal to div.#map width
-  // var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  // var mapDiv = document.getElementById('map');
-  // mapDiv.style.width = '100%';
-  // mapCanvas.style.width = '100%';
-  // MAP.resize();
 
   $('#table').DataTable( {
       data: uniquesList,
