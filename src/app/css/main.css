@@ -148,12 +148,8 @@ a:hover, a:focus {
 }
 
 .block {
-    background-color: #f4f6f8;
     color: #444;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    flex: none;
 }
 
 .header {
@@ -198,13 +194,15 @@ a:hover, a:focus {
     padding-right: 10px;
     padding-bottom: 25px;
     text-align: center;
-    align-items: center;
+    align-items: stretch;
     border-bottom: 1px solid #888;
     overflow-y: scroll;
 }
 
 .drawing-tools {
     display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .map-area {
@@ -243,7 +241,6 @@ a:hover, a:focus {
 
 .sidebar .block {
     display: flex;
-    justify-content: space-around;
     flex-direction: column;
 }
 
@@ -257,13 +254,14 @@ a:hover, a:focus {
     margin-left: 15px;
     margin-right: 15px;
     margin-top: 20px;
-    padding: 10px;
+    padding: 0;
     background-color: #fff;
     min-height: fit-content;
 }
 
 .block .geocoder-container {
-    padding-top: 40px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 hr {
@@ -530,16 +528,18 @@ label {
 
 /* Data Table */
 .dataTables_wrapper {
-    white-space: nowrap;
     font-size: 0.85rem;
     text-align: left;
-    padding-bottom: 30px;
 }
 
 .dataTables_scrollHead {
 }
 
 .dataTables_scrollBody {
+}
+
+table.dataTable.no-footer {
+    border-bottom: 1px solid #999 !important;
 }
 /* Data Table */
 
@@ -670,16 +670,15 @@ table {
 
 /* Spotlights */
 .spotlights {
-  height: 100%;
-  overflow: auto;
-  padding-bottom: 60px;
+  padding-bottom: 30px;
 }
 
 .spotlights .item {
   display: block;
+  text-align: left;
   border-radius: 5px;
   border: 1px solid #999;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: #fff;
   margin-left: 15px;
   margin-right: 15px;
   margin-top: 15px;
@@ -693,14 +692,21 @@ table {
 
 .spotlights .item .spotlight-title {
   display: block;
-  color: #00853e;
-  font-weight: 700;
+  padding-top: 8px;
+  font-family: "Roboto", Arial, Helvetica, sans-serif !important;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #3386c0;
+  word-wrap: break-word;
+  text-decoration: none;
 }
 
-.spotlights .item .spotlight-title small { font-weight: 400; }
-
 .spotlights .item.active .spotlight-title,
-.spotlights .item .spotlight-title:hover { color: #8cc63f; }
+.spotlights .item .spotlight-title:hover {
+    color: #4ea0da;
+    text-decoration: underline;
+    outline: 0;
+}
 
 .spotlights .item.active {
   background-color: #f8f8f8;
@@ -764,12 +770,10 @@ table {
     }
 }
 
-.geocoder-container {
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    align-self: center;
-    width: 100%;
+#sidebar .mapboxgl-ctrl-geocoder {
+    width: auto;
+    min-width: auto;
+    max-width: auto;
 }
 
 .geocoder-container > .mapboxgl-ctrl-geocoder, .mapboxgl-ctrl-geocoder ul {
@@ -781,9 +785,6 @@ table {
     font: 15px/25px 'Roboto', Arial, sans-serif;
     position: relative;
     background-color: white;
-    width: 75%;
-    min-width: 50%;
-    z-index: 1;
     border-radius: 5px;
     border: 1px solid #999;
 }
@@ -800,9 +801,9 @@ table {
     position: absolute;
     width: 100%;
     top: 100%;
-    z-index: 1000;
     overflow: hidden;
     font-size: 12px;
+    text-align: left;
 }
 
 .mapbox-gl-draw_polygon {
@@ -932,24 +933,14 @@ table {
 
 @media only screen and (min-width: 1028px)  {
 
-    .geocoder-container {
-        display: flex;
-        justify-content: center;
-        position: absolute;
-        align-self: center;
-        max-width: 25%;
-    }
-
     .geocoder-container > .mapboxgl-ctrl-geocoder {
         font: 15px/25px 'Roboto', Arial, sans-serif;
         position: relative;
         background-color: white;
-        width: 85%;
-        min-width: 180px;
-        max-width: 300px;
-        z-index: 1;
         border-radius: 5px;
         border: 1px solid #999;
+        min-width: auto;
+        max-width: auto;
     }
 
     .mapboxgl-popup {
