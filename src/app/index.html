@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NJ Wildlife Habitat Viewer" />
     <meta name="twitter:creator" content="@azavea" />
-    <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea Research Project leveraging vector tiles." />
+    <meta name="twitter:description" content="Draw a custom area on a map and get a list of wildlife habitat. An Azavea 10&#37; Time Project leveraging vector tiles." />
     <meta name="twitter:url" content="https://njwildlife.azavea.com" />
     <meta property="og:image" content="images/blog-featured-image-blog01.png" />
 
@@ -56,7 +56,6 @@
     </script>
 
     <!-- jQuery Plugin: DataTables (and dependencies) -->
-
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-flash-1.5.1/b-html5-1.5.1/r-2.2.1/datatables.min.css"/>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
@@ -85,17 +84,15 @@
         <div class="sidebar" id="sidebar">
         <!-- App State 0 -->
             <div class="block">
-                <h4>Enter an address or zoom to your <br>Area of Interest.</h4>
+                <h4>Zoom to your Area of Interest.<br>Enter an address or choose one of the featured locations.</h4>
             </div>
             <!-- Geocoder -->
             <div class="block">
                 <div id="geocoder-container" class="geocoder-container"></div>
             </div>
-            <div class="block"></div>
             <!-- Geocoder -->
-            <!-- Spotlight Locations -->
-            <div id="spotlights" class="spotlights"></div>
-            <!-- Spotlight Locations -->
+            <div class="block"></div>
+            <div id="spotlights" class="block spotlights"></div>
         <!-- App State 0 -->
         </div>
         <!-- Map -->
@@ -308,7 +305,7 @@ const POPUP = new mapboxgl.Popup ({
     closeOnClick: false
 });
 
-MAP.on('zoomend', function() { console.log("ZOOMEND"); updateApp(); });
+MAP.on('zoomend', function() { updateApp(); });
 
 // Listen for updates to the drawing
 MAP.on('draw.create', updateAreaOfInterest);
@@ -377,7 +374,7 @@ MAP.on('load', () => {
                 [4, '#9bb88f'],
                 [5, '#78aa94']]
             },
-      "fill-opacity": 0.9,
+      "fill-opacity": 0.8,
       "fill-outline-color": "#fff"
     }
   }, firstSymbolId);
@@ -514,20 +511,17 @@ MAP.on('load', () => {
           MAP.setFilter("nj-habitat-areas-hover", ["==", "LINKID", ""]);
       }
   });
-
+  updateApp();
 });
 
 function updateApp() {
-console.log(APP.areaOfInterest.features.length);
   // Immediately remove map annotation if zoom is less than 13
   if (MAP.getZoom() < 13) {
     POPUP.remove();
   }
-
   // determine if loaded
   if (APP.initialMapLoaded) {
     setReady();
-
     let zoom = MAP.getZoom();
     if (zoom < 13) {
       // Render "Search for Address or Zoom to Region"
@@ -539,7 +533,7 @@ console.log(APP.areaOfInterest.features.length);
 
       APP.state = 1;
       renderSelectAreaOfInterestPrompt();
-      buildSpotlightsList(spotlights);
+      resizeMap();
     } else if (zoom >= 13 && APP.areaOfInterest.features.length > 0) {
       if (APP.state !== 2) {
         // Wait if processing not complete
@@ -547,6 +541,7 @@ console.log(APP.areaOfInterest.features.length);
           // Render "Display Area of Interest Analysis with Species List"
           APP.state = 2;
           renderAreaOfInterestReport();
+          resizeMap();
         } else {
           setLoading();
         }
@@ -559,11 +554,18 @@ console.log(APP.areaOfInterest.features.length);
 }
 
 function setReady() {
-  //console.log('ready');
 }
 
 function setLoading() {
-  //console.log('loading');
+}
+
+function resizeMap() {
+    // set map canvas equal to div.#map width
+    var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+    var mapDiv = document.getElementById('map');
+    mapDiv.style.width = '100%';
+    mapCanvas.style.width = '100%';
+    MAP.resize();
 }
 
 // Render Application State 0: Prompt user to zoom to an area of interest
@@ -576,16 +578,17 @@ function renderZoomPrompt() {
   const appState0 =
       '<div class="sidebar" id="sidebar"> \
       <!-- App State 0 --> \
-          <div class="block"> \
-              <h4>Enter an address or zoom to your Area of Interest or choose one of the spotlight locations.</h4> \
+          <div class="description"> \
+              <h4>Zoom to your Area of Interest.</h4> \
+              <p class="italic">Enter an address or choose one of the featured locations.</p> \
           </div> \
           <!-- Geocoder --> \
           <div class="block"> \
               <div id="geocoder-container" class="geocoder-container"></div> \
           </div> \
-          <div class="block"></div> \
           <!-- Geocoder --> \
-          <div id="spotlights" class="spotlights"></div> \
+          <div class="block"></div> \
+          <div id="spotlights" class="block spotlights"></div> \
       <!-- App State 0 --> \
       </div>';
 
@@ -619,17 +622,15 @@ function renderSelectAreaOfInterestPrompt() {
               </tbody> \
           </table> \
           </div> \
-          <div id="spotlights" class="spotlights"></div> \
       <!-- App State 1 --> \
       </div>';
 
-  // set map canvas equal to div.#map width
-  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  var mapDiv = document.getElementById('map');
-  mapDiv.style.width = '100%';
-  mapCanvas.style.width = mapDiv.style.width;
-  console.log("mapresize2");
-  MAP.resize();
+  // // set map canvas equal to div.#map width
+  // var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  // var mapDiv = document.getElementById('map');
+  // mapDiv.style.width = '100%';
+  // mapCanvas.style.width = '100%';
+  // MAP.resize();
 
   // Replace Sidebar with App State 1 Sidebar
   $(".sidebar").replaceWith($(appState1));
@@ -708,15 +709,16 @@ function renderAreaOfInterestReport() {
       DRAW.deleteAll();
       unconstrainMap();
       APP.areaOfInterest = emptyFeatureCollection;
-      renderSelectAreaOfInterestPrompt();
+      // renderSelectAreaOfInterestPrompt();
+      updateApp();
   }
 
-  // set map canvas equal to div.#map width
-  var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  var mapDiv = document.getElementById('map');
-  mapDiv.style.width = '100%';
-  mapCanvas.style.width = '100%';
-  MAP.resize();
+  // // set map canvas equal to div.#map width
+  // var mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  // var mapDiv = document.getElementById('map');
+  // mapDiv.style.width = '100%';
+  // mapCanvas.style.width = '100%';
+  // MAP.resize();
 
   $('#table').DataTable( {
       data: uniquesList,
@@ -861,7 +863,7 @@ function unconstrainMap() {
 let spotlights = {
     'location1': {
         title: "Delaware Water Gap National Recreation Area",
-        description: "The Appalachian Trail runs up the middle of this large swath of public land that includes suitable habitat for more than 25 species.",
+        description: "The Appalachian Trail runs up the middle of this large swath of public land that includes suitable habitat for more than 25 protected species.",
         center: [-75.126345, 40.971842],
         zoom: 15.5,
         id: 1
@@ -896,11 +898,6 @@ function buildSpotlightsList(data) {
             link.className = 'spotlight-title';
             link.dataPosition = i ;
             link.innerHTML = currentLocation.title;
-
-            // $(".item").click(function() {
-            //     window.location = $(this).find("a").attr("href");
-            //     return false;
-            // });
 
             let details = location.appendChild(document.createElement('p'));
             details.innerHTML = currentLocation.description;
